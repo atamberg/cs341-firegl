@@ -8,13 +8,14 @@ title: Project Proposal CS-341 2025
 
 ## Abstract
 
-This project simulates the behavior of fire spreading through a scene (e.g. a forest). We'd like that a user’s click could start (spawn) a fire, and that with time it'll spread throughout the scene. This fire would produce light, smoke particles, and a bloom effect when looking at it. The user should have the option to enable toon shaders should complement the scene's simple polygon esthetic, juxtaposed with the semi-realistic fire.
+This project simulates fire in a scene. A player’s click will start (spawn) a fire, and with time will spread throughout the scene. This fire will produce light, smoke particles, and a bloom effect when looking at it. The player will be able to enable toon shaders that will complement the scene's simple polygon esthetic juxtaposed with semi-realistic fire.
 
-We'll need to a make a relatively robust particle system. We anticipate that deferred shading will improve performance in scenes with many light-producing fire nodes. As for technical challenges, we expect to face them while implementing fire/smoke spread. Synthesizing the 'hard' features into a complete scene versus just being separate demos may too be difficult. Realistic smoke/fire collisions that one might find in closed spaces may be out of scope for this project. 
-
-Even in graphically simple games, using advanced particle and lighting systems can create a surprisingly 'realistic' visual experience--often more so than high-resolution textures. Lighting, shadows, and effects like fog, bloom, and reflections contribute far more to a scene’s atmosphere than surface-level detail. Our perception of realism is shaped more by how light interacts with the environment than by how detailed individual textures appear. This principle is a big part of why we chose a fire simulation. Fire is dynamic and relies on animated lighting, color shifts, and particle behavior, making it a perfect showcase for how visual effects can create realism without complex models or textures.
+We'll need to make a particle system. We anticipate that deferred shading will improve performance in scenes with many light-producing fire nodes. As for technical challenges, we expect the to appear while implementing fire/smoke spread. Synthesizing the 'hard' features into a complete scene versus them being separate demos may too be difficult. Realistic smoke/fire collisions that one might find in closed spaces may be out of scope for this project.
 
 ![Fire effect from the game *Teardown*](images/teardown-fire1.jpg){width="600px"}
+
+Even in graphically simple games, using advanced particle and lighting systems can create a surprisingly 'realistic' visual experience--often more so than high-resolution textures. Our perception of realism is shaped more by how light interacts with the environment than by how detailed individual textures appear. Lighting, shadows, and effects like fog and bloom contribute a lot to a scene’s atmosphere. This principle is a big part of why we chose a fire simulation. Fire effects rely on dynamic lighting, particle behavior, and bloom making it a perfect showcase for how graphical effects can simulate realism without complex models or textures.
+
 
 ## Features
 
@@ -40,9 +41,9 @@ Even in graphically simple games, using advanced particle and lighting systems c
 	</tr>
 	<tr>
 		<td>Week 1</td>
-		<td>Brainstorm</td>
-		<td>Brainstorm</td>
-		<td>Brainstorm</td>
+		<td>Proposal</td>
+		<td>Proposal</td>
+		<td>Proposal</td>
 	</tr>
 	<tr style="background-color: #f9f9f9;">
 		<td colspan="4" align="center">Proposal</td>
@@ -51,7 +52,7 @@ Even in graphically simple games, using advanced particle and lighting systems c
 		<td>Week 2 (Easter)</td>
 		<td>Work on meshes</td>
 		<td></td>
-		<td>Research procedural fire generation</td>
+		<td>Research fire and smoke particle effects</td>
 	</tr>
 	<tr>
 		<td>Week 3</td>
