@@ -38,11 +38,11 @@
             <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
           </ul>-->
           <ul>
-          <li><a href="#project-title" id="toc-project-title">Project
-          Title</a>
+          <li><a href="#fire-simulation" id="toc-fire-simulation">Fire
+          Simulation</a>
           <ul>
           <li><a href="#abstract" id="toc-abstract">Abstract</a></li>
-          <li><a href="#featuress" id="toc-featuress">Featuress</a></li>
+          <li><a href="#features" id="toc-features">Features</a></li>
           <li><a href="#schedule" id="toc-schedule">Schedule</a></li>
           <li><a href="#resources" id="toc-resources">Resources</a></li>
           </ul></li>
@@ -50,63 +50,98 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         
-<h1 id="project-title">Project Title</h1>
+<h1 id="fire-simulation">Fire Simulation</h1>
 <figure>
-<img src="images/demo.jpg" width="300" alt="A representative image" />
-<figcaption aria-hidden="true">A representative image</figcaption>
+<img src="images/ForestFire.jpg" width="600" alt="A forest burning" />
+<figcaption aria-hidden="true">A forest burning</figcaption>
 </figure>
 <h2 id="abstract">Abstract</h2>
-<p>TODO</p>
-<h2 id="featuress">Featuress</h2>
+<p>This project simulates fire in a scene. A player’s click will start
+(spawn) a fire, and with time will spread throughout the scene. This
+fire will produce light, smoke particles, and a bloom effect when
+looking at it. The player will be able to enable toon shaders that will
+complement the scene’s simple polygon esthetic juxtaposed with
+semi-realistic fire.</p>
+<p>We’ll need to make a particle system. We anticipate that deferred
+shading will improve performance in scenes with many light-producing
+fire nodes. As for technical challenges, we expect the to appear while
+implementing fire/smoke spread. Synthesizing the ‘hard’ features into a
+complete scene may be difficult. Realistic smoke/fire collisions that
+one might find in closed spaces may be out of scope for this project. We
+will primarily use rasterization.</p>
+<figure>
+<img src="images/teardown-fire1.jpg" width="600"
+alt="Fire effect from the game Teardown" />
+<figcaption aria-hidden="true">Fire effect from the game
+<em>Teardown</em></figcaption>
+</figure>
+<p>Even in graphically simple games, using advanced particle and
+lighting systems can create a surprisingly ‘realistic’ visual
+experience–often more so than high-resolution textures. Our perception
+of realism is shaped more by how light interacts with the environment
+than by how detailed individual textures appear. Lighting, shadows, and
+effects like fog and bloom contribute a lot to a scene’s atmosphere.
+This principle is a big part of why we chose a fire simulation. Fire
+effects rely on dynamic lighting, particle behavior, and bloom making it
+a perfect showcase for how graphical effects can simulate realism
+without complex models or textures.</p>
+<h2 id="features">Features</h2>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>Feature</th>
 <th>Points</th>
 <th>Adapted Points</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>Feature 1</td>
+<tr>
+<td>Mesh and Scene Design</td>
 <td>5</td>
 <td>5</td>
 </tr>
-<tr class="even">
-<td>Feature 2</td>
-<td>10</td>
+<tr>
+<td>Bloom</td>
+<td>5</td>
 <td>5</td>
 </tr>
-<tr class="odd">
-<td>Feature 3</td>
+<tr>
+<td>Toon Shaders</td>
 <td>10</td>
 <td>10</td>
 </tr>
-<tr class="even">
-<td>Feature 4</td>
+<tr>
+<td>Deferred Shading</td>
 <td>20</td>
-<td>10</td>
+<td>15</td>
 </tr>
-<tr class="odd">
-<td>Feature 5</td>
+<tr>
+<td>Particle Effects</td>
 <td>20</td>
-<td>20</td>
+<td>15</td>
 </tr>
 </tbody>
 </table>
+<figure>
+<img src="images/teardown-fire2.jpg" width="600"
+alt="Fire spread with thick smoke!" />
+<figcaption aria-hidden="true">Fire spread with thick
+smoke!</figcaption>
+</figure>
 <h2 id="schedule">Schedule</h2>
+<p>(Likely subject to change)</p>
 <table>
 <tr>
 <th style="width: 20%">
 </th>
 <th>
-Name 1
+Leopold Popper
 </th>
 <th>
-Name 2
+Ali Gorgani
 </th>
 <th>
-Name 3
+Anthony Tamberg
 </th>
 </tr>
 <tr>
@@ -114,10 +149,13 @@ Name 3
 Week 1
 </td>
 <td>
+Proposal
 </td>
 <td>
+Proposal
 </td>
 <td>
+Proposal
 </td>
 </tr>
 <tr style="background-color: #f9f9f9;">
@@ -130,10 +168,13 @@ Proposal
 Week 2 (Easter)
 </td>
 <td>
+Work on meshes
 </td>
 <td>
+Read up on toon shaders and bloom
 </td>
 <td>
+Research fire and smoke particle effects
 </td>
 </tr>
 <tr>
@@ -141,10 +182,13 @@ Week 2 (Easter)
 Week 3
 </td>
 <td>
+Create basic scenes
 </td>
 <td>
+Implement toon shaders
 </td>
 <td>
+Implement basic phong shading
 </td>
 </tr>
 <tr>
@@ -152,10 +196,13 @@ Week 3
 Week 4
 </td>
 <td>
+Help with deferred shaders or particles
 </td>
 <td>
+Begin deferred shaders
 </td>
 <td>
+Implement basic particle system
 </td>
 </tr>
 <tr style="background-color: #f9f9f9;">
@@ -168,10 +215,13 @@ Milestone
 Week 5
 </td>
 <td>
+Implement bloom
 </td>
 <td>
+Finish deferred shaders
 </td>
 <td>
+Finish particle system
 </td>
 </tr>
 <tr>
@@ -179,10 +229,13 @@ Week 5
 Week 6
 </td>
 <td>
+Combine everything
 </td>
 <td>
+Create test scenes
 </td>
 <td>
+Combine everything
 </td>
 </tr>
 <tr>
@@ -190,10 +243,13 @@ Week 6
 Week 7
 </td>
 <td>
+Video and Report
 </td>
 <td>
+Video and Report
 </td>
 <td>
+Video and Report
 </td>
 </tr>
 <tr style="background-color: #f9f9f9;">
@@ -203,7 +259,31 @@ Video and Report
 </tr>
 </table>
 <h2 id="resources">Resources</h2>
-<p>TODO</p>
+<ul>
+<li><strong>Fog:</strong> <a
+href="https://lettier.github.io/3d-game-shaders-for-beginners/fog.html">3D
+Game Shaders for Beginners - Fog</a></li>
+<li><strong>Bloom:</strong> <a
+href="https://learnopengl.com/Advanced-Lighting/Bloom">Learn OpenGL
+Bloom</a></li>
+<li><strong>Bloom on ShaderToy:</strong> <a
+href="https://www.shadertoy.com/results?query=bloom">Bloom</a></li>
+<li><strong>Toon Shaders on ShaderToy</strong>: <a
+href="https://www.shadertoy.com/results?query=toon">Toon
+Shaders</a></li>
+<li><strong>Blender Meshes:</strong> <a
+href="https://docs.blender.org/manual/en/latest/modeling/meshes/primitives.html">Primitives</a></li>
+<li><strong>Noise Functions:</strong> <a
+href="https://github.com/josephg/noisejs">Seph Gentle’s
+Implementations</a></li>
+<li><strong>Worley Noise:</strong> <a
+href="https://thebookofshaders.com/12/">The Book of Shaders</a></li>
+<li><strong>Particle Effects:</strong> <a
+href="https://github.com/spite/polygon-shredder">Polygon
+Shredder</a></li>
+<li><strong>And other resources listed in the project
+handout</strong></li>
+</ul>
         </div>
       </div>
     </div>
