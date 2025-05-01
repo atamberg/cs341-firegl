@@ -4,7 +4,15 @@ title: Project Proposal CS-341 2025
 
 # Fire Simulation
 
-![A forest burning](images/ForestFire.jpg){width="600px"}
+<figure align = "center" style = "width: 600px;">
+	<img 
+		src="images/ForestFire.jpg"
+	/>
+	<figcaption align = "center">
+		<font size ="2">Figure 1: A virtual forest burning. <i>SIGGRAPH 2021</i>
+		</font>
+	</figcaption>
+</figure>
 
 ## Abstract
 
@@ -12,7 +20,16 @@ This project simulates fire in a scene. A player’s click will start (spawn) a 
 
 We'll need to make a particle system and we anticipate that deferred shading will improve performance in scenes with many light-producing fire nodes. As for technical challenges, we expect the difficulties to appear while implementing fire/smoke spread. Synthesizing the 'hard' features into a complete scene may be difficult. Realistic smoke/fire collisions that one might find in closed spaces may be out of scope for this project. We will primarily use rasterization.
 
-![Fire effect from the game *Teardown*](images/teardown-fire1.jpg){width="600px"}
+<figure align = "center" style = "width: 600px;">
+	<img 
+		src="images/teardown-fire1.jpg"
+	/>
+	<figcaption align = "center">
+		<font size ="2">Figure 2: Fire effect in <i>Teardown</i>. 
+		</font>
+	</figcaption>
+</figure>
+
 
 Even in graphically simple games, using advanced particle and lighting systems can create a surprisingly 'realistic' visual experience--often more so than high-resolution textures. Our perception of realism is shaped more by how light interacts with the environment than by how detailed individual textures appear. Lighting, shadows, and effects like fog and bloom contribute a lot to the scene’s atmosphere. This principle is a big part of why we chose a fire simulation. Fire effects rely on dynamic lighting, particle behavior, and bloom making it a perfect showcase for how graphical effects can simulate realism without complex models or textures.
 
@@ -27,7 +44,16 @@ Even in graphically simple games, using advanced particle and lighting systems c
 | Deferred Shading							| 20     | 15             |
 | Particle Effects							| 20     | 15             |
 
-![Fire spread with thick smoke!](images/teardown-fire2.jpg){width="600px"}
+<figure align = "center" style = "width: 600px;">
+	<img 
+		src="images/teardown-fire2.jpg"
+	/>
+	<figcaption align = "center">
+		<font size ="2">Figure 3: Fire spread with thick smoke in <i>Teardown</i>. 
+		</font>
+	</figcaption>
+</figure>
+
 
 ## Schedule
 (Likely subject to change)
@@ -95,6 +121,12 @@ Even in graphically simple games, using advanced particle and lighting systems c
 
 ## Resources
 
+##### Images
+- **Figure 1**: [3DVF (2021)](https://3dvf.com/en/siggraph-2021-how-some-researchers-virtually-set-forests-on-fire/) - *Retrieved May 1, 2025.*
+- **Figure 2 & 3**: Personal screenshots from *Teardown*
+
+
+##### Features 
 - **Fog:** [3D Game Shaders for Beginners - Fog](https://lettier.github.io/3d-game-shaders-for-beginners/fog.html)
 - **Bloom:** [Learn OpenGL Bloom](https://learnopengl.com/Advanced-Lighting/Bloom)
 - **Bloom on ShaderToy:** [Bloom](https://www.shadertoy.com/results?query=bloom)
