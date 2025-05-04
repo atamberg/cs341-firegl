@@ -1,4 +1,3 @@
-
 const default_texture = null; 
 const default_base_color = [1.0, 0.0, 1.0];  // magenta, used when no texture is provided
 const default_shininess = 0.1;
@@ -35,6 +34,7 @@ class BackgroundMaterial extends Material {
         this.texture = texture;
         this.properties.push("environment");
         this.properties.push("no_blinn_phong");
+        this.properties.push("no_toon");
     }
 }
 
@@ -45,6 +45,7 @@ class BillboardMaterial extends Material {
         this.color = color;
         this.properties.push("billboard");
         this.properties.push("no_blinn_phong");
+        this.properties.push("no_toon");
     }
 }
 
@@ -88,6 +89,7 @@ class TerrainMaterial extends Material {
 
         this.properties.push("terrain");
         this.properties.push("no_blinn_phong");
+        this.properties.push("no_toon");
     }
 }
 
