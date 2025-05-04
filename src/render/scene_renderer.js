@@ -7,6 +7,7 @@ import { MapMixerShaderRenderer } from "./shader_renderers/map_mixer_sr.js"
 import { TerrainShaderRenderer } from "./shader_renderers/terrain_sr.js"
 import { PreprocessingShaderRenderer } from "./shader_renderers/pre_processing_sr.js"
 import { ResourceManager } from "../scene_resources/resource_manager.js"
+import { BillboardShaderRender } from "./shader_renderers/billboard_sr.js"
 
 export class SceneRenderer {
 
@@ -31,6 +32,7 @@ export class SceneRenderer {
         this.mirror = new MirrorShaderRenderer(regl, resource_manager);
         this.shadows = new ShadowsShaderRenderer(regl, resource_manager);
         this.map_mixer = new MapMixerShaderRenderer(regl, resource_manager);
+        this.billboard = new BillboardShaderRender(regl, resource_manager);
 
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
@@ -120,6 +122,8 @@ export class SceneRenderer {
             // Render shaded objects
             this.blinn_phong.render(scene_state);
 
+            this.billboard.render(scene_state);
+
             // Render the reflection of mirror objects on top
             this.mirror.render(scene_state, (s_s) => {
                 this.pre_processing.render(scene_state);
@@ -149,6 +153,9 @@ export class SceneRenderer {
 
         // Mix the base color of the scene with the shadows information to create the final result
         this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
+
+        // render shadow buffer
+        // this.shadows.render(scene_state);
 
         // Visualize cubemap
         // this.mirror.env_capture.visualize();

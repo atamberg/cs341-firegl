@@ -108,8 +108,10 @@ async function main() {
   // Instantiate scenes. Multiple different scenes can be set up here: 
   // which one is rendered depends on the value of the active_scene variable.
   const demo_scene = new DemoScene(resource_manager, procedural_texture_generator);
+  const tutorial_scene = new TutorialScene(resource_manager);
 
-  const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
+  const active_scene = tutorial_scene;
+  //const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
   
   /*---------------------------------------------------------------
     5. UI Instantiation

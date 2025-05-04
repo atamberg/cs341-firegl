@@ -33,6 +33,8 @@ export class ShadowMapShaderRenderer extends ShaderRenderer {
 
         for (const obj of scene.objects) {
 
+            if(this.exclude_object(obj)) continue;
+
             const mesh = this.resource_manager.get_mesh(obj.mesh_reference);
             
             const { 
@@ -52,6 +54,9 @@ export class ShadowMapShaderRenderer extends ShaderRenderer {
         this.pipeline(inputs);
     }
 
+    exclude_object(obj){
+        return obj.material.properties.includes('billboard');
+    }
 
     cull(){
         return { enable: true }; // don't draw back face

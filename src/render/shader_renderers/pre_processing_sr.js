@@ -54,6 +54,10 @@ export class PreprocessingShaderRenderer extends ShaderRenderer {
         this.pipeline(inputs);
     }
 
+    exclude_object(obj){
+        return obj.material.properties.includes('billboard');
+    }
+
     // Overwrite the pipeline
     init_pipeline(){
         const regl = this.regl;

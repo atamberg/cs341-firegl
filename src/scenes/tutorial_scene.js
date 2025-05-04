@@ -1,7 +1,7 @@
 
 import { TurntableCamera } from "../scene_resources/camera.js"
 import * as MATERIALS from "../render/materials.js"
-import { cg_mesh_make_uv_sphere } from "../cg_libraries/cg_mesh.js"
+import { cg_mesh_make_uv_sphere, cg_mesh_make_plane } from "../cg_libraries/cg_mesh.js"
 
 import { 
   create_slider, 
@@ -32,11 +32,36 @@ export class TutorialScene extends Scene {
   initialize_scene(){
 
     // TODO
+    this.static
 
     this.lights.push({
       position : [0.0 , -2.0, 2.5],
       color: [1.0, 1.0, 0.9]
     });
+
+    this.objects.push({
+      translation: [0,0,0],
+      scale: [1,1,1],
+      mesh_reference: 'pine.obj',
+      material: MATERIALS.pine,
+    })
+
+    this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
+    this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
+
+    this.objects.push({
+      translation: [0, 0, 0],
+      scale: [80., 80., 80.],
+      mesh_reference: 'mesh_sphere_env_map',
+      material: MATERIALS.sunset_sky
+    });
+
+    this.objects.push({
+      translation: [0, 0, 2],
+      scale: [0.5, 0.5, 0.5],
+      mesh_reference: 'billboard',
+      material: MATERIALS.billboard,
+    })
 
   }
 
