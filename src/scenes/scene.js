@@ -1,5 +1,3 @@
-
-
 import { TurntableCamera } from "../scene_resources/camera.js"
 import { ResourceManager } from "../scene_resources/resource_manager.js";
 
@@ -27,6 +25,9 @@ export class Scene {
 
     // Point lights
     this.lights = [];
+
+    // Shading mode
+    this.use_toon_shading = false;
   }
 
   /**

@@ -72,6 +72,11 @@ async function main() {
       ui_global_params.is_paused = !ui_global_params.is_paused;
     });
 
+    // Create a toggle for toon shading
+    create_hotkey_action("Toggle Toon Shading", "t", () => {
+      active_scene.use_toon_shading = !active_scene.use_toon_shading;
+    });
+
   }
 
   /*---------------------------------------------------------------
