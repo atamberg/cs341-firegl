@@ -104,7 +104,12 @@ export class TurntableCamera {
         // only once instead as for every object. This option is simpler, and the performance
         // difference is negligible for a moderate number of objects.
         // Consider optimizing this routine if you need to render thousands of distinct objects.
-        return { mat_model_view, mat_model_view_projection, mat_normals_model_view }
+        return { 
+            mat_model: mat_model_to_world,
+            mat_model_view, 
+            mat_model_view_projection, 
+            mat_normals_model_view 
+        }
     }
 
     //// UI USEFUL FUNCTIONS

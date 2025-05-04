@@ -2,8 +2,8 @@ precision mediump float;
 
 // Varying values passed from the vertex shader
 varying vec2 v2f_uv;
-varying vec3 v2f_frag_pos;
-varying vec3 v2f_normal;
+varying vec3 v2f_world_pos;
+varying vec3 v2f_world_normal;
 varying vec3 v2f_light_dir;
 
 // Global variables specified in "uniforms" entry of the pipeline
@@ -23,9 +23,9 @@ uniform float outline_threshold;
 void main()
 {
     // Normalize vectors
-    vec3 normal = normalize(v2f_normal);
+    vec3 normal = normalize(v2f_world_normal);
     vec3 light_dir = normalize(v2f_light_dir);
-    vec3 view_dir = normalize(-v2f_frag_pos);
+    vec3 view_dir = normalize(light_position - v2f_world_pos);
     
     // Get base color from texture or material
     vec3 material_color = material_base_color;

@@ -30,9 +30,6 @@ export class ToonShaderRenderer extends ShaderRenderer {
 
         // For every light in the scene we render the toon shading contributions
         scene.lights.forEach(light => {
-            // Transform light position into camera space
-            const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view);
-
             for (const obj of scene.objects) {
                 // Check if object should be toon shaded
                 if(this.exclude_object(obj)) continue;
@@ -43,7 +40,8 @@ export class ToonShaderRenderer extends ShaderRenderer {
                 const { 
                     mat_model_view, 
                     mat_model_view_projection, 
-                    mat_normals_model_view 
+                    mat_normals_model_view,
+                    mat_model
                 } = scene.camera.object_matrices.get(obj);
                 
                 // Data passed to the pipeline to be used by the shader
@@ -52,9 +50,10 @@ export class ToonShaderRenderer extends ShaderRenderer {
 
                     mat_model_view_projection: mat_model_view_projection,
                     mat_model_view: mat_model_view,
+                    mat_model: mat_model,
                     mat_normals_model_view: mat_normals_model_view,
 
-                    light_position: light_position_cam,
+                    light_position: light.position,
                     light_color: light.color,
 
                     ambient_factor: ambient_factor,
@@ -107,6 +106,7 @@ export class ToonShaderRenderer extends ShaderRenderer {
             // View (camera) related matrix
             mat_model_view_projection: regl.prop('mat_model_view_projection'),
             mat_model_view: regl.prop('mat_model_view'),
+            mat_model: regl.prop('mat_model'),
             mat_normals_model_view: regl.prop('mat_normals_model_view'),
     
             // Light data
