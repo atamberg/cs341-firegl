@@ -164,7 +164,7 @@ export class SceneRenderer {
         this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
 
         // render shadow buffer
-        // this.shadows.render(scene_state);
+        //this.shadows.render(scene_state);
 
         // Visualize cubemap
         // this.mirror.env_capture.visualize();

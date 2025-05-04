@@ -6,6 +6,9 @@ varying vec3 v2f_world_pos;
 varying vec3 v2f_world_normal;
 varying vec3 v2f_light_dir;
 
+varying vec3 v2f_frag_pos;
+varying vec3 v2f_normal;
+
 // Global variables specified in "uniforms" entry of the pipeline
 uniform sampler2D material_texture;
 uniform bool is_textured;
@@ -56,10 +59,10 @@ void main()
     vec3 color = ambient + light_color * material_color * (diffuse + specular);
 
     // Optional: Add outline effect
-    float edge = dot(normal, view_dir);
-    if (edge < outline_threshold) {
-        color = vec3(0.0, 0.0, 0.0); // Black outline
-    }
+    //float edge = dot(normalize(v2f_normal), normalize(-v2f_frag_pos)) + 1.;
+    //if (edge < outline_threshold) {
+    //    color = vec3(0.0, 0.0, 0.0); // Black outline
+    //}
 
     gl_FragColor = vec4(color, 1.0);
 } 

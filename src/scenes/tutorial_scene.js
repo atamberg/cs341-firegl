@@ -34,6 +34,8 @@ export class TutorialScene extends Scene {
     // TODO
     this.static
 
+    this.ambient_factor = 0.5;
+
     this.lights.push({
       position : [0.0 , -2.0, 2.5],
       color: [1.0, 1.0, 0.9]
