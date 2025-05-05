@@ -155,6 +155,7 @@ export class ResourceManager{
             'terrain.vert.glsl', 'terrain.frag.glsl',
             'billboard.vert.glsl', 'billboard.frag.glsl',
             'toon.vert.glsl', 'toon.frag.glsl',
+            'sobel_outline.vert.glsl', 'sobel_outline.frag.glsl',
           ];
     }
 

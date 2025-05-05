@@ -64,10 +64,13 @@ export class ToonShaderRenderer extends ShaderRenderer {
                     material_shininess: obj.material.shininess,
 
                     // Toon shading specific parameters
-                    toon_levels: 4, // Number of discrete color levels
-                    toon_scale: 1.0, // Scale factor for quantization
-                    outline_threshold: 0.1 // Threshold for edge detection
+                    toon_levels: scene.ui_params.toon_levels || 7, // Number of discrete color levels
+                    toon_scale: scene.ui_params.toon_scale || 0.7, // Scale factor for quantization
+                    outline_threshold: scene.ui_params.outline_threshold || 0.2, // Threshold for edge detection
+                    outline_color: scene.ui_params.outline_color || [0.0, 0.0, 0.0], // Black outline by default
+                    show_shadows: scene.ui_params.show_shadows || false // Shadow toggle
                 });
+                console.log(scene.ui_params.toon_levels);
             }
             
             this.pipeline(inputs);
@@ -80,7 +83,6 @@ export class ToonShaderRenderer extends ShaderRenderer {
         // Do not shade objects that use other dedicated shader
         return obj.material.properties.includes('no_toon');
     }
-
     depth(){
         // Use z buffer
         return {
@@ -125,7 +127,9 @@ export class ToonShaderRenderer extends ShaderRenderer {
             // Toon shading parameters
             toon_levels: regl.prop('toon_levels'),
             toon_scale: regl.prop('toon_scale'),
-            outline_threshold: regl.prop('outline_threshold')
+            outline_threshold: regl.prop('outline_threshold'),
+            outline_color: regl.prop('outline_color'),
+            show_shadows: regl.prop('show_shadows')
         };
     }
 } 

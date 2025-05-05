@@ -148,6 +148,26 @@ export class DemoScene extends Scene {
 
     // Add button to generate random terrain
     create_button("Random terrain", () => {this.random_terrain()});
+        // Initialize toon shading parameters
+        this.ui_params.toon_levels = 4;
+        this.ui_params.toon_scale = 1.0;
+        this.ui_params.outline_threshold = 0.2;
+            
+        // Toon levels slider (2-10 levels)
+        create_slider("Toon Levels", [2, 10], (i) => {
+          this.ui_params.toon_levels = Number(i);
+          
+        });
+    
+        // Toon scale slider (0.5-2.0)
+        create_slider("Toon Scale", [0, n_steps_slider], (i) => {
+          this.ui_params.toon_scale = 0.5 + (i * 1.5 / n_steps_slider);
+        });
+    
+        // Outline threshold slider (0.1-0.5)
+        create_slider("Outline Threshold", [0, n_steps_slider], (i) => {
+          this.ui_params.outline_threshold = 0.1 + (i * 0.4 / n_steps_slider);
+        });
   }
 
   /**

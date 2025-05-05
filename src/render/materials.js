@@ -35,6 +35,7 @@ class BackgroundMaterial extends Material {
         this.properties.push("environment");
         this.properties.push("no_blinn_phong");
         this.properties.push("no_toon");
+        this.properties.push("no_sobel");
     }
 }
 
@@ -46,6 +47,7 @@ class BillboardMaterial extends Material {
         this.properties.push("billboard");
         this.properties.push("no_blinn_phong");
         this.properties.push("no_toon");
+        // this.properties.push("no_sobel");
     }
 }
 
@@ -100,7 +102,8 @@ class TerrainMaterial extends Material {
 
         this.properties.push("terrain");
         this.properties.push("no_blinn_phong");
-        this.properties.push("no_toon");
+        // this.properties.push("no_toon");
+        // this.properties.push("no_sobel");
     }
 }
 

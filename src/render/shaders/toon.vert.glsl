@@ -11,8 +11,12 @@ varying vec3 v2f_world_pos;
 varying vec3 v2f_world_normal;
 varying vec3 v2f_light_dir;
 
+varying vec3 v2f_frag_pos;
+varying vec3 v2f_normal;
+
 // Global uniform variables
 uniform mat4 mat_model_view;
+uniform mat3 mat_normals_model_view;
 uniform mat4 mat_model_view_projection;
 uniform mat4 mat_model;  // Model matrix for world space transformation
 uniform vec3 light_position;
@@ -30,6 +34,11 @@ void main()
 
     // Calculate light direction in world space
     v2f_light_dir = light_position - v2f_world_pos;
+
+    v2f_frag_pos = (mat_model_view * vec4(vertex_positions, 1.0)).xyz;
+
+    // normals in camera view
+    v2f_normal = normalize(mat_normals_model_view * vertex_normal);
 
     // Calculate final vertex position on the canvas
     gl_Position = mat_model_view_projection * vec4(vertex_positions, 1.0);

@@ -9,6 +9,7 @@ import { ResourceManager } from "../scene_resources/resource_manager.js"
 import { BillboardShaderRender } from "./shader_renderers/billboard_sr.js"
 import { ToonShaderRenderer } from "./shader_renderers/toon_sr.js"
 import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
+import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.js"
 
 export class SceneRenderer {
 
@@ -36,6 +37,7 @@ export class SceneRenderer {
         this.map_mixer = new MapMixerShaderRenderer(regl, resource_manager);
         this.billboard = new BillboardShaderRender(regl, resource_manager);
         this.particles = new ParticlesShaderRender(regl, resource_manager);
+        this.sobel_outline = new SobelOutlineShaderRenderer(regl, resource_manager);
 
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
@@ -166,12 +168,27 @@ export class SceneRenderer {
         this.billboard.render(scene_state);
         this.particles.render(scene_state);
 
+        // Apply Sobel outline effect
+        if (scene.use_toon_shading) {
+            this.sobel_outline.render({
+                ...scene_state,
+                depth_texture: this.texture("base")
+            });
+        }
+
+        // Set default parameters for Sobel outline
+        if (!scene.ui_params.depth_threshold) {
+            scene.ui_params.depth_threshold = 0.05; // More selective edge detection
+        }
+        if (!scene.ui_params.outline_thickness) {
+            scene.ui_params.outline_thickness = 0.1; // Thinner outlines
+        }
+
         // render shadow buffer
         // this.shadows.render(scene_state);
 
         // Visualize cubemap
         // this.mirror.env_capture.visualize();
-
     }
 }
 

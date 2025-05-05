@@ -1,4 +1,3 @@
-
 import { TurntableCamera } from "../scene_resources/camera.js"
 import * as MATERIALS from "../render/materials.js"
 import { cg_mesh_make_uv_sphere, cg_mesh_make_plane } from "../cg_libraries/cg_mesh.js"
@@ -6,7 +5,8 @@ import { cg_mesh_make_uv_sphere, cg_mesh_make_plane } from "../cg_libraries/cg_m
 import { 
   create_slider, 
   create_button_with_hotkey, 
-  create_hotkey_action 
+  create_hotkey_action,
+  create_button
 } from "../cg_libraries/cg_web.js";
 import { Scene } from "./scene.js";
 import { ResourceManager } from "../scene_resources/resource_manager.js";
@@ -92,9 +92,35 @@ export class TutorialScene extends Scene {
    * This function is called in main() if the scene is active.
    */
   initialize_ui_params(){
+    // Initialize toon shading parameters with optimal defaults
+    this.ui_params.toon_levels = 7;        // Number of discrete color bands (7 gives good balance)
+    this.ui_params.toon_scale = 0.7;       // Scale factor (0.7 preserves color intensity well)
+    this.ui_params.outline_threshold = 0.2; // Fixed outline threshold
+    this.ui_params.outline_color = [0.0, 0.0, 0.0]; // Black outlines
+    this.ui_params.show_shadows = false;    // Start with shadows off
 
-    // TODO
+    // Create sliders for toon shading parameters
+    const n_steps_slider = 100;
+    
+    // Toon levels slider (2-10 levels)
+    // Controls how many discrete color bands are used
+    // Higher values = smoother transitions, lower values = more cartoon-like
+    create_slider("Toon Levels", [2, 10], (i) => {
+      this.ui_params.toon_levels = Number(i);
+    });
 
+    // Toon scale slider (0.5-2.0)
+    // Controls the intensity of the shading
+    // Lower values = more subtle shading, higher values = more dramatic
+    create_slider("Toon Scale", [0, n_steps_slider], (i) => {
+      this.ui_params.toon_scale = 0.5 + (i * 1.5 / n_steps_slider);
+    });
+
+    // Toggle button for shadows
+    // Switches between bright mode (no shadows) and shadow mode
+    create_button("Toggle Shadows", () => {
+      this.ui_params.show_shadows = !this.ui_params.show_shadows;
+    });
   }
 
 }
