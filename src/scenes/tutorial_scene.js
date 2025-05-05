@@ -48,6 +48,7 @@ export class TutorialScene extends Scene {
 
     this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
     this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
+    this.resource_manager.add_procedural_mesh("ground", cg_mesh_make_plane());
 
     this.objects.push({
       translation: [0, 0, 0],
@@ -61,7 +62,14 @@ export class TutorialScene extends Scene {
       scale: [0.5, 0.5, 0.5],
       mesh_reference: 'billboard',
       material: MATERIALS.billboard,
-    })
+    });
+
+    this.objects.push({
+      translation: [0, 0, 0],
+      scale: [1, 1, 1],
+      mesh_reference: 'ground',
+      material: MATERIALS.gray,
+    });
 
   }
 

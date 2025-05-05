@@ -127,7 +127,6 @@ export class SceneRenderer {
                 this.blinn_phong.render(scene_state);
             }
 
-            this.billboard.render(scene_state);
 
             // Render the reflection of mirror objects on top
             this.mirror.render(scene_state, (s_s) => {
@@ -162,6 +161,7 @@ export class SceneRenderer {
 
         // Mix the base color of the scene with the shadows information to create the final result
         this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
+        this.billboard.render(scene_state);
 
         // render shadow buffer
         // this.shadows.render(scene_state);
