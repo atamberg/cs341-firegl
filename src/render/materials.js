@@ -49,6 +49,17 @@ class BillboardMaterial extends Material {
     }
 }
 
+class ParticleMaterial extends Material {
+    constructor({ texture = null, color = default_base_color }) {
+        super()
+        this.texture = texture;
+        this.color = color;
+        this.properties.push("particles");
+        this.properties.push("no_blinn_phong");
+        this.properties.push("no_toon");
+    }
+}
+
 class DiffuseMaterial extends Material {
 
     constructor({
@@ -107,6 +118,10 @@ export const sunset_sky = new BackgroundMaterial({
 export const billboard = new BillboardMaterial({
     texture: 'billboard.png',
     color: [0.0, 0.4, 0.4],
+});
+
+export const particle_green = new ParticleMaterial({
+    color: [0.0, 1.0, 0.2],
 });
 
 export const gray = new DiffuseMaterial({

@@ -10,6 +10,7 @@ import {
 } from "../cg_libraries/cg_web.js";
 import { Scene } from "./scene.js";
 import { ResourceManager } from "../scene_resources/resource_manager.js";
+import { RainbowVomitParticles } from "../scene_resources/rainbow_vomit_particles.js";
 
 export class TutorialScene extends Scene {
 
@@ -70,6 +71,10 @@ export class TutorialScene extends Scene {
       mesh_reference: 'ground',
       material: MATERIALS.gray,
     });
+
+    const vomit = new RainbowVomitParticles([0,0,2], [0.01,0.01,0.01], 'billboard');
+    this.objects.push(vomit);
+    this.actors["vomit"] = vomit;
 
   }
 

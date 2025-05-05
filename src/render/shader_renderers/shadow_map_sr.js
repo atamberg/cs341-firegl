@@ -55,7 +55,7 @@ export class ShadowMapShaderRenderer extends ShaderRenderer {
     }
 
     exclude_object(obj){
-        return obj.material.properties.includes('billboard');
+        return ['billboard', 'particles'].some(p => obj.material.properties.includes(p));
     }
 
     cull(){

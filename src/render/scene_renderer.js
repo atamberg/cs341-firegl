@@ -8,6 +8,7 @@ import { PreprocessingShaderRenderer } from "./shader_renderers/pre_processing_s
 import { ResourceManager } from "../scene_resources/resource_manager.js"
 import { BillboardShaderRender } from "./shader_renderers/billboard_sr.js"
 import { ToonShaderRenderer } from "./shader_renderers/toon_sr.js"
+import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
 
 export class SceneRenderer {
 
@@ -34,6 +35,7 @@ export class SceneRenderer {
         this.shadows = new ShadowsShaderRenderer(regl, resource_manager);
         this.map_mixer = new MapMixerShaderRenderer(regl, resource_manager);
         this.billboard = new BillboardShaderRender(regl, resource_manager);
+        this.particles = new ParticlesShaderRender(regl, resource_manager);
 
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
@@ -162,6 +164,7 @@ export class SceneRenderer {
         // Mix the base color of the scene with the shadows information to create the final result
         this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
         this.billboard.render(scene_state);
+        this.particles.render(scene_state);
 
         // render shadow buffer
         // this.shadows.render(scene_state);
