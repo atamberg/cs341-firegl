@@ -63,19 +63,19 @@ title: Milestone Report CS-341 2025
 		<tr>
 			<td>Week 1 (Proposal)</td>
 			<td></td>
-			<td></td>
+			<td>Look into the features to ensure feasibility</td>
 			<td></td>
 		</tr>
 		<tr style="background-color: #f0f0f0;">
 			<td>Week 2 (Easter)</td>
 			<td></td>
-			<td></td>
+			<td>Research Deferred and Toon Shading</td>
 			<td></td>
 		</tr>
 		<tr>
 			<td>Week 3</td>
 			<td></td>
-			<td></td>
+			<td>-</td>
 			<td></td>
 		</tr>
 		<tr>
@@ -95,7 +95,7 @@ title: Milestone Report CS-341 2025
 
 	Briefly describe the results you obtained until now and the overall state of the project.
 
-	TODO
+	The results obtained are rudimentary but satisfactory as our approach for the project was to get the harder features working by the first milestone. The overall state of the project is "on track" with a slight hiccup given the easter holiday issue. The unfinished features are also making fast progress, which gives an optimistic view for the state of the project.
 
 
 3. Optionally present the validation of any feature you have already implemented. This is not mandatory, but can help you get useful feedback for the final report: feature validation will be the main component determining your grade. 
@@ -153,6 +153,10 @@ title: Milestone Report CS-341 2025
 
 	The 
 
+	Regarding Toon shaders, the workload was split between understanding, to a certain point of course, the rendering pipeline given as a platform and the research regarding how Toon shaders work. 
+
+	Deferred Shading was also attempted, yet it is still a work in progress due to difficulty understanding and implementing the feature. Additionally, we figured that attempting deferred shaders during the final stages of the project might be a better approach as the shader is used for optimizing numerous dynamic light sources within a scene, which is only reached when all other features and scene designs are done.
+
 	
 
 ## Schedule Update
@@ -174,19 +178,19 @@ title: Milestone Report CS-341 2025
 		<tr>
 			<td>Week 5</td>
 			<td></td>
-			<td></td>
+			<td>Finalize Toon and start bloom shaders</td>
 			<td>Optimize particle system</td>
 		</tr>
 		<tr>
 			<td>Week 6</td>
 			<td></td>
-			<td></td>
+			<td>Finish bloom shaders and start deferred shading</td>
 			<td></td>
 		</tr>
 		<tr>
 			<td>Week 7</td>
 			<td></td>
-			<td></td>
+			<td>Finalize deferred shading</td>
 			<td></td>
 		</tr>
 	</table>
