@@ -21,31 +21,31 @@ title: Milestone Report CS-341 2025
 		</thead>
 		<tbody>
 			<tr>
-				<td>Feature 1</td>
+				<td>Mesh and Scene Design</td>
 				<td>5</td>
-				<td style="background-color: #d4edda;">Completed</td>
+				<td style="background-color: #d4edda;">Work in progress</td>
 			</tr>
 			<tr>
-				<td>Feature 2</td>
+				<td>Bloom</td>
 				<td>5</td>
-				<td style="background-color: #fff3cd;">Work in progress</td>
+				<td style="background-color: #fff3cd;">Upcoming</td>
 			</tr>
 			<tr>
-				<td>Feature 3</td>
+				<td>Toon Shaders</td>
 				<td>10</td>
-				<td style="background-color: #d4edda;">Completed</td>
+				<td style="background-color: #d4edda;">Complete (unpolished)</td>
 			</tr>
 			<tr>
 				<tr>
-					<td>Feature 4</td>
-					<td>10</td>
-					<td style="background-color: #cce5ff;">Upcoming</td>
+					<td>Deferred Shading</td>
+					<td>15</td>
+					<td style="background-color: #cce5ff;">Work in progress</td>
 				</tr>
 			</tr>
 			<tr>
-				<td>Feature 5</td>
-				<td>20</td>
-				<td style="background-color: #fff3cd;">Work in progress</td>
+				<td>Particle Effects</td>
+				<td>15</td>
+				<td style="background-color: #fff3cd;">Complete (unoptimized)</td>
 			</tr>
 		</tbody>
 	</table>
@@ -56,9 +56,9 @@ title: Milestone Report CS-341 2025
 		<caption>Achieved Goals</caption>
 		<tr>
 			<th></th>
-			<th>Name 1</th>
-			<th>Name 2</th>
-			<th>Name 3</th>
+			<th>Leopold Popper</th>
+			<th>Ali Gorgani</th>
+			<th>Anthony Tamberg</th>
 		</tr>
 		<tr>
 			<td>Week 1 (Proposal)</td>
@@ -80,9 +80,9 @@ title: Milestone Report CS-341 2025
 		</tr>
 		<tr>
 			<td>Week 4</td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td>Mesh work and Bloom</td>
+			<td>Deferred Shading and Toon</td>
+			<td>Particle Effects</td>
 		</tr>
 	</table>
 
@@ -119,45 +119,47 @@ title: Milestone Report CS-341 2025
 		<caption>Worked Hours</caption>
 		<tr>
 			<th></th>
-			<th>Name 1</th>
-			<th>Name 2</th>
-			<th>Name 3</th>
+			<th>Leopold Popper</th>
+			<th>Ali Gorgani</th>
+			<th>Anthony Tamberg</th>
 		</tr>
 		<tr>
 			<td>Week 1 (Proposal)</td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td>1</td>
+			<td>1</td>
+			<td>1</td>
 		</tr>
 		<tr style="background-color: #f0f0f0;">
 			<td>Week 2 (Easter)</td>
 			<td></td>
-			<td></td>
-			<td></td>
+			<td>1</td>
+			<td>0</td>
 		</tr>
 		<tr>
 			<td>Week 3</td>
 			<td></td>
-			<td></td>
-			<td></td>
+			<td>0</td>
+			<td>0</td>
 		</tr>
 		<tr>
 			<td>Week 4</td>
 			<td></td>
-			<td></td>
-			<td></td>
+			<td>11</td>
+			<td>9</td>
 		</tr>
 	</table>
 
 5. Is the project progressing as expected? Was your workload estimate correct? Critically reflect on your work plan and assess if you are on track.
 
-	TODO
+	The 
+
+	
 
 ## Schedule Update
 
 1. Acknowledge any delays or unexpected issues, and motivate proposed changes to the schedule, if needed.
 
-	TODO
+	We hadn't realized that Easter break ate into week 3, so we ended up losing that entire week by the time we began working on it on Wednesday. Though, given that we're caught up in the remaining time, we think we're on track.
 
 2. Present the work plan for the remaining weeks.
 
@@ -165,15 +167,15 @@ title: Milestone Report CS-341 2025
 		<caption>Updated Schedule</caption>
 		<tr>
 			<th></th>
-			<th>Name 1</th>
-			<th>Name 2</th>
-			<th>Name 3</th>
+			<th>Leopold Popper</th>
+			<th>Ali Gorgani</th>
+			<th>Anthony Tamberg</th>
 		</tr>
 		<tr>
 			<td>Week 5</td>
 			<td></td>
 			<td></td>
-			<td></td>
+			<td>Optimize particle system</td>
 		</tr>
 		<tr>
 			<td>Week 6</td>
