@@ -39,7 +39,7 @@ title: Milestone Report CS-341 2025
 				<tr>
 					<td>Deferred Shading</td>
 					<td>15</td>
-					<td style="background-color: #cce5ff;">Work in progress</td>
+					<td style="background-color: #d4edda;">Work in progress</td>
 				</tr>
 			</tr>
 			<tr>
@@ -62,19 +62,19 @@ title: Milestone Report CS-341 2025
 		</tr>
 		<tr>
 			<td>Week 1 (Proposal)</td>
-			<td></td>
+			<td>Found many resources related to fire simulation.</td>
 			<td>Look into the features to ensure feasibility</td>
 			<td></td>
 		</tr>
 		<tr style="background-color: #f0f0f0;">
 			<td>Week 2 (Easter)</td>
-			<td></td>
+			<td>Got familiar with blender.</td>
 			<td>Research Deferred and Toon Shading</td>
 			<td></td>
 		</tr>
 		<tr>
 			<td>Week 3</td>
-			<td></td>
+			<td>-</td>
 			<td>-</td>
 			<td></td>
 		</tr>
@@ -131,19 +131,19 @@ title: Milestone Report CS-341 2025
 		</tr>
 		<tr style="background-color: #f0f0f0;">
 			<td>Week 2 (Easter)</td>
-			<td></td>
+			<td>2</td>
 			<td>1</td>
 			<td>0</td>
 		</tr>
 		<tr>
 			<td>Week 3</td>
-			<td></td>
+			<td>0</td>
 			<td>0</td>
 			<td>0</td>
 		</tr>
 		<tr>
 			<td>Week 4</td>
-			<td></td>
+			<td>10</td>
 			<td>11</td>
 			<td>9</td>
 		</tr>
@@ -151,7 +151,7 @@ title: Milestone Report CS-341 2025
 
 5. Is the project progressing as expected? Was your workload estimate correct? Critically reflect on your work plan and assess if you are on track.
 
-	The 
+	It took quite some time getting familiar with blender, and implementing various meshes for our scene. Adding textures to our meshes into the project was harder than expected.
 
 	Regarding Toon shaders, the workload was split between understanding, to a certain point of course, the rendering pipeline given as a platform and the research regarding how Toon shaders work. 
 
@@ -177,19 +177,19 @@ title: Milestone Report CS-341 2025
 		</tr>
 		<tr>
 			<td>Week 5</td>
-			<td></td>
+			<td>Finalize scene and start bloom shaders</td>
 			<td>Finalize Toon and start bloom shaders</td>
 			<td>Optimize particle system</td>
 		</tr>
 		<tr>
 			<td>Week 6</td>
-			<td></td>
+			<td>Help with deferred shading</td>
 			<td>Finish bloom shaders and start deferred shading</td>
 			<td></td>
 		</tr>
 		<tr>
 			<td>Week 7</td>
-			<td></td>
+			<td>Video and report</td>
 			<td>Finalize deferred shading</td>
 			<td></td>
 		</tr>
