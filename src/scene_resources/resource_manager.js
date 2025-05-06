@@ -162,6 +162,9 @@ export class ResourceManager{
     meshes_to_load() {
         return [
         "pine.obj",
+        "terrain.obj",
+        /*"DeadTree.obj",
+        "DeadTreeType1.obj",*/
       ];
     }
 

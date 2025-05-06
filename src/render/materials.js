@@ -142,8 +142,29 @@ export const pine = new DiffuseMaterial({
     shininess: 0.5
 });
 
+export const terrain = new DiffuseMaterial({
+    color: [0.25, 1.00, 0.35],
+    shininess: 100
+});
+
+export const green = new DiffuseMaterial({
+    color: [0.34, 0.62, 0.21],
+    shininess: 0.1
+});
+
+export const trunk = new DiffuseMaterial({
+    color: [1.05, 0.75, 0.55],
+    shininess: 10
+});
+
+export const burntTree = new DiffuseMaterial({
+    color: [1.03, 0.76, 0.21],
+    shininess: 0.1
+});
+
+/*
 export const terrain = new TerrainMaterial({
     water_color: [0.29, 0.51, 0.62],
     grass_color: [0.33, 0.43, 0.18],
     peak_color: [0.8, 0.5, 0.4]
-});
+});*/

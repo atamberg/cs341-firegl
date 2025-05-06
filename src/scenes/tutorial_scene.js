@@ -36,8 +36,8 @@ export class TutorialScene extends Scene {
     this.static
 
     this.lights.push({
-      position : [0.0 , -2.0, 2.5],
-      color: [1.0, 1.0, 0.9]
+      position : [0.0 , 0, 5.5],
+      color: [0.0, 1.0, 0.9]
     });
 
     this.objects.push({
@@ -48,9 +48,6 @@ export class TutorialScene extends Scene {
     })
 
     this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
-    this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
-    this.resource_manager.add_procedural_mesh("ground", cg_mesh_make_plane());
-
     this.objects.push({
       translation: [0, 0, 0],
       scale: [80., 80., 80.],
@@ -58,6 +55,7 @@ export class TutorialScene extends Scene {
       material: MATERIALS.sunset_sky
     });
 
+    this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
     this.objects.push({
       translation: [0, 0, 2],
       scale: [0.5, 0.5, 0.5],
@@ -66,10 +64,23 @@ export class TutorialScene extends Scene {
     });
 
     this.objects.push({
-      translation: [0, 0, 0],
-      scale: [1, 1, 1],
-      mesh_reference: 'ground',
-      material: MATERIALS.gray,
+      translation: [0, 0, 0.25],
+      scale: [0.3, 0.3, 0.3],
+      mesh_reference: 'terrain.obj',
+      material: MATERIALS.terrain,
+    });
+
+    //generate positions, can tweak values
+    const treePositions = generateTreePositions(400, 8, 0.4);
+    
+    //add trees
+    treePositions.forEach(tree => {
+      this.objects.push({
+        translation: [tree.x, tree.y, tree.z],
+        scale: [tree.scale, tree.scale, tree.scale],
+        mesh_reference: 'pine.obj',
+        material: MATERIALS.pine
+      });
     });
 
     const vomit = new RainbowVomitParticles([0,0,2], [0.01,0.01,0.01], 'billboard');
@@ -124,4 +135,44 @@ export class TutorialScene extends Scene {
 
   }
 
+}
+/**
+ * Generate positions for trees.
+ * @param {*} count 
+ * @param {*} maxOffset 
+ * @param {*} minTreeDistance 
+ * @returns list of positions.
+ */
+function generateTreePositions(count, maxOffset, minTreeDistance) {
+  const positions = [];
+  //in case of overlaps
+  let attempts = 0;
+  const maxAttempts = count*10;
+  
+  while(positions.length < count && attempts < maxAttempts){
+    attempts++;
+    //random positions between [-maxOffset, maxOffset]
+    const x = (Math.random()*2 - 1) * maxOffset;
+    const y = (Math.random()*2 - 1) * maxOffset;
+    //random scale between [0.5, 1.2]
+    const scale = 0.5 + Math.random() * 0.7; 
+    //check overlaps
+    let overlaps = false;
+    for (const pos of positions) {
+      const dx = x - pos.x;
+      const dy = y - pos.y;
+      const distance = Math.sqrt(dx*dx + dy*dy);
+      
+      //overlap check
+      if(distance < minTreeDistance){
+        overlaps = true;
+        break;
+      }
+    }
+    //if no overlaps add position
+    if(!overlaps) {
+      positions.push({x, y, z: 0, scale});
+    }
+  }
+  return positions;
 }
