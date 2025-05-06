@@ -19,10 +19,8 @@ uniform float ambient_factor;      // How much ambient light to apply
 
 // Toon shading parameters
 uniform int toon_levels;           // Number of discrete color bands
-uniform float toon_scale;          // Scale factor for the toon effect
 uniform float outline_threshold;   // Threshold for outline detection
 uniform vec3 outline_color;        // Color of the outline
-uniform bool show_shadows;         // Whether to show shadows
 
 void main()
 {
@@ -41,24 +39,19 @@ void main()
     // Calculate diffuse lighting (how much light hits the surface)
     float diffuse = max(0.0, dot(normal, light_dir));
     
-    // Ensure minimum diffuse lighting and preserve base color
-    if (show_shadows) {
-        diffuse = max(0.2, diffuse); // Allow darker shadows when enabled
-    } else {
-        diffuse = max(0.4, diffuse); // Keep it brighter when disabled
-    }
-    
     // Quantize the diffuse value to create discrete color bands
-    float level = floor(diffuse * float(toon_levels)) / float(toon_levels);
-    diffuse = level * toon_scale;
+    float diffuse_floor = floor(diffuse * float(toon_levels)) / float(toon_levels);
+    float diffuse_ceil = diffuse_floor + (1. / float(toon_levels));
+    diffuse = diffuse_floor + (diffuse_ceil - diffuse_floor) / 2.;
 
     // Calculate specular lighting (shiny highlights)
     vec3 half_dir = normalize(light_dir + view_dir);
     float specular = pow(max(0.0, dot(normal, half_dir)), material_shininess);
     
     // Quantize the specular value to match the toon style
-    level = floor(specular * float(toon_levels)) / float(toon_levels);
-    specular = level * toon_scale;
+    float specular_floor = floor(specular * float(toon_levels)) / float(toon_levels);
+    float specular_ceil = specular_floor + (1. / float(toon_levels));
+    specular = specular_floor + (specular_ceil - specular_floor) / 2.;
 
     // Calculate ambient lighting (base level of light everywhere)
     vec3 ambient = ambient_factor * material_color;
@@ -68,25 +61,8 @@ void main()
     vec3 view_normal = normalize(v2f_normal);
     vec3 view_frag_pos = normalize(v2f_frag_pos);
     float edge = 1.0 - dot(view_normal, view_frag_pos);
-    if (edge > outline_threshold) {
-        outline = smoothstep(outline_threshold, outline_threshold + 0.1, edge);
-    }
-
     // Combine all lighting components to get final color
     vec3 color = ambient + light_color * material_color * (diffuse + specular);
     
-    // Apply outline with smooth transition
-    color = mix(color, outline_color, outline * 0.3);
-
-    // Apply color quantization to final result
-    color = floor(color * float(toon_levels)) / float(toon_levels);
-    
-    // Ensure minimum brightness and preserve base color
-    if (show_shadows) {
-        color = max(color, material_color * 0.2); // Allow darker shadows when enabled
-    } else {
-        color = max(color, material_color * 0.4); // Keep it brighter when disabled
-    }
-
     gl_FragColor = vec4(color, 1.0);
 } 

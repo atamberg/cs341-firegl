@@ -93,11 +93,11 @@ export class TutorialScene extends Scene {
    */
   initialize_ui_params(){
     // Initialize toon shading parameters with optimal defaults
-    this.ui_params.toon_levels = 7;        // Number of discrete color bands (7 gives good balance)
+    this.ui_params.toon_levels = 4;        // Number of discrete color bands (7 gives good balance)
     this.ui_params.toon_scale = 0.7;       // Scale factor (0.7 preserves color intensity well)
     this.ui_params.outline_threshold = 0.2; // Fixed outline threshold
     this.ui_params.outline_color = [0.0, 0.0, 0.0]; // Black outlines
-    this.ui_params.show_shadows = false;    // Start with shadows off
+    this.ui_params.depth_threshold = 0.1;
 
     // Create sliders for toon shading parameters
     const n_steps_slider = 100;
@@ -116,11 +116,12 @@ export class TutorialScene extends Scene {
       this.ui_params.toon_scale = 0.5 + (i * 1.5 / n_steps_slider);
     });
 
-    // Toggle button for shadows
-    // Switches between bright mode (no shadows) and shadow mode
-    create_button("Toggle Shadows", () => {
-      this.ui_params.show_shadows = !this.ui_params.show_shadows;
+
+    const sobel_steps = 25;
+    create_slider("Sobel Threshold", [0, sobel_steps], (i) => {
+      this.ui_params.depth_threshold = 0.01 + 0.5 * (i / sobel_steps);
     });
+
   }
 
 }

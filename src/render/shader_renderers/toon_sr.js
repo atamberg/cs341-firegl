@@ -9,20 +9,20 @@ export class ToonShaderRenderer extends ShaderRenderer {
      * @param {*} regl 
      * @param {ResourceManager} resource_manager 
      */
-    constructor(regl, resource_manager){
+    constructor(regl, resource_manager) {
         super(
-            regl, 
-            resource_manager, 
-            `toon.vert.glsl`, 
+            regl,
+            resource_manager,
+            `toon.vert.glsl`,
             `toon.frag.glsl`
         );
     }
-    
+
     /**
      * Render the objects of the scene_state with toon shading
      * @param {*} scene_state 
      */
-    render(scene_state){
+    render(scene_state) {
         const scene = scene_state.scene;
         const inputs = [];
 
@@ -32,18 +32,18 @@ export class ToonShaderRenderer extends ShaderRenderer {
         scene.lights.forEach(light => {
             for (const obj of scene.objects) {
                 // Check if object should be toon shaded
-                if(this.exclude_object(obj)) continue;
+                if (this.exclude_object(obj)) continue;
 
                 const mesh = this.resource_manager.get_mesh(obj.mesh_reference);
-                const {texture, is_textured} = texture_data(obj, this.resource_manager);
-                
-                const { 
-                    mat_model_view, 
-                    mat_model_view_projection, 
+                const { texture, is_textured } = texture_data(obj, this.resource_manager);
+
+                const {
+                    mat_model_view,
+                    mat_model_view_projection,
                     mat_normals_model_view,
                     mat_model
                 } = scene.camera.object_matrices.get(obj);
-                
+
                 // Data passed to the pipeline to be used by the shader
                 inputs.push({
                     mesh: mesh,
@@ -65,25 +65,23 @@ export class ToonShaderRenderer extends ShaderRenderer {
 
                     // Toon shading specific parameters
                     toon_levels: scene.ui_params.toon_levels || 7, // Number of discrete color levels
-                    toon_scale: scene.ui_params.toon_scale || 0.7, // Scale factor for quantization
                     outline_threshold: scene.ui_params.outline_threshold || 0.2, // Threshold for edge detection
                     outline_color: scene.ui_params.outline_color || [0.0, 0.0, 0.0], // Black outline by default
-                    show_shadows: scene.ui_params.show_shadows || false // Shadow toggle
                 });
                 console.log(scene.ui_params.toon_levels);
             }
-            
+
             this.pipeline(inputs);
             // Set to 0 the ambient factor so it is only taken into account once during the first light render
             ambient_factor = 0;
         });
     }
 
-    exclude_object(obj){
+    exclude_object(obj) {
         // Do not shade objects that use other dedicated shader
         return obj.material.properties.includes('no_toon');
     }
-    depth(){
+    depth() {
         // Use z buffer
         return {
             enable: true,
@@ -92,7 +90,7 @@ export class ToonShaderRenderer extends ShaderRenderer {
         };
     }
 
-    blend(){
+    blend() {
         // Additive blend mode
         return {
             enable: true,
@@ -103,21 +101,21 @@ export class ToonShaderRenderer extends ShaderRenderer {
         };
     }
 
-    uniforms(regl){
-        return{
+    uniforms(regl) {
+        return {
             // View (camera) related matrix
             mat_model_view_projection: regl.prop('mat_model_view_projection'),
             mat_model_view: regl.prop('mat_model_view'),
             mat_model: regl.prop('mat_model'),
             mat_normals_model_view: regl.prop('mat_normals_model_view'),
-    
+
             // Light data
             light_position: regl.prop('light_position'),
             light_color: regl.prop('light_color'),
 
             // Ambient factor
             ambient_factor: regl.prop('ambient_factor'),
-    
+
             // Material data
             material_texture: regl.prop('material_texture'),
             is_textured: regl.prop('is_textured'),
@@ -126,10 +124,8 @@ export class ToonShaderRenderer extends ShaderRenderer {
 
             // Toon shading parameters
             toon_levels: regl.prop('toon_levels'),
-            toon_scale: regl.prop('toon_scale'),
             outline_threshold: regl.prop('outline_threshold'),
             outline_color: regl.prop('outline_color'),
-            show_shadows: regl.prop('show_shadows')
         };
     }
 } 

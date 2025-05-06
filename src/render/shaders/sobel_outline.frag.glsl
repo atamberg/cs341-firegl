@@ -12,10 +12,10 @@ void main() {
     float depth = texture2D(depth_texture, v2f_uv).r;
     
     // Skip edge detection for background (depth = 1.0)
-    if (depth >= 0.999999) {
-        gl_FragColor = vec4(0.0);
-        return;
-    }
+    //if (depth >= 0.999999) {
+    //    gl_FragColor = vec4(0.0);
+    //    return;
+    //}
     
     // Sample neighboring pixels for depth and normal
     float depth_right = texture2D(depth_texture, v2f_uv + vec2(texel.x, 0.0)).r;
