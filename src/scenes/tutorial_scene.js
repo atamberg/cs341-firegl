@@ -152,21 +152,21 @@ export class TutorialScene extends Scene {
         // When bloom is true, use the sphere as light source
         this.lights.push({
             position: sphereLightPosition,
-            color: [1.0, 0.9, 0.8]
+            color: [1.0, 1.0, 1.0]
         });
       } else {
         // When bloom is false, use the original light source
         this.lights.push({
             position: originalLightPosition,
-            color: [1.0, 1.0, 0.9]
+            color: [1.0, 1.0, 1.0]
         });
       }
 
-      // Update sphere material
-      const sphere = this.objects.find(obj => obj.mesh_reference === 'light_sphere');
-      if (sphere) {
-        sphere.translation = this.ui_params.bloom ? sphereLightPosition : [-100, -100, -100];
-      }
+      // // Update sphere material
+      // const sphere = this.objects.find(obj => obj.mesh_reference === 'light_sphere');
+      // if (sphere) {
+      //   sphere.translation = sphereLightPosition;
+      // }
     };
 
     // Create UI elements
