@@ -35,10 +35,24 @@ export class TutorialScene extends Scene {
     // TODO
     this.static
 
-    this.lights.push({
-      position : [0.0 , -2.0, 2.5],
-      color: [1.0, 1.0, 0.9]
-    });
+    // Original light source position
+    const originalLightPosition = [0.0, -2.0, 2.5];
+    const sphereLightPosition = [1.5, 1.5, 2];
+    
+    // Add light source based on bloom toggle
+    if (this.ui_params.bloom) {
+        // When bloom is true, use the sphere as light source
+        this.lights.push({
+            position: sphereLightPosition,
+            color: [1.0, 0.9, 0.8]
+        });
+    } else {
+        // When bloom is false, use the original light source
+        this.lights.push({
+            position: originalLightPosition,
+            color: [1.0, 1.0, 0.9]
+        });
+    }
 
     this.objects.push({
       translation: [0,0,0],
@@ -48,6 +62,7 @@ export class TutorialScene extends Scene {
     })
 
     this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
+    this.resource_manager.add_procedural_mesh("light_sphere", cg_mesh_make_uv_sphere(32));
     this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
     this.resource_manager.add_procedural_mesh("ground", cg_mesh_make_plane());
 
@@ -64,6 +79,23 @@ export class TutorialScene extends Scene {
       mesh_reference: 'billboard',
       material: MATERIALS.billboard,
     });
+
+    // Add light source sphere
+    this.objects.push({
+      translation: [1.5, 1.5, 2],
+      scale: [0.2, 0.2, 0.2],
+      mesh_reference: 'light_sphere',
+      material: {
+        color: [1.0, 0.9, 0.8],
+        properties: ['emissive', 'no_blinn_phong'],
+        shininess: 100
+      }
+    });
+
+    // Make the sphere glow when bloom is true
+    if (this.ui_params.bloom) {
+        this.objects[this.objects.length - 1].material.properties.push('glow');
+    }
 
     this.objects.push({
       translation: [0, 0, 0],
@@ -98,6 +130,65 @@ export class TutorialScene extends Scene {
     this.ui_params.outline_threshold = 0.2; // Fixed outline threshold
     this.ui_params.outline_color = [0.0, 0.0, 0.0]; // Black outlines
     this.ui_params.depth_threshold = 0.1;
+
+    // Add bloom toggle
+    this.ui_params.bloom = false; // Start with original light source
+
+    // Original light source position
+    const originalLightPosition = [0.0, -2.0, 2.5];
+    const sphereLightPosition = [1.5, 1.5, 2];
+
+    // Function to update light source based on bloom state
+    const updateLightSource = () => {
+      // Clear existing lights
+      this.lights = [];
+
+      // Add new light source based on bloom state
+      if (this.ui_params.bloom) {
+        // When bloom is true, use the sphere as light source
+        this.lights.push({
+            position: sphereLightPosition,
+            color: [1.0, 0.9, 0.8]
+        });
+      } else {
+        // When bloom is false, use the original light source
+        this.lights.push({
+            position: originalLightPosition,
+            color: [1.0, 1.0, 0.9]
+        });
+      }
+
+      // Update sphere material
+      const sphere = this.objects.find(obj => obj.mesh_reference === 'light_sphere');
+      if (sphere) {
+        if (this.ui_params.bloom) {
+          sphere.material.properties.push('glow');
+        } else {
+          sphere.material.properties = sphere.material.properties.filter(prop => prop !== 'glow');
+        }
+      }
+    };
+
+    // Create UI elements
+    create_slider('toon_levels', 'Toon Levels', 2, 10, this.ui_params.toon_levels, 
+      (value) => { this.ui_params.toon_levels = value; });
+    create_slider('toon_scale', 'Toon Scale', 0.1, 1.0, this.ui_params.toon_scale, 
+      (value) => { this.ui_params.toon_scale = value; });
+    create_slider('outline_threshold', 'Outline Threshold', 0.0, 1.0, this.ui_params.outline_threshold, 
+      (value) => { this.ui_params.outline_threshold = value; });
+    create_slider('depth_threshold', 'Depth Threshold', 0.0, 1.0, this.ui_params.depth_threshold, 
+      (value) => { this.ui_params.depth_threshold = value; });
+
+    // Add bloom toggle button
+    create_button('Bloom Light Source', 
+      () => { 
+        this.ui_params.bloom = !this.ui_params.bloom; 
+        console.log('Bloom is now:', this.ui_params.bloom);
+        updateLightSource();
+      });
+
+    // Initialize light source
+    updateLightSource();
 
     // Create sliders for toon shading parameters
     const n_steps_slider = 100;
