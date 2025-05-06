@@ -107,6 +107,23 @@ class TerrainMaterial extends Material {
     }
 }
 
+/**
+ * Material for light sources that emits light and can be used for bloom effects
+ */
+class LightSourceMaterial extends Material {
+    constructor({
+        color = [1.0, 1.0, 1.0],
+        intensity = 1.0
+    }){
+        super()
+        this.color = color;
+        this.intensity = intensity;
+        this.properties.push("light_source");
+        this.properties.push("no_blinn_phong");
+        this.properties.push("no_toon");
+    }
+}
+
 /*---------------------------------------------------------------
 	Material Instantiation
 ---------------------------------------------------------------*/
@@ -146,4 +163,9 @@ export const terrain = new TerrainMaterial({
     water_color: [0.29, 0.51, 0.62],
     grass_color: [0.33, 0.43, 0.18],
     peak_color: [0.8, 0.5, 0.4]
+});
+
+export const light_source = new LightSourceMaterial({
+    color: [1.0, 0.95, 0.9],
+    intensity: 1.0
 });
