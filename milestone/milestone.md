@@ -89,9 +89,9 @@ title: Milestone Report CS-341 2025
 
 2. Show some preliminary results.
 
-	![An image showing your progress.](images/demo.jpg){width="300px"}
+	![Our toon shader implementation.](images/toon.png){width="500px"}
 
-	![A video showing your progress.](videos/demo.mp4){width="500px"}
+	![Billboard implementation](videos/billboard.webm){width="500px"}
 
 	Briefly describe the results you obtained until now and the overall state of the project.
 
