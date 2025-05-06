@@ -61,7 +61,12 @@ export class PreprocessingShaderRenderer extends ShaderRenderer {
             return false;
         }
         
-        return ['billboard', 'particles', 'light_source'].some(p => obj.material.properties.includes(p));
+        // Always exclude light source objects from preprocessing
+        if (obj.material.properties.includes('light_source')) {
+            return true;
+        }
+        
+        return ['billboard', 'particles'].some(p => obj.material.properties.includes(p));
     }
 
     // Overwrite the pipeline
