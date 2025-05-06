@@ -32,6 +32,7 @@ export class SceneRenderer {
         this.blinn_phong = new BlinnPhongShaderRenderer(regl, resource_manager);
         this.terrain = new TerrainShaderRenderer(regl, resource_manager);
         this.toon = new ToonShaderRenderer(regl, resource_manager);
+        this.light_source = new LightSourceShaderRenderer(regl, resource_manager);
 
         this.mirror = new MirrorShaderRenderer(regl, resource_manager);
         this.shadows = new ShadowsShaderRenderer(regl, resource_manager);
@@ -147,6 +148,9 @@ export class SceneRenderer {
                 }
             });
         })
+
+        // Render light sources
+        this.light_source.render(scene_state);
 
         /*---------------------------------------------------------------
             2. Shadows Render Pass

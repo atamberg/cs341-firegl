@@ -54,15 +54,10 @@ export class TutorialScene extends Scene {
 
     // Add light source sphere
     this.objects.push({
-      translation: [1.5, 1.5, 2],
+      translation: sphereLightPosition,
       scale: [0.2, 0.2, 0.2],
       mesh_reference: 'light_sphere',
-      material: {
-        color: [1.0, 0.9, 0.8],
-        properties: ['emissive'],
-        shininess: 100,
-        texture: null
-      }
+      material: MATERIALS.light_source
     });
 
     // Make the sphere glow when bloom is true
@@ -150,11 +145,7 @@ export class TutorialScene extends Scene {
       // Update sphere material
       const sphere = this.objects.find(obj => obj.mesh_reference === 'light_sphere');
       if (sphere) {
-        // Clear existing properties and add new ones
-        sphere.material.properties = ['emissive'];
-        if (this.ui_params.bloom) {
-          sphere.material.properties.push('glow');
-        }
+        sphere.translation = this.ui_params.bloom ? sphereLightPosition : [-100, -100, -100];
       }
     };
 

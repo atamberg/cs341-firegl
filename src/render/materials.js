@@ -107,6 +107,23 @@ class TerrainMaterial extends Material {
     }
 }
 
+/**
+ * Material for light sources that emits light and can be used for bloom effects
+ */
+class LightSourceMaterial extends Material {
+    constructor({
+        color = [1.0, 1.0, 1.0],
+        intensity = 1.0
+    }){
+        super()
+        this.color = color;
+        this.intensity = intensity;
+        this.properties.push("light_source");
+        this.properties.push("no_blinn_phong");
+        this.properties.push("no_toon");
+    }
+}
+
 /*---------------------------------------------------------------
 	Material Instantiation
 ---------------------------------------------------------------*/
