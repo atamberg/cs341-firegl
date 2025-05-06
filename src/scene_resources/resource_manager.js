@@ -157,6 +157,7 @@ export class ResourceManager{
             'toon.vert.glsl', 'toon.frag.glsl',
             'sobel_outline.vert.glsl', 'sobel_outline.frag.glsl',
             'light_source.vert.glsl', 'light_source.frag.glsl',
+            'bloom.vert.glsl', 'bloom.frag.glsl',
           ];
     }
 
