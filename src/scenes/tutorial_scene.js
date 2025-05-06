@@ -87,8 +87,9 @@ export class TutorialScene extends Scene {
       mesh_reference: 'light_sphere',
       material: {
         color: [1.0, 0.9, 0.8],
-        properties: ['emissive', 'no_blinn_phong'],
-        shininess: 100
+        properties: ['emissive'],
+        shininess: 100,
+        texture: null
       }
     });
 
@@ -161,10 +162,10 @@ export class TutorialScene extends Scene {
       // Update sphere material
       const sphere = this.objects.find(obj => obj.mesh_reference === 'light_sphere');
       if (sphere) {
+        // Clear existing properties and add new ones
+        sphere.material.properties = ['emissive'];
         if (this.ui_params.bloom) {
           sphere.material.properties.push('glow');
-        } else {
-          sphere.material.properties = sphere.material.properties.filter(prop => prop !== 'glow');
         }
       }
     };
