@@ -11,6 +11,7 @@ import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
 import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.js"
 import { PositionShaderRenderer } from "./shader_renderers/position_sr.js"
 import { NormalShaderRenderer } from "./shader_renderers/normal_sr.js"
+import { BloomShaderRenderer } from "./shader_renderers/bloom_sr.js"
 
 export class SceneRenderer {
 
@@ -33,6 +34,7 @@ export class SceneRenderer {
         this.terrain = new TerrainShaderRenderer(regl, resource_manager);
         this.toon = new ToonShaderRenderer(regl, resource_manager);
         this.light_source = new LightSourceShaderRenderer(regl, resource_manager);
+        this.bloom = new BloomShaderRenderer(regl, resource_manager);
 
         this.mirror = new MirrorShaderRenderer(regl, resource_manager);
         this.shadows = new ShadowsShaderRenderer(regl, resource_manager);
@@ -149,8 +151,11 @@ export class SceneRenderer {
             });
         })
 
-        // Render light sources
+        // Render light sources with bloom effect
         this.light_source.render(scene_state);
+        if (scene_state.scene.ui_params.bloom) {
+            this.bloom.render(scene_state);
+        }
 
         /*---------------------------------------------------------------
             2. Shadows Render Pass
