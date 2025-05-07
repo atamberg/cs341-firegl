@@ -70,6 +70,7 @@ export class LightSourceShaderRenderer extends ShaderRenderer {
 
                     material_texture: texture,
                     is_textured: is_textured,
+                    material_emissive: obj.material.emissive
                 });
             });
         });
@@ -92,12 +93,12 @@ export class LightSourceShaderRenderer extends ShaderRenderer {
     }
 
     blend(){
-        // Additive blend mode for the light source
+        // Use normal blend mode with alpha for the light source
         return {
             enable: true,
             func: {
-                src: 1,
-                dst: 1,
+                src: 'src alpha',
+                dst: 'one minus src alpha',
             }
         };
     }

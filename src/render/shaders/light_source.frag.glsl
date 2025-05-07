@@ -9,6 +9,7 @@ varying vec2 v2f_uv;
 uniform vec3 light_position;
 uniform vec3 light_color;
 uniform float ambient_factor;
+uniform vec3 material_emissive;
 
 void main() {
     // Calculate light direction and normalize
@@ -20,9 +21,9 @@ void main() {
     // Calculate diffuse lighting
     float diffuse = max(0.0, dot(n, l));
     
-    // Combine ambient and diffuse lighting
-    vec3 result = (ambient_factor + diffuse) * light_color;
+    // Combine ambient, diffuse, and emissive lighting
+    vec3 result = (ambient_factor + diffuse) * light_color + material_emissive;
     
-    // Output the final color
+    // Output the final color with alpha
     gl_FragColor = vec4(result, 1.0);
 }

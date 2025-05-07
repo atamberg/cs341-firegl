@@ -23,6 +23,7 @@ export class TutorialScene extends Scene {
     this.resource_manager = resource_manager;
     this.ui_params = {
       bloom: false,
+      bloom_threshold: 0.8,
       bloom_intensity: 1.0,
       blur_radius: 1.0,
       toon_shading: false,
@@ -48,9 +49,9 @@ export class TutorialScene extends Scene {
     
     // Add initial light source
     this.lights.push({
-        position: this.ui_params.bloom ? sphereLightPosition : originalLightPosition,
+        position: originalLightPosition,
         color: [1.0, 1.0, 1.0],
-        intensity: this.ui_params.bloom ? 1.5 : 1.0
+        intensity: 1.0
     });
 
     // Create the light source material clone for bloom
@@ -59,12 +60,7 @@ export class TutorialScene extends Scene {
     // Make a copy of the light source material properties
     this.lightSourceMaterial.properties = [...MATERIALS.light_source.properties];
     
-    // Add the bloom property if bloom is enabled
-    if (this.ui_params.bloom) {
-        if (!this.lightSourceMaterial.properties.includes('bloom')) {
-            this.lightSourceMaterial.properties.push('bloom');
-        }
-    }
+
 
     // Add resources
     this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
@@ -96,17 +92,8 @@ export class TutorialScene extends Scene {
       material: MATERIALS.billboard,
     });
 
-    // Add light source sphere
-    this.objects.push({
-      translation: sphereLightPosition,
-      scale: [0.2, 0.2, 0.2],
-      mesh_reference: 'light_sphere',
-      material: this.lightSourceMaterial  // Use our custom material
-    });
-    
-    // Store the light source object index for easy reference
-    this.lightSourceIndex = this.objects.length - 1;
 
+    
     // Add ground
     this.objects.push({
       translation: [0, 0, 0],
@@ -145,73 +132,53 @@ export class TutorialScene extends Scene {
     const originalLightPosition = [0.0, -2.0, 2.5];
     const sphereLightPosition = [1.5, 1.5, 2];
 
-    // Function to update light source based on bloom state
-    const updateLightSource = () => {
-      // Position constants
-      const originalLightPosition = [0.0, -2.0, 2.5];
-      const sphereLightPosition = [1.5, 1.5, 2];
-      
-      // Clear existing lights
-      this.lights = [];
-
-      // Add new light source based on bloom state
-      this.lights.push({
-          position: this.ui_params.bloom ? sphereLightPosition : originalLightPosition,
-          color: [1.0, 1.0, 1.0],
-          intensity: this.ui_params.bloom ? 1.5 : 1.0
-      });
-      
-      // Update the light source material for bloom effect
-      if (this.ui_params.bloom) {
-          // Add the bloom property if it doesn't exist
-          if (!this.lightSourceMaterial.properties.includes('bloom')) {
-              this.lightSourceMaterial.properties.push('bloom');
-          }
-          
-          // Increase intensity for better bloom effect
-          this.lightSourceMaterial.intensity = 1.5;
-          this.lightSourceMaterial.color = [1.0, 0.95, 0.8]; // Warmer color for bloom
-      } else {
-          // Remove the bloom property
-          const bloomIndex = this.lightSourceMaterial.properties.indexOf('bloom');
-          if (bloomIndex !== -1) {
-              this.lightSourceMaterial.properties.splice(bloomIndex, 1);
-          }
-          
-          // Reset intensity to normal
-          this.lightSourceMaterial.intensity = 1.0;
-          this.lightSourceMaterial.color = [1.0, 0.95, 0.9];
-      }
-      
-      // Update the light source object if it exists
-      if (this.lightSourceIndex !== undefined && 
-          this.objects[this.lightSourceIndex]) {
-          this.objects[this.lightSourceIndex].material = this.lightSourceMaterial;
-      }
-    };
-
     // Create UI elements
-    create_slider('Toon Levels', [2, 10], (value) => { this.ui_params.toon_levels = Number(value); });
-    create_slider('Toon Scale', [0.1, 1.0], (value) => { this.ui_params.toon_scale = Number(value); });
-    create_slider('Outline Threshold', [0.0, 1.0], (value) => { this.ui_params.outline_threshold = Number(value); });
-    create_slider('Outline Width', [0.0, 2.0], (value) => { this.ui_params.outline_width = Number(value); });
-    create_slider('Outline Smoothness', [0.0, 1.0], (value) => { this.ui_params.outline_smoothness = Number(value); });
-    create_slider('Bloom Intensity', [0.0, 2.0], (value) => { this.ui_params.bloom_intensity = Number(value); });
-    create_slider('Blur Radius', [0.0, 5.0], (value) => { this.ui_params.blur_radius = Number(value); });
+    this.ui = {
+      bloom: create_slider("Bloom", 0, 1, this.ui_params.bloom ? 1 : 0, (value) => {
+        this.ui_params.bloom = value > 0.5;
+      }),
+      bloom_threshold: create_slider("Bloom Threshold", 0, 1, this.ui_params.bloom_threshold, (value) => {
+        this.ui_params.bloom_threshold = Number(value);
+      }),
+      bloom_intensity: create_slider("Bloom Intensity", 0, 2, this.ui_params.bloom_intensity, (value) => {
+        this.ui_params.bloom_intensity = Number(value);
+      }),
+      blur_radius: create_slider("Blur Radius", 0, 2, this.ui_params.blur_radius, (value) => {
+        this.ui_params.blur_radius = Number(value);
+      }),
+      toon: create_slider("Toon Shading", 0, 1, this.ui_params.toon_shading ? 1 : 0, (value) => {
+        this.ui_params.toon_shading = value > 0.5;
+      }),
+      toon_levels: create_slider("Toon Levels", 1, 8, this.ui_params.toon_levels, (value) => {
+        this.ui_params.toon_levels = Number(value);
+      }),
+      toon_scale: create_slider("Toon Scale", 0, 2, this.ui_params.toon_scale, (value) => {
+        this.ui_params.toon_scale = Number(value);
+      }),
+      outline: create_slider("Outline", 0, 1, this.ui_params.outline_threshold ? 1 : 0, (value) => {
+        this.ui_params.outline_threshold = value > 0.5;
+      }),
+      outline_width: create_slider("Outline Width", 0, 1, this.ui_params.outline_width, (value) => {
+        this.ui_params.outline_width = Number(value);
+      }),
+      outline_smoothness: create_slider("Outline Smoothness", 0, 1, this.ui_params.outline_smoothness, (value) => {
+        this.ui_params.outline_smoothness = Number(value);
+      })
+    };
 
     // Create buttons
     create_button('Bloom Effect', 
       () => { 
         this.ui_params.bloom = !this.ui_params.bloom;
-        updateLightSource();
         console.log('Bloom effect ' + (this.ui_params.bloom ? 'enabled' : 'disabled'));
+        console.log('Current lights:', this.lights);
       });
     create_button('Toon Shading', 
       () => { this.ui_params.toon_shading = !this.ui_params.toon_shading; });
 
-    // Initialize light source
-    updateLightSource();
 
+
+    console.log('Initial lights:', this.lights);
     // Create sliders for toon shading parameters
     const n_steps_slider = 100;
     
