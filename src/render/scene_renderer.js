@@ -34,13 +34,13 @@ export class SceneRenderer {
         this.terrain = new TerrainShaderRenderer(regl, resource_manager);
         this.toon = new ToonShaderRenderer(regl, resource_manager);
         this.light_source = new LightSourceShaderRenderer(regl, resource_manager);
-        this.bloom = new BloomShaderRenderer(regl, resource_manager);
 
         this.mirror = new MirrorShaderRenderer(regl, resource_manager);
         this.shadows = new ShadowsShaderRenderer(regl, resource_manager);
         this.map_mixer = new MapMixerShaderRenderer(regl, resource_manager);
         this.particles = new ParticlesShaderRender(regl, resource_manager);
         this.sobel_outline = new SobelOutlineShaderRenderer(regl, resource_manager);
+        this.bloom = new BloomShaderRenderer(regl, resource_manager);
 
         this.position = new PositionShaderRenderer(regl, resource_manager);
         this.normal = new NormalShaderRenderer(regl, resource_manager);
@@ -48,7 +48,8 @@ export class SceneRenderer {
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
         this.create_texture_and_buffer("base", {}); 
-        this.create_texture_and_buffer("light", {}); 
+        this.create_texture_and_buffer("light", {});
+        this.create_texture_and_buffer("bloom", {}); 
     }
 
     /**
@@ -100,7 +101,8 @@ export class SceneRenderer {
      * @param {*} scene_state the description of the scene, time, dynamically modified parameters, etc.
      */
     render(scene_state) {
-        
+        // Inject regl into scene_state if needed
+    scene_state.regl = this.regl;
         const scene = scene_state.scene;
         const frame = scene_state.frame;
 
@@ -182,14 +184,31 @@ export class SceneRenderer {
         ---------------------------------------------------------------*/
 
         // Mix the base color of the scene with the shadows information to create the final result
-        this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
+        const baseTexture = this.texture("base");
+        this.map_mixer.render(scene_state, this.texture("shadows"), baseTexture);
+        
+        // Apply bloom effect if enabled
+        if (scene.ui_params.bloom) {
+            // Render the bloom effect
+            this.render_in_texture("bloom", () => {
+                this.bloom.render(scene_state, baseTexture);
+            });
+            
+            // Get the bloom texture
+            const bloomTexture = this.texture("bloom");
+            
+            // Combine bloom with the base scene
+            this.map_mixer.render(scene_state, bloomTexture, baseTexture);
+        }
+        
+        this.billboard.render(scene_state);
         this.particles.render(scene_state);
 
         // Apply Sobel outline effect
         if (scene.use_toon_shading) {
             this.sobel_outline.render({
                 ...scene_state,
-                depth_texture: this.texture("base")
+                depth_texture: baseTexture
             });
         }
 
