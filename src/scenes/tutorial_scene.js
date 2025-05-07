@@ -10,7 +10,6 @@ import {
 } from "../cg_libraries/cg_web.js";
 import { Scene } from "./scene.js";
 import { ResourceManager } from "../scene_resources/resource_manager.js";
-import { RainbowVomitParticles } from "../scene_resources/rainbow_vomit_particles.js";
 
 export class TutorialScene extends Scene {
 
@@ -43,48 +42,37 @@ export class TutorialScene extends Scene {
    */
   initialize_scene(){
 
-    // TODO
-    this.static
-
-    // Original light source position
+    // Position constants
     const originalLightPosition = [0.0, -2.0, 2.5];
     const sphereLightPosition = [1.5, 1.5, 2];
     
-    // Add light source based on bloom toggle
-    if (this.ui_params.bloom) {
-        // When bloom is true, use the sphere as light source
-        this.lights.push({
-            position: sphereLightPosition,
-            color: [1.0, 0.9, 0.8]
-        });
-    } else {
-        // When bloom is false, use the original light source
-        this.lights.push({
-            position: originalLightPosition,
-            color: [1.0, 1.0, 0.9]
-        });
-    }
-
-    // Add light source sphere
-    this.objects.push({
-      translation: sphereLightPosition,
-      scale: [0.2, 0.2, 0.2],
-      mesh_reference: 'light_sphere',
-      material: MATERIALS.light_source
+    // Add initial light source
+    this.lights.push({
+        position: this.ui_params.bloom ? sphereLightPosition : originalLightPosition,
+        color: [1.0, 1.0, 1.0],
+        intensity: this.ui_params.bloom ? 1.5 : 1.0
     });
 
-    this.objects.push({
-      translation: [0,0,0],
-      scale: [1,1,1],
-      mesh_reference: 'pine.obj',
-      material: MATERIALS.pine,
-    })
+    // Create the light source material clone for bloom
+    this.lightSourceMaterial = Object.assign({}, MATERIALS.light_source);
+    
+    // Make a copy of the light source material properties
+    this.lightSourceMaterial.properties = [...MATERIALS.light_source.properties];
+    
+    // Add the bloom property if bloom is enabled
+    if (this.ui_params.bloom) {
+        if (!this.lightSourceMaterial.properties.includes('bloom')) {
+            this.lightSourceMaterial.properties.push('bloom');
+        }
+    }
 
+    // Add resources
     this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
     this.resource_manager.add_procedural_mesh("light_sphere", cg_mesh_make_uv_sphere(32));
     this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
     this.resource_manager.add_procedural_mesh("ground", cg_mesh_make_plane());
 
+    // Add environment sphere
     this.objects.push({
       translation: [0, 0, 0],
       scale: [80., 80., 80.],
@@ -92,6 +80,15 @@ export class TutorialScene extends Scene {
       material: MATERIALS.sunset_sky
     });
 
+    // Add pine tree
+    this.objects.push({
+      translation: [0, 0, 0],
+      scale: [1, 1, 1],
+      mesh_reference: 'pine.obj',
+      material: MATERIALS.pine,
+    });
+
+    // Add billboard
     this.objects.push({
       translation: [0, 0, 2],
       scale: [0.5, 0.5, 0.5],
@@ -104,24 +101,19 @@ export class TutorialScene extends Scene {
       translation: sphereLightPosition,
       scale: [0.2, 0.2, 0.2],
       mesh_reference: 'light_sphere',
-      material: MATERIALS.light_source
+      material: this.lightSourceMaterial  // Use our custom material
     });
+    
+    // Store the light source object index for easy reference
+    this.lightSourceIndex = this.objects.length - 1;
 
-    // Make the sphere glow when bloom is true
-    if (this.ui_params.bloom) {
-        this.objects[this.objects.length - 1].material.properties.push('glow');
-    }
-
+    // Add ground
     this.objects.push({
       translation: [0, 0, 0],
       scale: [1, 1, 1],
       mesh_reference: 'ground',
       material: MATERIALS.gray,
     });
-
-    const vomit = new RainbowVomitParticles([0,0,2], [0.01,0.01,0.01], 'billboard');
-    this.objects.push(vomit);
-    this.actors["vomit"] = vomit;
 
   }
 
@@ -155,22 +147,46 @@ export class TutorialScene extends Scene {
 
     // Function to update light source based on bloom state
     const updateLightSource = () => {
+      // Position constants
+      const originalLightPosition = [0.0, -2.0, 2.5];
+      const sphereLightPosition = [1.5, 1.5, 2];
+      
       // Clear existing lights
       this.lights = [];
 
       // Add new light source based on bloom state
+      this.lights.push({
+          position: this.ui_params.bloom ? sphereLightPosition : originalLightPosition,
+          color: [1.0, 1.0, 1.0],
+          intensity: this.ui_params.bloom ? 1.5 : 1.0
+      });
+      
+      // Update the light source material for bloom effect
       if (this.ui_params.bloom) {
-        // When bloom is true, use the sphere as light source
-        this.lights.push({
-            position: sphereLightPosition,
-            color: [1.0, 1.0, 1.0]
-        });
+          // Add the bloom property if it doesn't exist
+          if (!this.lightSourceMaterial.properties.includes('bloom')) {
+              this.lightSourceMaterial.properties.push('bloom');
+          }
+          
+          // Increase intensity for better bloom effect
+          this.lightSourceMaterial.intensity = 1.5;
+          this.lightSourceMaterial.color = [1.0, 0.95, 0.8]; // Warmer color for bloom
       } else {
-        // When bloom is false, use the original light source
-        this.lights.push({
-            position: originalLightPosition,
-            color: [1.0, 1.0, 1.0]
-        });
+          // Remove the bloom property
+          const bloomIndex = this.lightSourceMaterial.properties.indexOf('bloom');
+          if (bloomIndex !== -1) {
+              this.lightSourceMaterial.properties.splice(bloomIndex, 1);
+          }
+          
+          // Reset intensity to normal
+          this.lightSourceMaterial.intensity = 1.0;
+          this.lightSourceMaterial.color = [1.0, 0.95, 0.9];
+      }
+      
+      // Update the light source object if it exists
+      if (this.lightSourceIndex !== undefined && 
+          this.objects[this.lightSourceIndex]) {
+          this.objects[this.lightSourceIndex].material = this.lightSourceMaterial;
       }
     };
 
@@ -184,10 +200,11 @@ export class TutorialScene extends Scene {
     create_slider('Blur Radius', [0.0, 5.0], (value) => { this.ui_params.blur_radius = Number(value); });
 
     // Create buttons
-    create_button('Bloom', 
+    create_button('Bloom Effect', 
       () => { 
-        this.ui_params.bloom = !this.ui_params.bloom; 
+        this.ui_params.bloom = !this.ui_params.bloom;
         updateLightSource();
+        console.log('Bloom effect ' + (this.ui_params.bloom ? 'enabled' : 'disabled'));
       });
     create_button('Toon Shading', 
       () => { this.ui_params.toon_shading = !this.ui_params.toon_shading; });

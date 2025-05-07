@@ -46,6 +46,7 @@ export class SceneRenderer {
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
         this.create_texture_and_buffer("base", {}); 
+        this.create_texture_and_buffer("light", {}); 
     }
 
     /**
@@ -118,7 +119,6 @@ export class SceneRenderer {
 
         // Render call: the result will be stored in the texture "base"
         this.render_in_texture("base", () =>{
-
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
 
@@ -135,7 +135,6 @@ export class SceneRenderer {
                 this.blinn_phong.render(scene_state);
             }
 
-
             // Render the reflection of mirror objects on top
             this.mirror.render(scene_state, (s_s) => {
                 this.pre_processing.render(scene_state);
@@ -147,12 +146,19 @@ export class SceneRenderer {
                     this.blinn_phong.render(s_s);
                 }
             });
-        })
+        });
 
         // Render light sources with bloom effect
-        this.light_source.render(scene_state);
         if (scene_state.scene.ui_params.bloom) {
-            this.bloom.render(scene_state);
+            // First render the light source to a texture
+            const lightTexture = this.render_in_texture("light", () => {
+                this.light_source.render(scene_state);
+            });
+            
+            // Apply bloom to the light source texture
+            this.bloom.render(scene_state, lightTexture);
+        } else {
+            this.light_source.render(scene_state);
         }
 
         /*---------------------------------------------------------------

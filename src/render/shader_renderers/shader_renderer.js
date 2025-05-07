@@ -101,7 +101,9 @@ export class ShaderRenderer {
         const regl = this.regl;
 
         return regl({
-    
+            vert: this.vert_shader,
+            frag: this.frag_shader,
+            
             attributes: this.attributes(regl),
 
             // Faces, as triplets of vertex indices
@@ -114,11 +116,7 @@ export class ShaderRenderer {
             blend: this.blend(),
         
             // Uniforms: global data available to the shader
-            uniforms: this.uniforms(regl),
-        
-            // Shaders
-            vert: this.vert_shader,
-            frag: this.frag_shader,
+            uniforms: this.uniforms(regl)
         });
     }
 }

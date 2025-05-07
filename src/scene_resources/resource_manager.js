@@ -33,6 +33,30 @@ export class ResourceManager{
         // Start downloads in parallel
         const resource_promises = {};
 
+        // Create screen quad for post-processing
+        this.screen_quad = {
+            mesh: {
+                vertex_positions: regl.buffer([
+                    [-1, -1, 0], // Bottom-left
+                    [1, -1, 0],  // Bottom-right
+                    [-1, 1, 0],  // Top-left
+                    [1, 1, 0]    // Top-right
+                ]),
+                vertex_tex_coords: regl.buffer([
+                    [0, 0],
+                    [1, 0],
+                    [0, 1],
+                    [1, 1]
+                ]),
+                faces: regl.elements([
+                    [0, 1, 2], // First triangle (bottom-left, bottom-right, top-left)
+                    [2, 1, 3]  // Second triangle (top-left, bottom-right, top-right)
+                ])
+            },
+            model_matrix: mat4.create(),
+            view_proj_matrix: mat4.create()
+        };
+
         // load textures
         for (const texture_name of this.textures_to_load()) {
             resource_promises[texture_name] = load_texture(regl, `${path_to_textures_folder}/${texture_name}`);
@@ -157,6 +181,7 @@ export class ResourceManager{
             'toon.vert.glsl', 'toon.frag.glsl',
             'sobel_outline.vert.glsl', 'sobel_outline.frag.glsl',
             'light_source.vert.glsl', 'light_source.frag.glsl',
+            'blur.vert.glsl', 'blur.frag.glsl',
             'bloom.vert.glsl', 'bloom.frag.glsl',
           ];
     }
