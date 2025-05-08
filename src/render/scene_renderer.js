@@ -46,27 +46,59 @@ export class SceneRenderer {
         this.normal = new NormalShaderRenderer(regl, resource_manager);
 
         // Create textures & buffer to save some intermediate renders into a texture
-        this.create_texture_and_buffer("shadows", {}); 
-        this.create_texture_and_buffer("base", {}); 
-        this.create_texture_and_buffer("light", {});
-        this.create_texture_and_buffer("bloom", {}); 
+        this.create_texture_and_buffer("shadows", { format: 'rgba', type: 'float' }); 
+        this.create_texture_and_buffer("base", { format: 'rgba', type: 'float' }); 
+        this.create_texture_and_buffer("light", { format: 'rgba', type: 'float' });
+        this.create_texture_and_buffer("bloom", { format: 'rgba', type: 'float' }); 
     }
 
     /**
      * Helper function to create regl texture & regl buffers
      * @param {*} name the name for the texture (used to save & retrive data)
-     * @param {*} parameters use if you need specific texture parameters
+     * @param {*} options use if you need specific texture parameters
      */
-    create_texture_and_buffer(name, {wrap = 'clamp', format = 'rgba', type = 'float'}){
+    create_texture_and_buffer(name, options = {}){
         const regl = this.regl;
-        const framebuffer_width = window.innerWidth;
-        const framebuffer_height = window.innerHeight;
-
+        const framebuffer_width = regl._gl.drawingBufferWidth;
+        const framebuffer_height = regl._gl.drawingBufferHeight;
+        const wrap = options.wrap || 'clamp';
+        const format = options.format || 'rgba';
+        const type = options.type || 'float';
+        
         // Create a regl texture and a regl buffer linked to the regl texture
-        const text = regl.texture({ width: framebuffer_width, height: framebuffer_height, wrap: wrap, format: format, type: type })
-        const buffer = regl.framebuffer({ color: [text], width: framebuffer_width, height: framebuffer_height, })
+        const text = regl.texture({ 
+            width: framebuffer_width, 
+            height: framebuffer_height, 
+            wrap: wrap, 
+            format: format, 
+            type: type
+        });
+        
+        // Debug logging - check texture properties
+        console.log(`Created texture ${name}:`, {
+            width: text.width,
+            height: text.height,
+            format: text.format,
+            type: text.type
+        });
+        
+        const buffer = regl.framebuffer({ 
+            color: [text], 
+            width: framebuffer_width, 
+            height: framebuffer_height,
+            depth: true,
+            depthTexture: true
+        });
         
         this.textures_and_buffers[name] = [text, buffer]; 
+        
+        // Debug logging - check framebuffer properties
+        console.log(`Created framebuffer for ${name}:`, {
+            width: buffer.color[0].width,
+            height: buffer.color[0].height,
+            format: buffer.color[0].format,
+            type: buffer.color[0].type
+        });
     }
 
     /**
@@ -78,10 +110,17 @@ export class SceneRenderer {
     render_in_texture(name, render_function){
         const regl = this.regl;
         const [texture, buffer] = this.textures_and_buffers[name];
+        
+        if (!texture || !buffer) {
+            console.error(`Texture or buffer not found for ${name}`);
+            return null;
+        }
+
         regl({ framebuffer: buffer })(() => {
             regl.clear({ color: [0,0,0,1], depth: 1 });
             render_function();
-          });
+        });
+        
         return texture;
     }
 
@@ -92,6 +131,10 @@ export class SceneRenderer {
      */
     texture(name){
         const [texture, buffer] = this.textures_and_buffers[name];
+        if (!texture) {
+            console.error(`Texture ${name} not found`);
+            return null;
+        }
         return texture;
     }
 
@@ -102,7 +145,8 @@ export class SceneRenderer {
      */
     render(scene_state) {
         // Inject regl into scene_state if needed
-    scene_state.regl = this.regl;
+        scene_state.regl = this.regl;
+        
         const scene = scene_state.scene;
         const frame = scene_state.frame;
 
@@ -122,7 +166,10 @@ export class SceneRenderer {
         ---------------------------------------------------------------*/
 
         // Render call: the result will be stored in the texture "base"
-        this.render_in_texture("base", () =>{
+        const baseTexture = this.render_in_texture("base", () =>{
+            // Clear the framebuffer
+            this.regl.clear({ color: [0, 0, 0, 1], depth: 1 });
+
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
 
@@ -150,20 +197,27 @@ export class SceneRenderer {
                     this.blinn_phong.render(s_s);
                 }
             });
+
+            // Return the base texture
+            return this.texture("base");
         });
 
-        // Render light sources with bloom effect
-        if (scene_state.scene.ui_params.bloom) {
-            // First render the light source to a texture
-            const lightTexture = this.render_in_texture("light", () => {
-                this.light_source.render(scene_state);
-            });
-            
-            // Apply bloom to the light source texture
-            this.bloom.render(scene_state, lightTexture);
-        } else {
-            this.light_source.render(scene_state);
+        // Debug logging - check base texture
+        console.log('Base texture created:', {
+            texture: baseTexture,
+            width: baseTexture.width,
+            height: baseTexture.height,
+            format: baseTexture.format
+        });
+
+        // Ensure the texture is properly initialized
+        if (!baseTexture) {
+            console.error('Base texture is not initialized');
+            return;
         }
+
+        // Render light sources
+        this.light_source.render(scene_state);
 
         /*---------------------------------------------------------------
             2. Shadows Render Pass
@@ -171,10 +225,8 @@ export class SceneRenderer {
         
         // Render the shadows of the scene in a black & white texture. White means shadow.
         this.render_in_texture("shadows", () =>{
-
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
-
             // Render the shadows
             this.shadows.render(scene_state);
         })
@@ -184,21 +236,12 @@ export class SceneRenderer {
         ---------------------------------------------------------------*/
 
         // Mix the base color of the scene with the shadows information to create the final result
-        const baseTexture = this.texture("base");
         this.map_mixer.render(scene_state, this.texture("shadows"), baseTexture);
         
         // Apply bloom effect if enabled
         if (scene.ui_params.bloom) {
-            // Render the bloom effect
-            this.render_in_texture("bloom", () => {
-                this.bloom.render(scene_state, baseTexture);
-            });
-            
-            // Get the bloom texture
-            const bloomTexture = this.texture("bloom");
-            
-            // Combine bloom with the base scene
-            this.map_mixer.render(scene_state, bloomTexture, baseTexture);
+            // Render the bloom effect directly to the screen
+            this.bloom.render(scene_state, baseTexture);
         }
         
         this.billboard.render(scene_state);
