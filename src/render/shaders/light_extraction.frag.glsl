@@ -9,12 +9,16 @@ uniform float u_intensity;
 varying vec2 v_texCoord;
 
 void main() {
-    vec3 color = texture2D(u_input, v_texCoord).rgb;
-    float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+    // Get input color
+    vec4 color = texture2D(u_input, v_texCoord);
     
-    // Only keep pixels above the threshold
-    vec3 extracted = color * step(u_threshold, luminance);
+    // Calculate luminance
+    float luminance = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
     
-    // Apply intensity
-    gl_FragColor = vec4(extracted * u_intensity, 1.0);
+    // Extract bright pixels
+    if (luminance > u_threshold) {
+        gl_FragColor = vec4(color.rgb * u_intensity, color.a);
+    } else {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+    }
 }

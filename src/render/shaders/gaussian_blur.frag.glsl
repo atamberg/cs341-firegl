@@ -32,5 +32,8 @@ void main() {
         }
     }
     
-    gl_FragColor = vec4(color / totalWeight, 1.0);
+    // Clamp the color to prevent overflow
+    color = clamp(color / totalWeight, vec3(0.0), vec3(1.0));
+    
+    gl_FragColor = vec4(color, 1.0);
 }
