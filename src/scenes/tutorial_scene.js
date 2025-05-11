@@ -2,9 +2,9 @@ import { TurntableCamera } from "../scene_resources/camera.js"
 import * as MATERIALS from "../render/materials.js"
 import { cg_mesh_make_uv_sphere, cg_mesh_make_plane } from "../cg_libraries/cg_mesh.js"
 
-import { 
-  create_slider, 
-  create_button_with_hotkey, 
+import {
+  create_slider,
+  create_button_with_hotkey,
   create_hotkey_action,
   create_button
 } from "../cg_libraries/cg_web.js";
@@ -18,9 +18,9 @@ export class TutorialScene extends Scene {
    * A scene to be completed, used for the introductory tutorial
    * @param {ResourceManager} resource_manager 
    */
-  constructor(resource_manager){
+  constructor(resource_manager) {
     super();
-    
+
     this.resource_manager = resource_manager;
 
     this.initialize_scene();
@@ -30,19 +30,19 @@ export class TutorialScene extends Scene {
   /**
    * Scene setup
    */
-  initialize_scene(){
+  initialize_scene() {
 
     // TODO
     this.static
 
     this.lights.push({
-      position : [0.0 , 0, 5.5],
+      position: [0.0, 0, 5.5],
       color: [0.0, 1.0, 0.9]
     });
 
     this.objects.push({
-      translation: [0,0,0],
-      scale: [1,1,1],
+      translation: [0, 0, 0],
+      scale: [1, 1, 1],
       mesh_reference: 'pine.obj',
       material: MATERIALS.pine,
     })
@@ -80,7 +80,7 @@ export class TutorialScene extends Scene {
 
     //generate positions, can tweak values
     const treePositions = generateTreePositions(400, 8, 0.4);
-    
+
     //add trees
     treePositions.forEach(tree => {
       this.objects.push({
@@ -100,7 +100,7 @@ export class TutorialScene extends Scene {
   /**
    * Initialize the evolve function that describes the behaviour of each actor 
    */
-  initialize_actor_actions(){
+  initialize_actor_actions() {
 
     // TODO
 
@@ -110,7 +110,7 @@ export class TutorialScene extends Scene {
    * Initialize custom scene-specific UI parameters to allow interactive control of selected scene elements.
    * This function is called in main() if the scene is active.
    */
-  initialize_ui_params(){
+  initialize_ui_params() {
     // Initialize toon shading parameters with optimal defaults
     this.ui_params.toon_levels = 4;        // Number of discrete color bands (7 gives good balance)
     this.ui_params.toon_scale = 0.7;       // Scale factor (0.7 preserves color intensity well)
@@ -120,7 +120,7 @@ export class TutorialScene extends Scene {
 
     // Create sliders for toon shading parameters
     const n_steps_slider = 100;
-    
+
     // Toon levels slider (2-10 levels)
     // Controls how many discrete color bands are used
     // Higher values = smoother transitions, lower values = more cartoon-like
@@ -155,31 +155,31 @@ function generateTreePositions(count, maxOffset, minTreeDistance) {
   const positions = [];
   //in case of overlaps
   let attempts = 0;
-  const maxAttempts = count*10;
-  
-  while(positions.length < count && attempts < maxAttempts){
+  const maxAttempts = count * 10;
+
+  while (positions.length < count && attempts < maxAttempts) {
     attempts++;
     //random positions between [-maxOffset, maxOffset]
-    const x = (Math.random()*2 - 1) * maxOffset;
-    const y = (Math.random()*2 - 1) * maxOffset;
+    const x = (Math.random() * 2 - 1) * maxOffset;
+    const y = (Math.random() * 2 - 1) * maxOffset;
     //random scale between [0.5, 1.2]
-    const scale = 0.5 + Math.random() * 0.7; 
+    const scale = 0.5 + Math.random() * 0.7;
     //check overlaps
     let overlaps = false;
     for (const pos of positions) {
       const dx = x - pos.x;
       const dy = y - pos.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
       //overlap check
-      if(distance < minTreeDistance){
+      if (distance < minTreeDistance) {
         overlaps = true;
         break;
       }
     }
     //if no overlaps add position
-    if(!overlaps) {
-      positions.push({x, y, z: 0, scale});
+    if (!overlaps) {
+      positions.push({ x, y, z: 0, scale });
     }
   }
   return positions;

@@ -6,7 +6,6 @@ import { MapMixerShaderRenderer } from "./shader_renderers/map_mixer_sr.js"
 import { TerrainShaderRenderer } from "./shader_renderers/terrain_sr.js"
 import { PreprocessingShaderRenderer } from "./shader_renderers/pre_processing_sr.js"
 import { ResourceManager } from "../scene_resources/resource_manager.js"
-import { BillboardShaderRender } from "./shader_renderers/billboard_sr.js"
 import { ToonShaderRenderer } from "./shader_renderers/toon_sr.js"
 import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
 import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.js"
@@ -35,7 +34,6 @@ export class SceneRenderer {
         this.mirror = new MirrorShaderRenderer(regl, resource_manager);
         this.shadows = new ShadowsShaderRenderer(regl, resource_manager);
         this.map_mixer = new MapMixerShaderRenderer(regl, resource_manager);
-        this.billboard = new BillboardShaderRender(regl, resource_manager);
         this.particles = new ParticlesShaderRender(regl, resource_manager);
         this.sobel_outline = new SobelOutlineShaderRenderer(regl, resource_manager);
 
@@ -165,7 +163,6 @@ export class SceneRenderer {
 
         // Mix the base color of the scene with the shadows information to create the final result
         this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
-        this.billboard.render(scene_state);
         this.particles.render(scene_state);
 
         // Apply Sobel outline effect
