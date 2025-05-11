@@ -202,13 +202,13 @@ export class SceneRenderer {
             return this.texture("base");
         });
 
-        // Debug logging - check base texture
-        console.log('Base texture created:', {
-            texture: baseTexture,
-            width: baseTexture.width,
-            height: baseTexture.height,
-            format: baseTexture.format
-        });
+        // // Debug logging - check base texture
+        // console.log('Base texture created:', {
+        //     texture: baseTexture,
+        //     width: baseTexture.width,
+        //     height: baseTexture.height,
+        //     format: baseTexture.format
+        // });
 
         // Ensure the texture is properly initialized
         if (!baseTexture) {
@@ -241,9 +241,8 @@ export class SceneRenderer {
         // Apply bloom effect if enabled
         if (scene.ui_params.bloom) {
             // Render the bloom effect directly to the screen
-            this.bloom.render(scene_state, baseTexture);
-        }
-        
+        this.bloom.render(scene_state, baseTexture);
+        }        
         this.billboard.render(scene_state);
         this.particles.render(scene_state);
 

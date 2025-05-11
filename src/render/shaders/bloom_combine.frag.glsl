@@ -5,22 +5,25 @@ precision mediump float;
 uniform sampler2D u_original;
 uniform sampler2D u_bloom;
 uniform float u_bloom_intensity;
+uniform float u_exposure;
 
 varying vec2 v_texCoord;
 
 void main() {
-    // Get colors
+    // Sample the original scene color and the bloom texture
     vec4 original = texture2D(u_original, v_texCoord);
     vec4 bloom = texture2D(u_bloom, v_texCoord);
     
-    // Scale bloom intensity
-    vec3 bloom_rgb = bloom.rgb * u_bloom_intensity;
+    // Add bloom to the original HDR color (additive blending)
+    vec3 hdrColor = original.rgb + bloom.rgb * u_bloom_intensity;
     
-    // Combine using screen blend mode
-    vec3 combined = original.rgb + (1.0 - original.rgb) * bloom_rgb;
+    // Tone mapping (exposure)
+    const float gamma = 2.2;
+    vec3 result = vec3(1.0) - exp(-hdrColor * u_exposure);
     
-    // Clamp to prevent overflow
-    combined = clamp(combined, vec3(0.0), vec3(1.0));
+    // Gamma correction
+    result = pow(result, vec3(1.0 / gamma));
     
-    gl_FragColor = vec4(combined, original.a);
+    // Output the final color with original alpha
+    gl_FragColor = vec4(result, original.a);
 }

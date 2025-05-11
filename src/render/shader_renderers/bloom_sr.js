@@ -5,6 +5,7 @@ export class BloomShaderRenderer extends ShaderRenderer {
     constructor(regl, resource_manager) {
         super(regl, resource_manager, "bloom_combine.vert.glsl", "bloom_combine.frag.glsl");
         
+        // Create the bloom combine pass
         this.bloomCombine = this.regl({
             frag: this.resource_manager.get_shader("bloom_combine.frag.glsl"),
             vert: this.resource_manager.get_shader("bloom_combine.vert.glsl"),
@@ -13,14 +14,18 @@ export class BloomShaderRenderer extends ShaderRenderer {
                 a_texCoord: [0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1],
             },
             uniforms: {
-                u_original: regl.texture(),
-                u_bloom: regl.texture(),
+                u_original: regl.prop('u_original'),
+                u_bloom: regl.prop('u_bloom'),
                 u_bloom_intensity: regl.prop('u_bloom_intensity'),
+                u_exposure: regl.prop('u_exposure'),
             },
             count: 6,
+            depth: { enable: false },
+            blend: { enable: false }
         });
 
-        this.lightExtraction = this.regl({
+        // Create the bright pass filter
+        this.brightPass = this.regl({
             frag: this.resource_manager.get_shader("light_extraction.frag.glsl"),
             vert: this.resource_manager.get_shader("light_extraction.vert.glsl"),
             attributes: {
@@ -28,13 +33,16 @@ export class BloomShaderRenderer extends ShaderRenderer {
                 a_texCoord: [0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1],
             },
             uniforms: {
-                u_input: regl.prop('input'),
-                u_threshold: regl.prop('threshold'),
-                u_intensity: regl.prop('intensity'),
+                u_input: regl.prop('u_input'),
+                u_threshold: regl.prop('u_threshold'),
+                u_intensity: regl.prop('u_intensity'),
             },
             count: 6,
+            depth: { enable: false },
+            blend: { enable: false }
         });
 
+        // Create the gaussian blur pass
         this.gaussianBlur = this.regl({
             frag: this.resource_manager.get_shader("gaussian_blur.frag.glsl"),
             vert: this.resource_manager.get_shader("gaussian_blur.vert.glsl"),
@@ -43,114 +51,129 @@ export class BloomShaderRenderer extends ShaderRenderer {
                 a_texCoord: [0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1],
             },
             uniforms: {
-                u_input: regl.texture(),
+                u_input: regl.prop('u_input'),
                 u_blur_radius: regl.prop('u_blur_radius'),
                 u_resolution: regl.prop('u_resolution'),
+                u_horizontal: regl.prop('u_horizontal'),
             },
             count: 6,
+            depth: { enable: false },
+            blend: { enable: false }
         });
+        
+        // Create ping-pong framebuffers for the blur passes
+        this.pingpongFBO = [null, null];
+        this.pingpongBuffers = [null, null];
+        
+        // Initialize the ping-pong framebuffers
+        this.initFramebuffers(regl);
+    }
+    
+    // Initialize ping-pong framebuffers
+    initFramebuffers(regl) {
+        const width = regl._gl.drawingBufferWidth;
+        const height = regl._gl.drawingBufferHeight;
+        
+        this.pingpongFBO = [regl.framebuffer(), regl.framebuffer()];
+        this.pingpongBuffers = [null, null];
+        
+        for (let i = 0; i < 2; i++) {
+            this.pingpongBuffers[i] = regl.texture({
+                width: width,
+                height: height,
+                format: 'rgba',
+                type: 'float',
+                min: 'linear',
+                mag: 'linear',
+                wrap: 'clamp'
+            });
+            
+            this.pingpongFBO[i]({ color: this.pingpongBuffers[i], depth: false });
+        }
     }
 
     render(scene_state, baseTexture) {
         const { scene, regl } = scene_state;
 
+        // Verify base texture exists
         if (!baseTexture) {
-            console.error('Base texture not found');
+            console.error('Base texture not found for bloom effect');
             return;
         }
-
-        // Debug logging - check base texture
-        console.log('Base texture properties:', {
-            texture: baseTexture,
-            width: baseTexture.width,
-            height: baseTexture.height,
-            format: baseTexture.format,
-            type: baseTexture.type
-        });
 
         // Get the canvas dimensions
         const width = regl._gl.drawingBufferWidth;
         const height = regl._gl.drawingBufferHeight;
-
-        // Debug logging - check canvas dimensions
-        console.log('Canvas dimensions:', {
-            width,
-            height,
-            drawingBufferWidth: regl._gl.drawingBufferWidth,
-            drawingBufferHeight: regl._gl.drawingBufferHeight
-        });
-
-        // Create framebuffer for bloom extraction
-        const bloomFramebuffer = regl.framebuffer({
-            color: regl.texture({
-                width,
-                height,
-                format: 'rgba',
-                type: 'float'
-            }),
-            width,
-            height,
-            depth: false,
-            depthTexture: false
-        });
         
-        // Debug logging - check bloom framebuffer
-        console.log('Bloom framebuffer created:', {
-            width: bloomFramebuffer.color[0].width,
-            height: bloomFramebuffer.color[0].height,
-            format: 'rgba'
+        // Check if we need to recreate framebuffers (e.g., if window was resized)
+        if (this.pingpongBuffers[0].width !== width || this.pingpongBuffers[0].height !== height) {
+            this.initFramebuffers(regl);
+        }
+        
+        // Get bloom parameters from UI with fallbacks
+        const threshold = scene.ui_params.bloom_threshold || 0.6;
+        const intensity = scene.ui_params.bloom_intensity || 1.5;
+        const blurRadius = scene.ui_params.blur_radius || 2.0;
+        const exposure = scene.ui_params.exposure || 1.0;
+
+        // Create framebuffer for the bright pass
+        const brightFramebuffer = regl.framebuffer({
+            color: regl.texture({
+                width: width,
+                height: height,
+                format: 'rgba',
+                type: 'float',
+                min: 'linear',
+                mag: 'linear'
+            }),
+            depth: false
         });
 
-        // Debug logging - check framebuffer binding
-        console.log('Framebuffer binding:', {
-            framebuffer: bloomFramebuffer,
-            color: bloomFramebuffer.color[0],
-            colorWidth: bloomFramebuffer.color[0].width,
-            colorHeight: bloomFramebuffer.color[0].height
-        });
-
-        // Bind the framebuffer using .use()
-        bloomFramebuffer.use(() => {
-            regl.clear({ color: [0, 0, 0, 1], depth: 1 });
-
-            // Debug logging - check light extraction parameters
-            console.log('Light extraction parameters:', {
-                threshold: scene.ui_params.bloom_threshold,
-                intensity: scene.ui_params.bloom_intensity,
-                inputTexture: {
-                    width: baseTexture.width,
-                    height: baseTexture.height,
-                    format: baseTexture.format
-                }
-            });
-
-            // Light extraction render pass
-            this.lightExtraction({
-                input: baseTexture,
-                threshold: scene.ui_params.bloom_threshold,
-                intensity: scene.ui_params.bloom_intensity,
-            });
-
-            // Gaussian blur pass (could use separate framebuffer for ping-ponging)
-            this.gaussianBlur({
-                u_input: bloomFramebuffer.color[0],
-                u_blur_radius: parseFloat(scene.ui_params.blur_radius),
-                u_resolution: [bloomFramebuffer.color[0].width, bloomFramebuffer.color[0].height],
+        // Step 1: Extract bright areas
+        brightFramebuffer.use(() => {
+            // Clear the framebuffer
+            regl.clear({ color: [0, 0, 0, 0] });
+            
+            // Extract bright areas
+            this.brightPass({
+                u_input: baseTexture,
+                u_threshold: threshold,
+                u_intensity: intensity
             });
         });
 
-        // Final composition with bloom
+        // Step 2: Apply two-pass Gaussian blur using ping-pong technique
+        let horizontal = true;
+        let firstIteration = true;
+        const blurAmount = 5; // Number of blur passes (adjust as needed)
+        
+        for (let i = 0; i < blurAmount; i++) {
+            // Bind the appropriate framebuffer
+            this.pingpongFBO[horizontal ? 1 : 0].use(() => {
+                // Clear the framebuffer
+                regl.clear({ color: [0, 0, 0, 0] });
+                
+                // Apply blur in one direction
+                this.gaussianBlur({
+                    u_input: firstIteration ? brightFramebuffer.color[0] : this.pingpongBuffers[horizontal ? 0 : 1],
+                    u_blur_radius: blurRadius,
+                    u_resolution: [width, height],
+                    u_horizontal: horizontal
+                });
+            });
+            
+            horizontal = !horizontal;
+            if (firstIteration) {
+                firstIteration = false;
+            }
+        }
+
+        // Step 3: Combine the original image with the blurred bright areas
         this.bloomCombine({
             u_original: baseTexture,
-            u_bloom: bloomFramebuffer.color[0],
-            u_bloom_intensity: 1.0,
-        });
-
-        // Debug logging - check final render
-        console.log('Bloom effect rendered with parameters:', {
-            threshold: scene.ui_params.bloom_threshold,
-            intensity: scene.ui_params.bloom_intensity,
-            blur_radius: scene.ui_params.blur_radius
+            u_bloom: this.pingpongBuffers[horizontal ? 1 : 0], // Use the last rendered blur result
+            u_bloom_intensity: intensity,
+            u_exposure: exposure
         });
     }
 }
