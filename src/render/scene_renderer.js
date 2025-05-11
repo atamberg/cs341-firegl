@@ -9,6 +9,8 @@ import { ResourceManager } from "../scene_resources/resource_manager.js"
 import { ToonShaderRenderer } from "./shader_renderers/toon_sr.js"
 import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
 import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.js"
+import { PositionShaderRenderer } from "./shader_renderers/position_sr.js"
+import { NormalShaderRenderer } from "./shader_renderers/normal_sr.js"
 
 export class SceneRenderer {
 
@@ -36,6 +38,9 @@ export class SceneRenderer {
         this.map_mixer = new MapMixerShaderRenderer(regl, resource_manager);
         this.particles = new ParticlesShaderRender(regl, resource_manager);
         this.sobel_outline = new SobelOutlineShaderRenderer(regl, resource_manager);
+
+        this.position = new PositionShaderRenderer(regl, resource_manager);
+        this.normal = new NormalShaderRenderer(regl, resource_manager);
 
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
@@ -183,6 +188,12 @@ export class SceneRenderer {
 
         // render shadow buffer
         // this.shadows.render(scene_state);
+
+        // render position buffer
+        // this.position.render(scene_state);
+
+        // render normal buffer
+        // this.normal.render(scene_state);
 
         // Visualize cubemap
         // this.mirror.env_capture.visualize();
