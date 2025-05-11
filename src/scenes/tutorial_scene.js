@@ -26,6 +26,7 @@ export class TutorialScene extends Scene {
       bloom_threshold: 0.8,
       bloom_intensity: 1.0,
       blur_radius: 1.0,
+      exposure: 1.0,
       toon_shading: false,
       toon_levels: 4,
       toon_scale: 1.0,
@@ -133,38 +134,62 @@ export class TutorialScene extends Scene {
     const sphereLightPosition = [1.5, 1.5, 2];
 
     // Create UI elements
-    this.ui = {
-      bloom: create_slider("Bloom", 0, 1, this.ui_params.bloom ? 1 : 0, (value) => {
-        this.ui_params.bloom = value > 0.5;
-      }),
-      bloom_threshold: create_slider("Bloom Threshold", 0, 1, this.ui_params.bloom_threshold, (value) => {
-        this.ui_params.bloom_threshold = Number(value);
-      }),
-      bloom_intensity: create_slider("Bloom Intensity", 0, 2, this.ui_params.bloom_intensity, (value) => {
-        this.ui_params.bloom_intensity = Number(value);
-      }),
-      blur_radius: create_slider("Blur Radius", 0, 2, this.ui_params.blur_radius, (value) => {
-        this.ui_params.blur_radius = Number(value);
-      }),
-      toon: create_slider("Toon Shading", 0, 1, this.ui_params.toon_shading ? 1 : 0, (value) => {
-        this.ui_params.toon_shading = value > 0.5;
-      }),
-      toon_levels: create_slider("Toon Levels", 1, 8, this.ui_params.toon_levels, (value) => {
-        this.ui_params.toon_levels = Number(value);
-      }),
-      toon_scale: create_slider("Toon Scale", 0, 2, this.ui_params.toon_scale, (value) => {
-        this.ui_params.toon_scale = Number(value);
-      }),
-      outline: create_slider("Outline", 0, 1, this.ui_params.outline_threshold ? 1 : 0, (value) => {
-        this.ui_params.outline_threshold = value > 0.5;
-      }),
-      outline_width: create_slider("Outline Width", 0, 1, this.ui_params.outline_width, (value) => {
-        this.ui_params.outline_width = Number(value);
-      }),
-      outline_smoothness: create_slider("Outline Smoothness", 0, 1, this.ui_params.outline_smoothness, (value) => {
-        this.ui_params.outline_smoothness = Number(value);
-      })
-    };
+    // Note: According to cg_web.js, create_slider expects (title, range, action) format
+    
+    // Bloom toggle slider
+    create_slider("Bloom", [0, 1], (value) => {
+      this.ui_params.bloom = Number(value) > 0.5;
+    });
+    
+    // Bloom threshold slider
+    create_slider("Bloom Threshold", [0, 1], (value) => {
+      this.ui_params.bloom_threshold = Number(value);
+    });
+    
+    // Bloom intensity slider
+    create_slider("Bloom Intensity", [0, 2], (value) => {
+      this.ui_params.bloom_intensity = Number(value);
+    });
+    
+    // Blur radius slider
+    create_slider("Blur Radius", [0, 3], (value) => {
+      this.ui_params.blur_radius = Number(value);
+    });
+    
+    // Exposure slider for HDR tone mapping
+    create_slider("Exposure", [0, 3], (value) => {
+      this.ui_params.exposure = Number(value);
+    });
+    
+    // Toon shading toggle
+    create_slider("Toon Shading", [0, 1], (value) => {
+      this.ui_params.toon_shading = Number(value) > 0.5;
+    });
+    
+    // Toon levels slider
+    create_slider("Toon Levels", [1, 8], (value) => {
+      this.ui_params.toon_levels = Number(value);
+    });
+    
+    // Toon scale slider
+    create_slider("Toon Scale", [0, 2], (value) => {
+      this.ui_params.toon_scale = Number(value);
+    });
+    
+    // Outline toggle
+    create_slider("Outline", [0, 1], (value) => {
+      this.ui_params.outline_threshold = Number(value) > 0.5;
+    });
+    
+    // Outline width slider
+    create_slider("Outline Width", [0, 1], (value) => {
+      this.ui_params.outline_width = Number(value);
+    });
+    
+    // Outline smoothness slider
+    create_slider("Outline Smoothness", [0, 1], (value) => {
+      this.ui_params.outline_smoothness = Number(value);
+    });
 
     // Create buttons
     create_button('Bloom Effect', 
