@@ -1,3 +1,4 @@
+import { mat4 } from "../../../lib/gl-matrix_3.3.0/esm/index.js";
 import { texture_data, light_to_cam_view } from "../../cg_libraries/cg_render_utils.js"
 import { ResourceManager } from "../../scene_resources/resource_manager.js";
 import { ShaderRenderer } from "./shader_renderer.js"
@@ -40,9 +41,12 @@ export class ToonShaderRenderer extends ShaderRenderer {
                 const {
                     mat_model_view,
                     mat_model_view_projection,
-                    mat_normals_model_view,
-                    mat_model
+                    mat_normals_model_view
                 } = scene.camera.object_matrices.get(obj);
+
+                const mat_model = mat4.create();
+                mat4.fromTranslation(mat_model, obj.translation);
+                mat4.scale(mat_model, mat_model, obj.scale);
 
                 // Data passed to the pipeline to be used by the shader
                 inputs.push({
@@ -68,7 +72,6 @@ export class ToonShaderRenderer extends ShaderRenderer {
                     outline_threshold: scene.ui_params.outline_threshold || 0.2, // Threshold for edge detection
                     outline_color: scene.ui_params.outline_color || [0.0, 0.0, 0.0], // Black outline by default
                 });
-                console.log(scene.ui_params.toon_levels);
             }
 
             this.pipeline(inputs);
