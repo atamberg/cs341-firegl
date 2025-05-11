@@ -56,11 +56,19 @@ export class TutorialScene extends Scene {
     });
 
     this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
+
     this.objects.push({
       translation: [0, 0, 2],
       scale: [0.5, 0.5, 0.5],
       mesh_reference: 'billboard',
       material: MATERIALS.billboard,
+      particle_list: [{
+        color: MATERIALS.billboard.color,
+        life: -1,
+        offset: [0, 0, 0],
+        scale_multiplier: [4, 1],
+      }],
+      particle_count: 1,
     });
 
     this.objects.push({
@@ -83,7 +91,7 @@ export class TutorialScene extends Scene {
       });
     });
 
-    const vomit = new RainbowVomitParticles([0,0,2], [0.01,0.01,0.01], 'billboard');
+    const vomit = new RainbowVomitParticles([0, 0, 0], [0.1, 0.1, 0.1], 'billboard');
     this.objects.push(vomit);
     this.actors["vomit"] = vomit;
 

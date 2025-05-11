@@ -118,7 +118,7 @@ export const sunset_sky = new BackgroundMaterial({
     texture: 'kloppenheim_07_puresky_blur.jpg'
 });
 
-export const billboard = new BillboardMaterial({
+export const billboard = new ParticleMaterial({
     texture: 'billboard.png',
     color: [0.0, 0.4, 0.4],
 });

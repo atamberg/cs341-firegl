@@ -33,11 +33,13 @@ export class BillboardShaderRender extends ShaderRenderer {
 
             inputs.push({
                 mesh: mesh,
+                material_base_color: obj.material.color,
+                offset: [0, 0, 0],
+
                 particleCenter_worldspace: particle_center_world_space,
                 mat_view: mat_view,
                 billboardSize: billboardSize,
 
-                material_base_color: obj.material.color,
                 material_texture: texture,
                 is_textured: is_textured,
 
@@ -48,13 +50,19 @@ export class BillboardShaderRender extends ShaderRenderer {
         this.pipeline(inputs)
     }
 
+    attributes(regl) {
+        const attr = super.attributes(regl);
+        attr['vertex_offset'] = regl.prop('offset');
+        attr['vertex_color'] = regl.prop('material_base_color');
+        return attr;
+    }
+
     uniforms(regl) {
         return {
             particleCenter_worldspace: regl.prop('particleCenter_worldspace'),
             mat_view: regl.prop('mat_view'),
             billboardSize: regl.prop('billboardSize'),
 
-            material_base_color: regl.prop('material_base_color'),
             material_texture: regl.prop('material_texture'),
             is_textured: regl.prop('is_textured'),
 

@@ -10,6 +10,8 @@ export class RainbowVomitParticles extends ParticleContainer {
             this.particle_list.push({
                 color: [0, 0, 0],
                 life: -1,
+                offset: [0, 0, 0],
+                scale_multiplier: [1, 1, 1],
             });
             this.particle_count++;
         }
@@ -22,7 +24,8 @@ export class RainbowVomitParticles extends ParticleContainer {
                 color: random(vec3.create()),
                 life: 20,
                 speed: fromValues(3 * Math.cos(i), 5 * Math.sin(i), 50),
-                pos: fromValues(Math.cos(i), Math.sin(i), 0),
+                offset: [Math.cos(i), Math.sin(i), 0],
+                scale_multiplier: [1, 1, 1],
             };
         }
 
@@ -32,7 +35,7 @@ export class RainbowVomitParticles extends ParticleContainer {
                 p.life -= dt;
                 let next_speed = fromValues(0, 0, -9.81);
                 scaleAndAdd(p.speed, p.speed, next_speed, dt * 0.5);
-                scaleAndAdd(p.pos, p.pos, p.speed, dt);
+                scaleAndAdd(p.offset, p.offset, p.speed, dt);
             }
         }
     };

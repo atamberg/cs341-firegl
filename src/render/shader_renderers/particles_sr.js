@@ -16,14 +16,6 @@ export class ParticlesShaderRender extends ShaderRenderer {
 
             if (this.exclude_object(obj)) continue;
 
-            const particle_container_center_world_space = obj.translation;
-
-            const mat_view = scene.camera.mat.view;
-
-            const billboardSize = vec2.fromValues(1, 1);
-
-            const mesh = this.resource_manager.get_mesh(obj.mesh_reference);
-
             const { texture, is_textured } = texture_data(obj, this.resource_manager);
 
             const {
@@ -32,37 +24,49 @@ export class ParticlesShaderRender extends ShaderRenderer {
                 mat_normals_model_view
             } = scene.camera.object_matrices.get(obj);
 
-            for (const p of obj.particle_list) {
-                if (p.life < 0) continue;
-                let particle_center_world_space = add(vec3.create(), particle_container_center_world_space, p.pos);
-
-                inputs.push({
-                    mesh: mesh,
-                    particleCenter_worldspace: particle_center_world_space,
-                    mat_view: mat_view,
-                    billboardSize: billboardSize,
-
-                    material_base_color: p.color,
-                    material_texture: texture,
-                    is_textured: is_textured,
-
-                    mat_mvp: mat_model_view_projection
-                })
-            }
+            inputs.push({
+                mesh: this.resource_manager.get_mesh(obj.mesh_reference),
+                particle_offsets: {
+                    buffer: obj.particle_list.map(p => p.offset),
+                    divisor: 1,
+                },
+                particle_colors: {
+                    buffer: obj.particle_list.map(p => p.color),
+                    divisor: 1,
+                },
+                particle_scale: {
+                    buffer: obj.particle_list.map(p => p.scale_multiplier),
+                    divisor: 1,
+                },
 
 
+                particleCenter_worldspace: obj.translation,
+                mat_view: scene.camera.mat.view,
+                particle_count: obj.particle_count,
+
+                material_texture: texture,
+                is_textured: is_textured,
+
+                mat_mvp: mat_model_view_projection
+            })
         }
 
         this.pipeline(inputs)
+    }
+
+    attributes(regl) {
+        const attr = super.attributes(regl);
+        attr.vertex_offset = regl.prop('particle_offsets');
+        attr.vertex_color = regl.prop('particle_colors');
+        attr.vertex_scale = regl.prop('particle_scale');
+        return attr;
     }
 
     uniforms(regl) {
         return {
             particleCenter_worldspace: regl.prop('particleCenter_worldspace'),
             mat_view: regl.prop('mat_view'),
-            billboardSize: regl.prop('billboardSize'),
 
-            material_base_color: regl.prop('material_base_color'),
             material_texture: regl.prop('material_texture'),
             is_textured: regl.prop('is_textured'),
 
@@ -73,5 +77,32 @@ export class ParticlesShaderRender extends ShaderRenderer {
     exclude_object(obj) {
         // Do not shade objects that use other dedicated shader
         return !obj.material.properties.includes('particles');
+    }
+
+    init_pipeline() {
+        const regl = this.regl;
+
+        return regl({
+
+            attributes: this.attributes(regl),
+
+            // Faces, as triplets of vertex indices
+            elements: regl.prop('mesh.faces'),
+
+            depth: this.depth(),
+
+            cull: this.cull(),
+
+            blend: this.blend(),
+
+            // Uniforms: global data available to the shader
+            uniforms: this.uniforms(regl),
+
+            // Shaders
+            vert: this.vert_shader,
+            frag: this.frag_shader,
+
+            instances: regl.prop('particle_count')
+        });
     }
 }
