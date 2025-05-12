@@ -74,6 +74,7 @@ export class BloomShaderRenderer extends ShaderRenderer {
         const width = regl._gl.drawingBufferWidth;
         const height = regl._gl.drawingBufferHeight;
         
+        // Create persistent framebuffers
         this.pingpongFBO = [regl.framebuffer(), regl.framebuffer()];
         this.pingpongBuffers = [null, null];
         
@@ -90,6 +91,21 @@ export class BloomShaderRenderer extends ShaderRenderer {
             
             this.pingpongFBO[i]({ color: this.pingpongBuffers[i], depth: false });
         }
+        
+        // Create a persistent bright pass framebuffer
+        this.brightTexture = regl.texture({
+            width: width,
+            height: height,
+            format: 'rgba',
+            type: 'float',
+            min: 'linear',
+            mag: 'linear'
+        });
+        
+        this.brightFramebuffer = regl.framebuffer({
+            color: this.brightTexture,
+            depth: false
+        });
     }
 
     render(scene_state, baseTexture) {
@@ -116,21 +132,8 @@ export class BloomShaderRenderer extends ShaderRenderer {
         const blurRadius = scene.ui_params.blur_radius || 2.0;
         const exposure = scene.ui_params.exposure || 1.0;
 
-        // Create framebuffer for the bright pass
-        const brightFramebuffer = regl.framebuffer({
-            color: regl.texture({
-                width: width,
-                height: height,
-                format: 'rgba',
-                type: 'float',
-                min: 'linear',
-                mag: 'linear'
-            }),
-            depth: false
-        });
-
-        // Step 1: Extract bright areas
-        brightFramebuffer.use(() => {
+        // Step 1: Extract bright areas using the persistent bright pass framebuffer
+        this.brightFramebuffer.use(() => {
             // Clear the framebuffer
             regl.clear({ color: [0, 0, 0, 0] });
             
@@ -155,7 +158,7 @@ export class BloomShaderRenderer extends ShaderRenderer {
                 
                 // Apply blur in one direction
                 this.gaussianBlur({
-                    u_input: firstIteration ? brightFramebuffer.color[0] : this.pingpongBuffers[horizontal ? 0 : 1],
+                    u_input: firstIteration ? this.brightTexture : this.pingpongBuffers[horizontal ? 0 : 1],
                     u_blur_radius: blurRadius,
                     u_resolution: [width, height],
                     u_horizontal: horizontal
