@@ -46,7 +46,6 @@ export class TutorialScene extends Scene {
 
     // Position constants
     const originalLightPosition = [0.0, -2.0, 2.5];
-    const sphereLightPosition = [1.5, 1.5, 2];
     
     // Add initial light source
     this.lights.push({
@@ -126,20 +125,12 @@ export class TutorialScene extends Scene {
     this.ui_params.outline_color = [0.0, 0.0, 0.0]; // Black outlines
     this.ui_params.depth_threshold = 0.1;
 
-    // Add bloom toggle
-    this.ui_params.bloom = false; // Start with original light source
+    this.ui_params.bloom = false;
 
-    // Original light source position
-    const originalLightPosition = [0.0, -2.0, 2.5];
-    const sphereLightPosition = [1.5, 1.5, 2];
 
     // Create UI elements
     // Note: According to cg_web.js, create_slider expects (title, range, action) format
-    
-    // Bloom toggle slider
-    create_slider("Bloom", [0, 1], (value) => {
-      this.ui_params.bloom = Number(value) > 0.5;
-    });
+  
     
     // Bloom threshold slider
     create_slider("Bloom Threshold", [0, 1], (value) => {
@@ -193,11 +184,7 @@ export class TutorialScene extends Scene {
 
     // Create buttons
     create_button('Bloom Effect', 
-      () => { 
-        this.ui_params.bloom = !this.ui_params.bloom;
-        console.log('Bloom effect ' + (this.ui_params.bloom ? 'enabled' : 'disabled'));
-        console.log('Current lights:', this.lights);
-      });
+      () => { this.ui_params.bloom = !this.ui_params.bloom;});
     create_button('Toon Shading', 
       () => { this.ui_params.toon_shading = !this.ui_params.toon_shading; });
 

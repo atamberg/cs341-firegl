@@ -239,7 +239,7 @@ export class SceneRenderer {
         // Apply bloom effect if enabled
         if (scene.ui_params.bloom) {
             // Render the bloom effect directly to the screen
-        this.bloom.render(scene_state, baseTexture);
+            this.bloom.render(scene_state, baseTexture);
         }        
         this.billboard.render(scene_state);
         this.particles.render(scene_state);
