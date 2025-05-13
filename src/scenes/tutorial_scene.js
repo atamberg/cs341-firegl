@@ -11,6 +11,7 @@ import {
 import { Scene } from "./scene.js";
 import { ResourceManager } from "../scene_resources/resource_manager.js";
 import { RainbowVomitParticles } from "../scene_resources/rainbow_vomit_particles.js";
+import { FireAndSmoke } from "../scene_resources/fire_and_smoke.js";
 
 export class TutorialScene extends Scene {
 
@@ -40,12 +41,6 @@ export class TutorialScene extends Scene {
       color: [0.0, 1.0, 0.9]
     });
 
-    this.objects.push({
-      translation: [0, 0, 0],
-      scale: [1, 1, 1],
-      mesh_reference: 'pine.obj',
-      material: MATERIALS.pine,
-    })
 
     this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
     this.objects.push({
@@ -58,26 +53,16 @@ export class TutorialScene extends Scene {
     this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
 
     this.objects.push({
-      translation: [0, 0, 2],
-      scale: [0.5, 0.5, 0.5],
-      mesh_reference: 'billboard',
-      material: MATERIALS.billboard,
-      particle_list: [{
-        color: MATERIALS.billboard.color,
-        life: -1,
-        offset: [0, 0, 0],
-        scale_multiplier: [4, 1],
-      }],
-      particle_count: 1,
-    });
-
-    this.objects.push({
       translation: [0, 0, 0.25],
       scale: [0.3, 0.3, 0.3],
       mesh_reference: 'terrain.obj',
       material: MATERIALS.terrain,
     });
 
+    const fire = new FireAndSmoke([0, 0, 0.1], [1.5, 1.5, 1.5], 'billboard');
+    this.objects.push(fire);
+    this.actors["fire"] = fire;
+    /*
     //generate positions, can tweak values
     const treePositions = generateTreePositions(400, 8, 0.4);
 
@@ -89,11 +74,10 @@ export class TutorialScene extends Scene {
         mesh_reference: 'pine.obj',
         material: MATERIALS.pine
       });
-    });
+    });*/
+  
 
-    const vomit = new RainbowVomitParticles([0, 0, 0], [0.1, 0.1, 0.1], 'billboard');
-    this.objects.push(vomit);
-    this.actors["vomit"] = vomit;
+    
 
   }
 

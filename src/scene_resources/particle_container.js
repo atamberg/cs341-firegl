@@ -27,19 +27,19 @@ export class ParticleContainer {
 
     find_unused_particle() {
         for (let i = this.last_used_particle; i < this.max_particles; ++i) {
-            if (this.particle_list[i].life < 0) {
+            if (this.particle_list[i].life <= 0) {
                 this.last_used_particle = i;
                 return i;
             }
         }
 
         for (let i = 0; i < this.last_used_particle; ++i) {
-            if (this.particle_list[i].life < 0) {
+            if (this.particle_list[i].life <= 0) {
                 this.last_used_particle = i;
                 return i;
             }
         }
-
+        this.last_used_particle = 0;
         return 0;
     }
 
