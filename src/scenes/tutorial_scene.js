@@ -133,12 +133,12 @@ export class TutorialScene extends Scene {
   
     
     // Bloom threshold slider
-    create_slider("Bloom Threshold", [0, 1], (value) => {
-      this.ui_params.bloom_threshold = Number(value);
+    create_slider("Bloom Threshold", [0, 100], (value) => {
+      this.ui_params.bloom_threshold = Number(value)/100;
     });
     
     // Bloom intensity slider
-    create_slider("Bloom Intensity", [0, 2], (value) => {
+    create_slider("Bloom Intensity", [0, 10], (value) => {
       this.ui_params.bloom_intensity = Number(value);
     });
     

@@ -20,10 +20,10 @@ const float weight4 = 0.016216;
 void main() {
     vec2 texelSize = 1.0 / u_resolution;
     vec3 result = texture2D(u_input, v_texCoord).rgb * weight0; // current fragment's contribution
-    
+    // We do a 5-tap filter with the predefined gaussian weights
     // Apply blur in one direction only (horizontal or vertical)
     if (u_horizontal) {
-        // Horizontal blur - unroll the loop for GLSL ES 1.00 compatibility
+        // Horizontal blur - unroll the loop for GLSL 1.00 compatibility
         // Sample 1
         result += texture2D(u_input, v_texCoord + vec2(texelSize.x, 0.0)).rgb * weight1;
         result += texture2D(u_input, v_texCoord - vec2(texelSize.x, 0.0)).rgb * weight1;

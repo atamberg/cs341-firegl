@@ -10,7 +10,6 @@ import { BillboardShaderRender } from "./shader_renderers/billboard_sr.js"
 import { ToonShaderRenderer } from "./shader_renderers/toon_sr.js"
 import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
 import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.js"
-import { LightSourceShaderRenderer } from "./shader_renderers/light_source_sr.js"
 import { BloomShaderRenderer } from "./shader_renderers/bloom_sr.js"
 
 export class SceneRenderer {
@@ -33,7 +32,6 @@ export class SceneRenderer {
         this.blinn_phong = new BlinnPhongShaderRenderer(regl, resource_manager);
         this.terrain = new TerrainShaderRenderer(regl, resource_manager);
         this.toon = new ToonShaderRenderer(regl, resource_manager);
-        this.light_source = new LightSourceShaderRenderer(regl, resource_manager);
 
         this.mirror = new MirrorShaderRenderer(regl, resource_manager);
         this.shadows = new ShadowsShaderRenderer(regl, resource_manager);
@@ -213,9 +211,6 @@ export class SceneRenderer {
             console.error('Base texture is not initialized');
             return;
         }
-
-        // Render light sources
-        this.light_source.render(scene_state);
 
         /*---------------------------------------------------------------
             2. Shadows Render Pass
