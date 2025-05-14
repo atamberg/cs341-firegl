@@ -52,7 +52,6 @@ export class BloomShaderRenderer extends ShaderRenderer {
             },
             uniforms: {
                 u_input: regl.prop('u_input'),
-                u_blur_radius: regl.prop('u_blur_radius'),
                 u_resolution: regl.prop('u_resolution'),
                 u_horizontal: regl.prop('u_horizontal'),
             },
@@ -129,7 +128,6 @@ export class BloomShaderRenderer extends ShaderRenderer {
         // Get bloom parameters from UI with fallbacks
         const threshold = scene.ui_params.bloom_threshold || 0.6;
         const intensity = scene.ui_params.bloom_intensity || 1.5;
-        const blurRadius = scene.ui_params.blur_radius || 2.0;
         const exposure = scene.ui_params.exposure || 1.0;
 
         // Step 1: Extract bright areas using the persistent bright pass framebuffer
@@ -145,10 +143,10 @@ export class BloomShaderRenderer extends ShaderRenderer {
             });
         });
 
-        // Step 2: Apply two-pass Gaussian blur using ping-pong technique
+        // Apply two-pass Gaussian blur using ping-pong technique
         let horizontal = true;
         let firstIteration = true;
-        const blurAmount = 5; // Number of blur passes (adjust as needed)
+        const blurAmount = 5; // Number of blur passes (adjust as needed) (maybe add slider?)
         
         for (let i = 0; i < blurAmount; i++) {
             // Bind the appropriate framebuffer
@@ -159,7 +157,6 @@ export class BloomShaderRenderer extends ShaderRenderer {
                 // Apply blur in one direction
                 this.gaussianBlur({
                     u_input: firstIteration ? this.brightTexture : this.pingpongBuffers[horizontal ? 0 : 1],
-                    u_blur_radius: blurRadius,
                     u_resolution: [width, height],
                     u_horizontal: horizontal
                 });

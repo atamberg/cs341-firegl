@@ -73,14 +73,6 @@ export class SceneRenderer {
             type: type
         });
         
-        // Debug logging - check texture properties
-        console.log(`Created texture ${name}:`, {
-            width: text.width,
-            height: text.height,
-            format: text.format,
-            type: text.type
-        });
-        
         const buffer = regl.framebuffer({ 
             color: [text], 
             width: framebuffer_width, 
@@ -91,13 +83,7 @@ export class SceneRenderer {
         
         this.textures_and_buffers[name] = [text, buffer]; 
         
-        // Debug logging - check framebuffer properties
-        console.log(`Created framebuffer for ${name}:`, {
-            width: buffer.color[0].width,
-            height: buffer.color[0].height,
-            format: buffer.color[0].format,
-            type: buffer.color[0].type
-        });
+
     }
 
     /**
