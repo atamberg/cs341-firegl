@@ -125,6 +125,10 @@ export class TutorialScene extends Scene {
     // Note: According to cg_web.js, create_slider expects (title, range, action) format
   
     
+    // Create buttons
+    create_button('Bloom Effect', 
+      () => { this.ui_params.bloom = !this.ui_params.bloom;});
+
     // Bloom threshold slider
     create_slider("Bloom Threshold", [0, 100], (value) => {
       this.ui_params.bloom_threshold = Number(value)/100;
@@ -143,10 +147,6 @@ export class TutorialScene extends Scene {
     });
     
     
-
-    // Create buttons
-    create_button('Bloom Effect', 
-      () => { this.ui_params.bloom = !this.ui_params.bloom;});
 
 
 
