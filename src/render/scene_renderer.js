@@ -225,7 +225,6 @@ export class SceneRenderer {
             // Render the bloom effect directly to the screen
             this.bloom.render(scene_state, baseTexture);
         }        
-        this.billboard.render(scene_state);
         this.particles.render(scene_state);
 
         // Apply Sobel outline effect
