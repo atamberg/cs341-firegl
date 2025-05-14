@@ -148,45 +148,15 @@ export class TutorialScene extends Scene {
       this.ui_params.exposure = Number(value);
     });
     
-    // Toon shading toggle
-    create_slider("Toon Shading", [0, 1], (value) => {
-      this.ui_params.toon_shading = Number(value) > 0.5;
-    });
     
-    // Toon levels slider
-    create_slider("Toon Levels", [1, 8], (value) => {
-      this.ui_params.toon_levels = Number(value);
-    });
-    
-    // Toon scale slider
-    create_slider("Toon Scale", [0, 2], (value) => {
-      this.ui_params.toon_scale = Number(value);
-    });
-    
-    // Outline toggle
-    create_slider("Outline", [0, 1], (value) => {
-      this.ui_params.outline_threshold = Number(value) > 0.5;
-    });
-    
-    // Outline width slider
-    create_slider("Outline Width", [0, 1], (value) => {
-      this.ui_params.outline_width = Number(value);
-    });
-    
-    // Outline smoothness slider
-    create_slider("Outline Smoothness", [0, 1], (value) => {
-      this.ui_params.outline_smoothness = Number(value);
-    });
 
     // Create buttons
     create_button('Bloom Effect', 
       () => { this.ui_params.bloom = !this.ui_params.bloom;});
-    create_button('Toon Shading', 
-      () => { this.ui_params.toon_shading = !this.ui_params.toon_shading; });
 
 
 
-    console.log('Initial lights:', this.lights);
+
     // Create sliders for toon shading parameters
     const n_steps_slider = 100;
     
