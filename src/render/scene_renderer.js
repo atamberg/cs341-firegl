@@ -165,7 +165,7 @@ export class SceneRenderer {
             this.terrain.render(scene_state);
 
             // Render shaded objects - either with toon or blinn-phong shading
-            if (scene.use_toon_shading) {
+            if (scene.ui_params.toon_shading) {
                 this.toon.render(scene_state);
             } else {
                 this.blinn_phong.render(scene_state);
@@ -176,7 +176,7 @@ export class SceneRenderer {
                 this.pre_processing.render(scene_state);
                 this.flat_color.render(s_s);
                 this.terrain.render(scene_state);
-                if (scene.use_toon_shading) {
+                if (scene.ui_params.toon_shading) {
                     this.toon.render(s_s);
                 } else {
                     this.blinn_phong.render(s_s);
@@ -228,7 +228,7 @@ export class SceneRenderer {
         this.particles.render(scene_state);
 
         // Apply Sobel outline effect
-        if (scene.use_toon_shading) {
+        if (scene.ui_params.toon_shading) {
             this.sobel_outline.render({
                 ...scene_state,
                 depth_texture: baseTexture

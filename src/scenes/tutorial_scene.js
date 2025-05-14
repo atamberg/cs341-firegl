@@ -118,33 +118,13 @@ export class TutorialScene extends Scene {
     this.ui_params.outline_color = [0.0, 0.0, 0.0]; // Black outlines
     this.ui_params.depth_threshold = 0.1;
 
+    this.ui_params.toon_shading = false;
     this.ui_params.bloom = false;
-
 
     // Create UI elements
     // Note: According to cg_web.js, create_slider expects (title, range, action) format
-  
-    
-    // Create buttons
-    create_button('Bloom Effect', 
-      () => { this.ui_params.bloom = !this.ui_params.bloom;});
 
-    // Bloom threshold slider
-    create_slider("Bloom Threshold", [0, 100], (value) => {
-      this.ui_params.bloom_threshold = Number(value)/100;
-    });
-    
-    // Bloom intensity slider
-    create_slider("Bloom Intensity", [0, 10], (value) => {
-      this.ui_params.bloom_intensity = Number(value);
-    });
-    
 
-    
-    // Exposure slider for HDR tone mapping
-    create_slider("Exposure", [0, 3], (value) => {
-      this.ui_params.exposure = Number(value);
-    });
     
     
 
@@ -172,6 +152,22 @@ export class TutorialScene extends Scene {
     const sobel_steps = 25;
     create_slider("Sobel Threshold", [0, sobel_steps], (i) => {
       this.ui_params.depth_threshold = 0.01 + 0.5 * (i / sobel_steps);
+    });
+
+        // Bloom threshold slider
+    create_slider("Bloom Threshold", [0, 100], (value) => {
+      this.ui_params.bloom_threshold = Number(value)/100;
+    });
+    
+    // Bloom intensity slider
+    create_slider("Bloom Intensity", [0, 10], (value) => {
+      this.ui_params.bloom_intensity = Number(value);
+    });
+    
+    
+    // Exposure slider for HDR tone mapping
+    create_slider("Exposure", [0, 3], (value) => {
+      this.ui_params.exposure = Number(value);
     });
 
   }

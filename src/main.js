@@ -74,7 +74,12 @@ async function main() {
 
     // Create a toggle for toon shading
     create_hotkey_action("Toggle Toon Shading", "t", () => {
-      active_scene.use_toon_shading = !active_scene.use_toon_shading;
+      active_scene.ui_params.toon_shading = !active_scene.ui_params.toon_shading;
+    });
+
+    // Create a toggle for bloom shading
+    create_hotkey_action("Toggle Bloom Effect", "b", () => {
+      active_scene.ui_params.bloom = !active_scene.ui_params.bloom;
     });
 
   }
