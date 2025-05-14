@@ -25,7 +25,6 @@ export class TutorialScene extends Scene {
       bloom: false,
       bloom_threshold: 0.8,
       bloom_intensity: 1.0,
-      blur_radius: 1.0,
       exposure: 1.0,
       toon_shading: false,
       toon_levels: 4,
@@ -142,10 +141,7 @@ export class TutorialScene extends Scene {
       this.ui_params.bloom_intensity = Number(value);
     });
     
-    // Blur radius slider
-    create_slider("Blur Radius", [0, 3], (value) => {
-      this.ui_params.blur_radius = Number(value);
-    });
+
     
     // Exposure slider for HDR tone mapping
     create_slider("Exposure", [0, 3], (value) => {

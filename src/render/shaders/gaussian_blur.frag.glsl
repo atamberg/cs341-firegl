@@ -3,7 +3,6 @@
 precision mediump float;
 
 uniform sampler2D u_input;
-uniform float u_blur_radius;
 uniform vec2 u_resolution;
 uniform bool u_horizontal;
 
@@ -23,7 +22,7 @@ void main() {
     // We do a 5-tap filter with the predefined gaussian weights
     // Apply blur in one direction only (horizontal or vertical)
     if (u_horizontal) {
-        // Horizontal blur - unroll the loop for GLSL 1.00 compatibility
+        // Horizontal blur - unroll the loop (basically for loop but for GLSL 1.00)
         // Sample 1
         result += texture2D(u_input, v_texCoord + vec2(texelSize.x, 0.0)).rgb * weight1;
         result += texture2D(u_input, v_texCoord - vec2(texelSize.x, 0.0)).rgb * weight1;
