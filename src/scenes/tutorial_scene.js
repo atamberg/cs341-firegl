@@ -33,7 +33,8 @@ export class TutorialScene extends Scene {
       toon_scale: 1.0,
       outline_threshold: 0.5,
       outline_width: 0.5,
-      outline_smoothness: 0.5
+      outline_smoothness: 0.5,
+      night_mode: false
     };
 
     this.initialize_scene();
@@ -49,8 +50,8 @@ export class TutorialScene extends Scene {
     this.static
 
     this.lights.push({
-      position: [0.0, 0, 5.5],
-      color: [0.0, 1.0, 0.9]
+      position: [0.0, 10.0, 5.5],
+      color: [1.0, 1.0, 1.0]
     });
 
 
@@ -185,6 +186,23 @@ export class TutorialScene extends Scene {
       this.ui_params.exposure = Number(value);
     });
 
+    // Create a toggle button for night mode
+    create_button("Night Mode", () => {
+      const isNightMode = this.ui_params.night_mode;
+      this.ui_params.night_mode = !isNightMode;
+
+      // Toggle light sources
+      if (this.ui_params.night_mode) {
+        // Remove the original light source
+        this.lights = this.lights.filter(light => light !== this.originalLight);
+      } else {
+        // Add the original light source
+        this.lights.push(this.originalLight);
+      }
+    });
+
+    // Store the original light source
+    this.originalLight = this.lights[0];
   }
 
 }
