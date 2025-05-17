@@ -19,6 +19,13 @@ export class FireAndSmoke extends ParticleContainer{
         //dark red - gray - black
         this.smoke_colors = [[0.7, 0.05, 0.0], [0.3, 0.3, 0.3], [0.0, 0.0, 0.0]];
 
+        // Initialize light source
+        this.light_source = {
+            position: translation,
+            color: this.fire_colors[0], // Use the base color of the fire
+            intensity: 1.0
+        };
+
         //initialize
         for(let i = 0; i < this.max_particles; ++i){
             this.particle_list.push({

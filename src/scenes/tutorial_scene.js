@@ -78,7 +78,22 @@ export class TutorialScene extends Scene {
     const fire = new FireAndSmoke([0, 0, 0.1], [1.5, 1.5, 1.5], 'billboard');
     this.objects.push(fire);
     this.actors["fire"] = fire;
-    /*
+
+    // Add fire's light source
+    this.lights.push(fire.light_source);
+
+    //generate positions, can tweak values
+    const treePositions = generateTreePositions(400, 8, 0.4);
+
+    //add trees
+    treePositions.forEach(tree => {
+      this.objects.push({
+        translation: [tree.x, tree.y, tree.z],
+        scale: [tree.scale, tree.scale, tree.scale],
+        mesh_reference: 'pine.obj',
+        material: MATERIALS.pine
+      });
+    });/*
     //generate positions, can tweak values
     const treePositions = generateTreePositions(400, 8, 0.4);
 
