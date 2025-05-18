@@ -1,6 +1,7 @@
 import { TurntableCamera } from "../scene_resources/camera.js"
 import * as MATERIALS from "../render/materials.js"
 import { cg_mesh_make_uv_sphere, cg_mesh_make_plane } from "../cg_libraries/cg_mesh.js"
+import { vec3, mat4 } from "../../lib/gl-matrix_3.3.0/esm/index.js"
 
 import {
   create_slider,
@@ -36,9 +37,20 @@ export class TutorialScene extends Scene {
       outline_smoothness: 0.5,
       night_mode: false
     };
+    
+    // Collection to store fire containers created by clicks
+    this.fire_containers = [];
+    this.fireIndex = 0;
+    
+    // Keep track of the original light for night mode
+    this.originalLight = {
+      position: [0.0, 10.0, 5.5],
+      color: [1.0, 1.0, 1.0]
+    };
 
     this.initialize_scene();
     this.initialize_actor_actions();
+    this.setup_click_handler();
   }
 
   /**
@@ -49,10 +61,8 @@ export class TutorialScene extends Scene {
     // TODO
     this.static
 
-    this.lights.push({
-      position: [0.0, 10.0, 5.5],
-      color: [1.0, 1.0, 1.0]
-    });
+    // Store this as the original light for reference
+    this.lights.push(this.originalLight);
 
 
     // Add resources
@@ -120,6 +130,194 @@ export class TutorialScene extends Scene {
 
     // TODO
 
+  }
+
+  /**
+   * Set up click handler to spawn fire where user clicks
+   */
+  setup_click_handler() {
+    // Get the canvas element
+    const canvas = document.getElementsByTagName('canvas')[0];
+    
+    console.log('Setting up click handler');
+    
+    // Add left click event listener
+    canvas.addEventListener('click', (event) => {
+      // Only handle left clicks
+      if (event.button !== 0) return;
+      
+      console.log('Click detected! Event:', event.clientX, event.clientY);
+      
+      // Get click position in pixel coordinates
+      const rect = canvas.getBoundingClientRect();
+      const pixelX = event.clientX - rect.left;
+      const pixelY = event.clientY - rect.top;
+      
+      // Calculate normalized device coordinates (NDC) from mouse position
+      const ndcX = (pixelX / canvas.width) * 2 - 1;
+      const ndcY = 1 - (pixelY / canvas.height) * 2;  // Flip Y to match WebGL convention
+      
+      console.log('Canvas dimensions:', canvas.width, canvas.height);
+      console.log('Pixel coords:', pixelX, pixelY);
+      console.log('NDC coords:', ndcX, ndcY);
+      
+      // Calculate camera position in world space from view matrix
+      // Extract the camera position from the view matrix
+      const viewMatrix = this.camera.mat.view;
+      const invViewMatrix = mat4.create();
+      mat4.invert(invViewMatrix, viewMatrix);
+      
+      // Camera position is in the last column of the inverse view matrix
+      const cameraPos = vec3.fromValues(
+        invViewMatrix[12],
+        invViewMatrix[13],
+        invViewMatrix[14]
+      );
+      console.log('Camera position:', cameraPos);
+      
+      // Create a 4D homogeneous point for the clicked NDC position
+      const ndcNearPoint = vec3.fromValues(ndcX, ndcY, -1.0); // z=-1 for near plane
+      const ndcFarPoint = vec3.fromValues(ndcX, ndcY, 1.0);  // z=1 for far plane
+      
+      console.log('NDC points:', ndcNearPoint, ndcFarPoint);
+      
+      // Create inverse view-projection matrix
+      const vpMatrix = mat4.create();
+      mat4.multiply(vpMatrix, this.camera.mat.projection, this.camera.mat.view);
+      
+      const invVpMatrix = mat4.create();
+      mat4.invert(invVpMatrix, vpMatrix);
+      
+      // Transform NDC points to world space
+      const nearPointWorld = vec3.transformMat4(vec3.create(), ndcNearPoint, invVpMatrix);
+      const farPointWorld = vec3.transformMat4(vec3.create(), ndcFarPoint, invVpMatrix);
+      
+      console.log('Near point world:', nearPointWorld);
+      console.log('Far point world:', farPointWorld);
+      
+      // Create ray direction from near to far point
+      const rayDirection = vec3.create();
+      vec3.subtract(rayDirection, farPointWorld, nearPointWorld);
+      vec3.normalize(rayDirection, rayDirection);
+      console.log('Ray origin:', nearPointWorld);
+      console.log('Ray direction:', rayDirection);
+      
+      // Simple ray-cast to find intersections
+      let hitObject = null;
+      let hitPoint = null;
+      let closestT = Infinity;
+      let objectsChecked = 0;
+      
+      for (const obj of this.objects) {
+        // Skip objects that aren't suitable for fire placement
+        if (!obj.mesh_reference || 
+            obj.mesh_reference === 'mesh_sphere_env_map' || 
+            obj.mesh_reference === 'billboard' || 
+            (typeof obj.evolve === 'function')) {
+          continue;
+        }
+        
+        objectsChecked++;
+        
+        // Simple bounding sphere intersection test
+        const objPos = obj.translation || [0, 0, 0];
+        
+        // Use the largest scale component for the radius
+        let radius = 1.0;
+        if (obj.scale) {
+          radius = Math.max(obj.scale[0], Math.max(obj.scale[1], obj.scale[2]));
+        }
+        
+        console.log('Testing object:', obj.mesh_reference, 'at position:', objPos, 'with radius:', radius);
+        
+        // Ray-sphere intersection test
+        // Calculate coefficients for quadratic equation
+        const oc = vec3.create();
+        vec3.subtract(oc, nearPointWorld, objPos);
+        
+        const a = vec3.dot(rayDirection, rayDirection);
+        const b = 2.0 * vec3.dot(oc, rayDirection);
+        const c = vec3.dot(oc, oc) - (radius * radius);
+        
+        const discriminant = b * b - 4 * a * c;
+        
+        console.log('Object:', obj.mesh_reference, 'Discriminant:', discriminant);
+        
+        if (discriminant >= 0) {
+          // Ray intersects sphere
+          const t = (-b - Math.sqrt(discriminant)) / (2.0 * a);
+          
+          // Ensure intersection is in front of camera and closer than previous hits
+          if (t > 0 && t < closestT) {
+            closestT = t;
+            hitObject = obj;
+            
+            // Calculate hit point
+            hitPoint = vec3.create();
+            vec3.scaleAndAdd(hitPoint, nearPointWorld, rayDirection, t);
+            
+            console.log('Hit detected! Object:', obj.mesh_reference, 'at t:', t, 'Hit point:', hitPoint);
+          }
+        }
+      }
+      
+      console.log('Objects checked:', objectsChecked, 'Hit object:', hitObject ? hitObject.mesh_reference : 'none');
+      
+      // If we hit an object, spawn a fire at the hit point
+      if (hitObject && hitPoint) {
+        console.log('Spawning fire at position:', hitPoint);
+        // Small offset above the surface to prevent z-fighting
+        hitPoint[2] += 0.05;
+        this.spawnFireAtPosition(hitPoint);
+      } else {
+        console.log('No valid hit detected, not spawning fire');
+        
+        // Fallback: Create fire at a fixed distance in the ray direction
+        const fallbackPoint = vec3.create();
+        vec3.scaleAndAdd(fallbackPoint, nearPointWorld, rayDirection, 5.0); // 5 units away
+        
+        // Make sure the fire is not below ground
+        if (fallbackPoint[2] < 0.1) {
+          fallbackPoint[2] = 0.1; // Minimum height
+        }
+        
+        console.log('Creating fallback fire at:', fallbackPoint);
+        this.spawnFireAtPosition(fallbackPoint);
+      }
+    });
+  }
+  
+  /**
+   * Spawn a fire container at the specified position
+   * @param {Array} position - [x, y, z] position to spawn the fire
+   */
+  spawnFireAtPosition(position) {
+    // Create a new fire container
+    const fireId = `fire_${this.fireIndex++}`;
+    console.log(`Creating new fire with ID: ${fireId} at position:`, position);
+    
+    const fire = new FireAndSmoke(
+      [position[0], position[1], position[2]], // Position
+      [0.8, 0.8, 0.8], // Scale (smaller than the main fire)
+      'billboard' // Use the same billboard mesh
+    );
+    
+    // Add to scene objects and actors
+    this.objects.push(fire);
+    this.actors[fireId] = fire;
+    this.fire_containers.push(fire);
+    
+    // Add fire's light source with a slight offset for better lighting
+    const lightSource = {
+      position: [position[0], position[1], position[2] + 0.3],
+      color: [1.0, 0.7, 0.3], // Warm fire color
+      intensity: 1.0
+    };
+    this.lights.push(lightSource);
+    
+    console.log(`Fire created. Total fires: ${this.fire_containers.length}`);
+    console.log('Current scene objects:', this.objects.length);
+    console.log('Current scene actors:', Object.keys(this.actors).length);
   }
 
   /**
