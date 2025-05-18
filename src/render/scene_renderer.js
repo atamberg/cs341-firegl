@@ -9,8 +9,8 @@ import { ResourceManager } from "../scene_resources/resource_manager.js"
 import { ToonShaderRenderer } from "./shader_renderers/toon_sr.js"
 import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
 import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.js"
-import { PositionShaderRenderer } from "./shader_renderers/position_sr.js"
-import { NormalShaderRenderer } from "./shader_renderers/normal_sr.js"
+import { GBufferShaderRenderer } from "./shader_renderers/deferred/gBuffer_sr.js"
+import { BlinnPhongDeferredShaderRenderer } from "./shader_renderers/deferred/blinn_phong_deferred_sr.js"
 
 export class SceneRenderer {
 
@@ -39,12 +39,16 @@ export class SceneRenderer {
         this.particles = new ParticlesShaderRender(regl, resource_manager);
         this.sobel_outline = new SobelOutlineShaderRenderer(regl, resource_manager);
 
-        this.position = new PositionShaderRenderer(regl, resource_manager);
-        this.normal = new NormalShaderRenderer(regl, resource_manager);
-
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
         this.create_texture_and_buffer("base", {}); 
+
+        // For deferred shading gBuffer
+        this.gBuffer = this.regl.framebuffer({ color: [regl.texture({ type: 'float' }), regl.texture({ type: 'float' }), regl.texture({ type: 'float' })]});
+        this.gBuffer.resize(window.innerWidth, window.innerHeight);
+
+        this.gBuffer_renderer = new GBufferShaderRenderer(regl, resource_manager);
+        this.blinn_phong_deferred = new BlinnPhongDeferredShaderRenderer(regl, resource_manager);
     }
 
     /**
@@ -120,32 +124,48 @@ export class SceneRenderer {
 
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
-
             // Render the background
             this.flat_color.render(scene_state);
 
             // Render the terrain
             this.terrain.render(scene_state);
+            if (scene.use_deferred_shading) {
+                this.gBuffer.use(() => {
+                    this.regl.clear({
+                        color: [0, 0, 0, 255],
+                        depth: 1
+                    })
 
-            // Render shaded objects - either with toon or blinn-phong shading
-            if (scene.use_toon_shading) {
-                this.toon.render(scene_state);
+                    this.gBuffer_renderer.render(scene_state);
+                })
+
+                this.blinn_phong_deferred.render(scene_state, this.gBuffer);
             } else {
-                this.blinn_phong.render(scene_state);
-            }
-
-
-            // Render the reflection of mirror objects on top
-            this.mirror.render(scene_state, (s_s) => {
-                this.pre_processing.render(scene_state);
-                this.flat_color.render(s_s);
-                this.terrain.render(scene_state);
+                // Render shaded objects - either with toon or blinn-phong shading
                 if (scene.use_toon_shading) {
-                    this.toon.render(s_s);
+                    this.toon.render(scene_state);
                 } else {
-                    this.blinn_phong.render(s_s);
+                    this.blinn_phong.render(scene_state);
                 }
-            });
+
+                // Render the reflection of mirror objects on top
+                //this.mirror.render(scene_state, (s_s) => {
+                //    this.pre_processing.render(scene_state);
+                //    this.flat_color.render(s_s);
+                //    this.terrain.render(scene_state);
+                //    if (scene.use_toon_shading) {
+                //        this.toon.render(s_s);
+                //    } else {
+                //        this.blinn_phong.render(s_s);
+                //    }
+                //});
+            }
+            // Render the background
+            //this.flat_color.render(scene_state);
+
+            // Render the terrain
+            //this.terrain.render(scene_state);
+            ////this.gBuffer_renderer.render(scene_state);
         })
 
         /*---------------------------------------------------------------
@@ -154,7 +174,6 @@ export class SceneRenderer {
         
         // Render the shadows of the scene in a black & white texture. White means shadow.
         this.render_in_texture("shadows", () =>{
-
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
 
@@ -189,11 +208,7 @@ export class SceneRenderer {
         // render shadow buffer
         // this.shadows.render(scene_state);
 
-        // render position buffer
-        // this.position.render(scene_state);
 
-        // render normal buffer
-        // this.normal.render(scene_state);
 
         // Visualize cubemap
         // this.mirror.env_capture.visualize();

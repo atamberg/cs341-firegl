@@ -28,6 +28,8 @@ export class Scene {
 
     // Shading mode
     this.use_toon_shading = false;
+
+    this.use_deferred_shading = true;
   }
 
   /**

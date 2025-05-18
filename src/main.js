@@ -34,7 +34,7 @@ async function main() {
     profile: true, // Can be useful to measure the size of buffers/textures in memory
     extensions: [  // Activate some WebGL extensions to access advanced features that are not part of the core WebGL specification
       'OES_texture_float', 'OES_texture_float_linear', 'WEBGL_color_buffer_float',
-      'OES_vertex_array_object', 'OES_element_index_uint', 'WEBGL_depth_texture', 'ANGLE_instanced_arrays', 'EXT_float_blend'
+      'OES_vertex_array_object', 'OES_element_index_uint', 'WEBGL_depth_texture', 'ANGLE_instanced_arrays', 'EXT_float_blend', 'webgl_draw_buffers'
     ],
   })
 
@@ -77,6 +77,9 @@ async function main() {
       active_scene.use_toon_shading = !active_scene.use_toon_shading;
     });
 
+    create_hotkey_action("Toggle Deferred Shading", "d", () => {
+      active_scene.use_deferred_shading = !active_scene.use_deferred_shading;
+    });
   }
 
   /*---------------------------------------------------------------
