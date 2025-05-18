@@ -11,6 +11,7 @@ import { ParticlesShaderRender } from "./shader_renderers/particles_sr.js"
 import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.js"
 import { GBufferShaderRenderer } from "./shader_renderers/deferred/gBuffer_sr.js"
 import { BlinnPhongDeferredShaderRenderer } from "./shader_renderers/deferred/blinn_phong_deferred_sr.js"
+import { ShadowsDeferredShaderRenderer } from "./shader_renderers/deferred/shadows_deferred_sr.js"
 
 export class SceneRenderer {
 
@@ -49,6 +50,7 @@ export class SceneRenderer {
 
         this.gBuffer_renderer = new GBufferShaderRenderer(regl, resource_manager);
         this.blinn_phong_deferred = new BlinnPhongDeferredShaderRenderer(regl, resource_manager);
+        this.shadows_deferred = new ShadowsDeferredShaderRenderer(regl, resource_manager);
     }
 
     /**
@@ -177,8 +179,12 @@ export class SceneRenderer {
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
 
+            if (scene.use_deferred_shading) {
+                this.shadows_deferred.render(scene_state, this.gBuffer);
+            } else {
+                this.shadows.render(scene_state);
+            }
             // Render the shadows
-            this.shadows.render(scene_state);
         })
 
         /*---------------------------------------------------------------
