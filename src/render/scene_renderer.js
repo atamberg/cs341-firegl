@@ -13,6 +13,7 @@ import { GBufferShaderRenderer } from "./shader_renderers/deferred/gBuffer_sr.js
 import { BlinnPhongDeferredShaderRenderer } from "./shader_renderers/deferred/blinn_phong_deferred_sr.js"
 import { ShadowsDeferredShaderRenderer } from "./shader_renderers/deferred/shadows_deferred_sr.js"
 import { ToonDeferredShaderRenderer } from "./shader_renderers/deferred/toon_deferred_sr.js"
+import { BloomShaderRenderer } from "./shader_renderers/bloom_sr.js"
 
 export class SceneRenderer {
 
@@ -40,10 +41,13 @@ export class SceneRenderer {
         this.map_mixer = new MapMixerShaderRenderer(regl, resource_manager);
         this.particles = new ParticlesShaderRender(regl, resource_manager);
         this.sobel_outline = new SobelOutlineShaderRenderer(regl, resource_manager);
+        this.bloom = new BloomShaderRenderer(regl, resource_manager);
 
         // Create textures & buffer to save some intermediate renders into a texture
         this.create_texture_and_buffer("shadows", {}); 
         this.create_texture_and_buffer("base", {}); 
+        this.create_texture_and_buffer("light", {});
+        this.create_texture_and_buffer("bloom", {}); 
 
         // For deferred shading gBuffer
         this.gBuffer = this.regl.framebuffer({ color: [regl.texture({ type: 'float' }), regl.texture({ type: 'float' }), regl.texture({ type: 'float' })]});
@@ -58,18 +62,36 @@ export class SceneRenderer {
     /**
      * Helper function to create regl texture & regl buffers
      * @param {*} name the name for the texture (used to save & retrive data)
-     * @param {*} parameters use if you need specific texture parameters
+     * @param {*} options use if you need specific texture parameters
      */
-    create_texture_and_buffer(name, {wrap = 'clamp', format = 'rgba', type = 'float'}){
+    create_texture_and_buffer(name, options = {}){
         const regl = this.regl;
-        const framebuffer_width = window.innerWidth;
-        const framebuffer_height = window.innerHeight;
-
+        const framebuffer_width = regl._gl.drawingBufferWidth;
+        const framebuffer_height = regl._gl.drawingBufferHeight;
+        const wrap = options.wrap || 'clamp';
+        const format = options.format || 'rgba';
+        const type = options.type || 'float';
+        
         // Create a regl texture and a regl buffer linked to the regl texture
-        const text = regl.texture({ width: framebuffer_width, height: framebuffer_height, wrap: wrap, format: format, type: type })
-        const buffer = regl.framebuffer({ color: [text], width: framebuffer_width, height: framebuffer_height, })
+        const text = regl.texture({ 
+            width: framebuffer_width, 
+            height: framebuffer_height, 
+            wrap: wrap, 
+            format: format, 
+            type: type
+        });
+        
+        const buffer = regl.framebuffer({ 
+            color: [text], 
+            width: framebuffer_width, 
+            height: framebuffer_height,
+            depth: true,
+            depthTexture: true
+        });
         
         this.textures_and_buffers[name] = [text, buffer]; 
+        
+
     }
 
     /**
@@ -81,10 +103,17 @@ export class SceneRenderer {
     render_in_texture(name, render_function){
         const regl = this.regl;
         const [texture, buffer] = this.textures_and_buffers[name];
+        
+        if (!texture || !buffer) {
+            console.error(`Texture or buffer not found for ${name}`);
+            return null;
+        }
+
         regl({ framebuffer: buffer })(() => {
             regl.clear({ color: [0,0,0,1], depth: 1 });
             render_function();
-          });
+        });
+        
         return texture;
     }
 
@@ -95,6 +124,10 @@ export class SceneRenderer {
      */
     texture(name){
         const [texture, buffer] = this.textures_and_buffers[name];
+        if (!texture) {
+            console.error(`Texture ${name} not found`);
+            return null;
+        }
         return texture;
     }
 
@@ -104,6 +137,8 @@ export class SceneRenderer {
      * @param {*} scene_state the description of the scene, time, dynamically modified parameters, etc.
      */
     render(scene_state) {
+        // Inject regl into scene_state if needed
+        scene_state.regl = this.regl;
         
         const scene = scene_state.scene;
         const frame = scene_state.frame;
@@ -124,7 +159,9 @@ export class SceneRenderer {
         ---------------------------------------------------------------*/
 
         // Render call: the result will be stored in the texture "base"
-        this.render_in_texture("base", () =>{
+        const baseTexture = this.render_in_texture("base", () =>{
+            // Clear the framebuffer
+            this.regl.clear({ color: [0, 0, 0, 1], depth: 1 });
 
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
@@ -133,7 +170,7 @@ export class SceneRenderer {
 
             // Render the terrain
             this.terrain.render(scene_state);
-            if (scene.use_deferred_shading) {
+            if (scene.ui_params.deferred_shading) {
                 this.gBuffer.use(() => {
                     this.regl.clear({
                         color: [0, 0, 0, 255],
@@ -143,14 +180,14 @@ export class SceneRenderer {
                 });
 
                 // Render shaded objects - either with toon or blinn-phong shading
-                if (scene.use_toon_shading) {
+                if (scene.ui_params.toon_shading) {
                     this.toon_deferred.render(scene_state, this.gBuffer);
                 } else {
                     this.blinn_phong_deferred.render(scene_state, this.gBuffer);
                 }
             } else {
                 // Render shaded objects - either with toon or blinn-phong shading
-                if (scene.use_toon_shading) {
+                if (scene.ui_params.toon_shading) {
                     this.toon.render(scene_state);
                 } else {
                     this.blinn_phong.render(scene_state);
@@ -161,7 +198,7 @@ export class SceneRenderer {
                 //    this.pre_processing.render(scene_state);
                 //    this.flat_color.render(s_s);
                 //    this.terrain.render(scene_state);
-                //    if (scene.use_toon_shading) {
+                //    if (scene.ui_params.toon_shading) {
                 //        this.toon.render(s_s);
                 //    } else {
                 //        this.blinn_phong.render(s_s);
@@ -185,7 +222,7 @@ export class SceneRenderer {
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
 
-            if (scene.use_deferred_shading) {
+            if (scene.ui_params.deferred_shading) {
                 this.shadows_deferred.render(scene_state, this.gBuffer);
             } else {
                 this.shadows.render(scene_state);
@@ -198,13 +235,19 @@ export class SceneRenderer {
         ---------------------------------------------------------------*/
 
         // Mix the base color of the scene with the shadows information to create the final result
-        this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
+        this.map_mixer.render(scene_state, this.texture("shadows"), baseTexture);
+        
+        // Apply bloom effect if enabled
+        if (scene.ui_params.bloom) {
+            // Render the bloom effect directly to the screen
+            this.bloom.render(scene_state, baseTexture);
+        }        
         this.particles.render(scene_state);
         // Apply Sobel outline effect
-        if (scene.use_toon_shading) {
+        if (scene.ui_params.toon_shading) {
             this.sobel_outline.render({
                 ...scene_state,
-                depth_texture: this.texture("base")
+                depth_texture: baseTexture
             });
         }
 

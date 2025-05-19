@@ -55,6 +55,17 @@ export class PreprocessingShaderRenderer extends ShaderRenderer {
     }
 
     exclude_object(obj){
+        // Check if material exists and has properties
+        if (!obj.material || !obj.material.properties) {
+            console.error('Object has no material or properties:', obj);
+            return false;
+        }
+        
+        // Always exclude light source objects from preprocessing
+        if (obj.material.properties.includes('light_source')) {
+            return true;
+        }
+        
         return ['billboard', 'particles'].some(p => obj.material.properties.includes(p));
     }
 

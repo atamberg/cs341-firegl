@@ -157,6 +157,9 @@ export class ResourceManager{
             'toon.vert.glsl', 'toon.frag.glsl',
             'sobel_outline.vert.glsl', 'sobel_outline.frag.glsl',
             'deferred.vert.glsl',
+            'light_extraction.vert.glsl', 'light_extraction.frag.glsl',
+            'gaussian_blur.vert.glsl', 'gaussian_blur.frag.glsl',
+            'bloom_combine.vert.glsl', 'bloom_combine.frag.glsl',
           ];
     }
 

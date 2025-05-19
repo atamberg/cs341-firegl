@@ -25,11 +25,6 @@ export class Scene {
 
     // Point lights
     this.lights = [];
-
-    // Shading mode
-    this.use_toon_shading = false;
-
-    this.use_deferred_shading = true;
   }
 
   /**
