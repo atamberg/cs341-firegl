@@ -27,7 +27,7 @@ void main()
     // Normalize vectors for lighting calculations
     vec3 normal = normalize(v2f_world_normal);
     vec3 light_dir = normalize(v2f_light_dir);
-    vec3 view_dir = normalize(light_position - v2f_world_pos);
+    vec3 view_dir = normalize(-v2f_frag_pos);
     
     // Get base color from texture or material
     vec3 material_color = material_base_color;
