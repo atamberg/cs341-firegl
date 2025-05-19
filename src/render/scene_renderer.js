@@ -210,7 +210,7 @@ export class SceneRenderer {
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
             // Render the shadows
-            this.shadows.render(scene_state);
+            // this.shadows.render(scene_state);
         })
 
         /*---------------------------------------------------------------

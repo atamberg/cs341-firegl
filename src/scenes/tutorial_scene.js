@@ -296,11 +296,16 @@ export class TutorialScene extends Scene {
     const fireId = `fire_${this.fireIndex++}`;
     console.log(`Creating new fire with ID: ${fireId} at position:`, position);
     
+    // Create fire container at exact same position as light
+    const firePos = [position[0]/2, position[1]/2, (position[2] + 0.3)/2];
     const fire = new FireAndSmoke(
-      [position[0], position[1], position[2]], // Position
+      firePos, // Position - will be used as the center for particle effects
       [0.8, 0.8, 0.8], // Scale (smaller than the main fire)
       'billboard' // Use the same billboard mesh
     );
+  
+    // Ensure the translation matches exactly
+    fire.translation = [...firePos]; // Create a new array to avoid reference issues
     
     // Add to scene objects and actors
     this.objects.push(fire);
@@ -311,10 +316,10 @@ export class TutorialScene extends Scene {
     const lightSource = {
       position: [position[0], position[1], position[2] + 0.3],
       color: [1.0, 0.7, 0.3], // Warm fire color
-      intensity: 1.0
     };
     this.lights.push(lightSource);
-    
+    console.log("Light position: ", lightSource.position)
+    console.log("Container position: ", fire.translation)
     console.log(`Fire created. Total fires: ${this.fire_containers.length}`);
     console.log('Current scene objects:', this.objects.length);
     console.log('Current scene actors:', Object.keys(this.actors).length);
