@@ -12,6 +12,7 @@ import { SobelOutlineShaderRenderer } from "./shader_renderers/sobel_outline_sr.
 import { GBufferShaderRenderer } from "./shader_renderers/deferred/gBuffer_sr.js"
 import { BlinnPhongDeferredShaderRenderer } from "./shader_renderers/deferred/blinn_phong_deferred_sr.js"
 import { ShadowsDeferredShaderRenderer } from "./shader_renderers/deferred/shadows_deferred_sr.js"
+import { ToonDeferredShaderRenderer } from "./shader_renderers/deferred/toon_deferred_sr.js"
 
 export class SceneRenderer {
 
@@ -51,6 +52,7 @@ export class SceneRenderer {
         this.gBuffer_renderer = new GBufferShaderRenderer(regl, resource_manager);
         this.blinn_phong_deferred = new BlinnPhongDeferredShaderRenderer(regl, resource_manager);
         this.shadows_deferred = new ShadowsDeferredShaderRenderer(regl, resource_manager);
+        this.toon_deferred = new ToonDeferredShaderRenderer(regl, resource_manager);
     }
 
     /**
@@ -137,11 +139,15 @@ export class SceneRenderer {
                         color: [0, 0, 0, 255],
                         depth: 1
                     })
-
                     this.gBuffer_renderer.render(scene_state);
-                })
+                });
 
-                this.blinn_phong_deferred.render(scene_state, this.gBuffer);
+                // Render shaded objects - either with toon or blinn-phong shading
+                if (scene.use_toon_shading) {
+                    this.toon_deferred.render(scene_state, this.gBuffer);
+                } else {
+                    this.blinn_phong_deferred.render(scene_state, this.gBuffer);
+                }
             } else {
                 // Render shaded objects - either with toon or blinn-phong shading
                 if (scene.use_toon_shading) {
@@ -194,7 +200,6 @@ export class SceneRenderer {
         // Mix the base color of the scene with the shadows information to create the final result
         this.map_mixer.render(scene_state, this.texture("shadows"), this.texture("base"));
         this.particles.render(scene_state);
-
         // Apply Sobel outline effect
         if (scene.use_toon_shading) {
             this.sobel_outline.render({
