@@ -141,10 +141,10 @@ export class TutorialScene extends Scene {
     
     console.log('Setting up click handler');
     
-    // Add left click event listener
-    canvas.addEventListener('click', (event) => {
-      // Only handle left clicks
-      if (event.button !== 0) return;
+    // Add middle mouse button event listener
+    canvas.addEventListener('mousedown', (event) => {
+      // Only handle middle clicks
+      if (event.button !== 1) return;
       
       console.log('Click detected! Event:', event.clientX, event.clientY);
       
@@ -297,7 +297,7 @@ export class TutorialScene extends Scene {
     console.log(`Creating new fire with ID: ${fireId} at position:`, position);
     
     // Create fire container at exact same position as light
-    const firePos = [position[0]/2, position[1]/2, (position[2] + 0.3)/2];
+    const firePos = [position[0]/2, position[1]/2, position[2]/2];
     const fire = new FireAndSmoke(
       firePos, // Position - will be used as the center for particle effects
       [0.8, 0.8, 0.8], // Scale (smaller than the main fire)
@@ -311,13 +311,13 @@ export class TutorialScene extends Scene {
     this.objects.push(fire);
     this.actors[fireId] = fire;
     this.fire_containers.push(fire);
-    
+    this.lights.push(fire.light_source)
     // Add fire's light source with a slight offset for better lighting
-    const lightSource = {
-      position: [position[0], position[1], position[2] + 0.3],
-      color: [1.0, 0.7, 0.3], // Warm fire color
-    };
-    this.lights.push(lightSource);
+    // const lightSource = {
+    //   position: [position[0], position[1], position[2] + 0.3],
+    //   color: [1.0, 0.7, 0.3], // Warm fire color
+    // };
+    // this.lights.push(lightSource);
     console.log("Light position: ", lightSource.position)
     console.log("Container position: ", fire.translation)
     console.log(`Fire created. Total fires: ${this.fire_containers.length}`);
