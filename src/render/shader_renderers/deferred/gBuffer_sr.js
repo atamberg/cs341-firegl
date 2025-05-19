@@ -65,6 +65,11 @@ export class GBufferShaderRenderer extends ShaderRenderer {
         this.pipeline(inputs);
     }
 
+    exclude_object(obj) {
+        // Exclude object with environment material: the sky does not cast shadows
+        return ['particles'].some(p => obj.material.properties.includes(p));
+    }
+
     uniforms(regl) {
         return {
             mat_model_view: regl.prop('mat_model_view'),
