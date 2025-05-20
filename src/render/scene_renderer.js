@@ -167,6 +167,8 @@ export class SceneRenderer {
             this.pre_processing.render(scene_state);
             // Render the background
             this.flat_color.render(scene_state);
+            // Render particles
+            this.particles.render(scene_state);
 
             // Render the terrain
             this.terrain.render(scene_state);
@@ -221,6 +223,8 @@ export class SceneRenderer {
         this.render_in_texture("shadows", () =>{
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
+            // This was the easiest way to fix the culling issue.
+            this.particles.render(scene_state);
 
             if (scene.ui_params.deferred_shading) {
                 this.shadows_deferred.render(scene_state, this.gBuffer);
@@ -242,7 +246,6 @@ export class SceneRenderer {
             // Render the bloom effect directly to the screen
             this.bloom.render(scene_state, baseTexture);
         }        
-        this.particles.render(scene_state);
         // Apply Sobel outline effect
         if (scene.ui_params.toon_shading) {
             this.sobel_outline.render({
