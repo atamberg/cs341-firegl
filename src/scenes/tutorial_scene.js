@@ -222,7 +222,7 @@ export class TutorialScene extends Scene {
     console.log(`Creating new fire with ID: ${fireId} at position:`, position);
     
     // Create fire container at exact same position as light
-    const firePos = [position[0]/2, position[1]/2, position[2]/2];
+    const firePos = [position[0], position[1], position[2]];
     const fire = new FireAndSmoke(
       firePos, // Position - will be used as the center for particle effects
       [1.0, 1.0, 1.0], // Scale (smaller than the main fire)
