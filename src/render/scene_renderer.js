@@ -167,8 +167,6 @@ export class SceneRenderer {
             this.pre_processing.render(scene_state);
             // Render the background
             this.flat_color.render(scene_state);
-            // Render particles
-            this.particles.render(scene_state);
 
             // Render the terrain
             this.terrain.render(scene_state);
@@ -223,15 +221,13 @@ export class SceneRenderer {
         this.render_in_texture("shadows", () =>{
             // Prepare the z_buffer and object with default black color
             this.pre_processing.render(scene_state);
-            // This was the easiest way to fix the culling issue.
-            this.particles.render(scene_state);
 
+            // Render the shadows
             //if (scene.ui_params.deferred_shading) {
             //    this.shadows_deferred.render(scene_state, this.gBuffer);
             //} else {
             //    this.shadows.render(scene_state);
             //}
-            // Render the shadows
         })
 
         /*---------------------------------------------------------------
@@ -240,6 +236,8 @@ export class SceneRenderer {
 
         // Mix the base color of the scene with the shadows information to create the final result
         this.map_mixer.render(scene_state, this.texture("shadows"), baseTexture);
+        // Render particles
+        this.particles.render(scene_state);
         
         // Apply bloom effect if enabled
         if (scene.ui_params.bloom) {

@@ -34,7 +34,9 @@ export class MapMixerShaderRenderer extends ShaderRenderer {
         for (const obj of scene.objects) {
 
             const mesh = this.resource_manager.get_mesh(obj.mesh_reference);
-            
+
+            if (this.exclude_object(obj)) continue;
+
             const { 
                 mat_model_view, 
                 mat_model_view_projection, 
@@ -58,6 +60,10 @@ export class MapMixerShaderRenderer extends ShaderRenderer {
         }
 
         this.pipeline(inputs);
+    }
+
+    exclude_object(obj) {
+        return ['particles'].some(p => obj.material.properties.includes(p));
     }
 
     uniforms(regl){
