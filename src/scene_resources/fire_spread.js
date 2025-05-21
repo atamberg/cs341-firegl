@@ -13,7 +13,7 @@ export class FireSpreadAndBurn{
         this.burnCheckTimer = 0;
         //tree can ignite being close to a fire
         this.burnRadius = 1.5;
-        this.burnDuration = 3.0;
+        this.burnDuration = 8.0;
         //keep track of trees burning
         this.burnTimers = new Map();
 
