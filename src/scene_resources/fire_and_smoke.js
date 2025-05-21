@@ -23,7 +23,6 @@ export class FireAndSmoke extends ParticleContainer{
         this.light_source = {
             position: translation,
             color: this.fire_colors[0], // Use the base color of the fire
-            intensity: 1.0
         };
 
         //initialize

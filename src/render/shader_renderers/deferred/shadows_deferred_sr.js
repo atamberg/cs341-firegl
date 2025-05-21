@@ -35,7 +35,6 @@ export class ShadowsDeferredShaderRenderer extends ShaderRenderer {
     render(scene_state, gBuffer) {
 
         const scene = scene_state.scene;
-        const inputs = [];
 
         // For every light build a shadow map and do a render of the shadows
         this.regl.clear({ color: [0, 0, 0, 1] });
@@ -43,6 +42,7 @@ export class ShadowsDeferredShaderRenderer extends ShaderRenderer {
         const num_lights = scene.lights.length;
 
         scene.lights.forEach(light => {
+            const inputs = [];
             // Transform light position into camera space
             const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view);
 
@@ -107,13 +107,13 @@ export class ShadowsDeferredShaderRenderer extends ShaderRenderer {
     }
 
     blend() {
-        // Additive blend mode
         return {
             enable: true,
             func: {
-                src: 1,
-                dst: 1,
+                src: 'src alpha',
+                dst: 'one minus src alpha'
             },
+            equation: 'add' 
         };
     }
 
@@ -158,7 +158,7 @@ function shadows_deferred_fragment_shader() {
                 float dist_frag_light = length(v2f_frag_pos - light_position_cam);
 
 
-                // get shadow map
+                // Get shadow map
                 vec4 result = textureCube(cube_shadowmap, -l);
                 float shadow_depth = result.r;
 

@@ -34,7 +34,6 @@ export class ShadowsShaderRenderer extends ShaderRenderer {
     render(scene_state){
 
         const scene = scene_state.scene;
-        const inputs = [];
 
         // For every light build a shadow map and do a render of the shadows
         this.regl.clear({color: [0,0,0,1]});
@@ -42,6 +41,7 @@ export class ShadowsShaderRenderer extends ShaderRenderer {
         const num_lights = scene.lights.length;
 
         scene.lights.forEach(light => {
+            const inputs = [];
             // Transform light position into camera space
             const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view);
 
@@ -105,13 +105,15 @@ export class ShadowsShaderRenderer extends ShaderRenderer {
     }
 
     blend(){
-        // Additive blend mode
+        // Use alpha blending for shadows
+        // This prevents shadows from stacking additively
         return {
             enable: true,
             func: {
-                src: 1,
-                dst: 1,
+                src: 'src alpha',
+                dst: 'one minus src alpha'
             },
+            equation: 'add'
         };
     }
 
