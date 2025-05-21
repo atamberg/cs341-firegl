@@ -156,8 +156,8 @@ export class TutorialScene extends Scene {
       const pixelY = event.clientY - rect.top;
       
       // Calculate normalized device coordinates (NDC) from mouse position
-      const ndcX = (pixelX / canvas.width) * 2 - 1;
-      const ndcY = 1 - (pixelY / canvas.height) * 2;  // Flip Y to match WebGL convention
+      const ndcX = (pixelX / canvas.width - 0.5);
+      const ndcY = (0.5 - pixelY / canvas.height);  // Flip Y to match WebGL convention
       
       console.log('Canvas dimensions:', canvas.width, canvas.height);
       console.log('Pixel coords:', pixelX, pixelY);
@@ -299,15 +299,12 @@ export class TutorialScene extends Scene {
     console.log(`Creating new fire with ID: ${fireId} at position:`, position);
     
     // Create fire container at exact same position as light
-    const firePos = [position[0]/2, position[1]/2, position[2]/2];
     const fire = new FireAndSmoke(
-      firePos, // Position - will be used as the center for particle effects
+      position, // Position - will be used as the center for particle effects
       [0.8, 0.8, 0.8], // Scale (smaller than the main fire)
       'billboard' // Use the same billboard mesh
     );
   
-    // Ensure the translation matches exactly
-    fire.translation = [...firePos]; // Create a new array to avoid reference issues
     
     // Add to scene objects and actors
     this.objects.push(fire);
