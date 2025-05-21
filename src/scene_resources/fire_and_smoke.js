@@ -4,15 +4,14 @@ import { ParticleContainer } from "./particle_container.js";
 export class FireAndSmoke extends ParticleContainer{
     constructor(translation, scale, mesh_reference){
         super(translation, scale, mesh_reference);
-
+       
         this.max_particles = 6000;
-        this.particles_per_frame = 35;     
+        this.particles_per_frame = 45;     
         this.emission_radius = 0.35;
         this.fire_height = 2.0;            
         this.smoke_height = 4.0;          
         //not all particles become smoke 
         this.smoke_chance = 0.05;  
-
         //bright yellow - orange - red
         this.fire_colors = [[1.0, 0.9, 0.15], [1.0, 0.45, 0.0], [0.7, 0.05, 0.0]];
         
