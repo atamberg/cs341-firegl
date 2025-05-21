@@ -1,3 +1,6 @@
+import { mat4 } from "../../../../lib/gl-matrix_3.3.0/esm/index.js";
+import { vec4FromVec3 } from "../../../cg_libraries/cg_math.js";
+import { cg_mesh_make_uv_sphere } from "../../../cg_libraries/cg_mesh.js";
 import { light_to_cam_view } from "../../../cg_libraries/cg_render_utils.js"
 import { ResourceManager } from "../../../scene_resources/resource_manager.js";
 import { ShaderRenderer } from "./../shader_renderer.js"
@@ -12,12 +15,15 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
      */
     constructor(regl, resource_manager) {
         resource_manager.resources["blinn_phong_deferred.frag.glsl"] = blinn_phong_deferred_fragment_shader();
+        resource_manager.resources["blinn_phong_deferred.vert.glsl"] = blinn_phong_deferred_vertex_shader();
         super(
             regl,
             resource_manager,
-            `deferred.vert.glsl`,
+            `blinn_phong_deferred.vert.glsl`,
             `blinn_phong_deferred.frag.glsl`
         );
+
+        this.light_sphere = cg_mesh_make_uv_sphere(16);
     }
 
     /**
@@ -25,67 +31,40 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
      * @param {*} scene_state 
      */
     render(scene_state, gBuffer) {
-
         const scene = scene_state.scene;
-        const inputs = [];
+        // no ambient lighting is done here
 
-        let ambient_factor = scene.ambient_factor;
+        const mat_model_view = mat4.create();
 
-        // For every light in the scene we render the blinn-phong contributions
-        // Results will be added on top of each other (see this.blend())
         scene.lights.forEach(light => {
+            const inputs = [];
+            const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view)
+            const radius = light.radius;
 
-            // Transform light position into camera space
-            const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view);
+            mat4.fromTranslation(mat_model_view, vec4FromVec3(light_position_cam, 1.));
+            mat4.scale(mat_model_view, mat_model_view, [radius, radius, radius]);
 
-            for (const obj of scene.objects) {
+            inputs.push({
+                mesh: this.light_sphere,
+                albedoSpec: gBuffer.color[0],
+                normal: gBuffer.color[1],
+                position: gBuffer.color[2],
 
-                // Check if object is Blinn-Phong shaded
-                if (this.exclude_object(obj)) continue;
+                mat_model_view: mat_model_view,
+                projection: scene.camera.mat.projection,
 
-                const mesh = this.resource_manager.get_mesh(obj.mesh_reference);
-
-                const {
-                    mat_model_view,
-                    mat_model_view_projection,
-                    mat_normals_model_view
-                } = scene.camera.object_matrices.get(obj);
-
-                // Data passed to the pipeline to be used by the shader
-                inputs.push({
-                    mesh: mesh,
-
-                    albedoSpec: gBuffer.color[0],
-                    normal: gBuffer.color[1],
-                    position: gBuffer.color[2],
-
-                    mat_model_view_projection: mat_model_view_projection,
-
-                    light_position: light_position_cam,
-                    light_color: light.color,
-
-                    ambient_factor: ambient_factor,
-                });
-
-            }
+                light_color: light.color,
+                light_position: light_position_cam,
+                light_radius: radius,
+            });
 
             this.pipeline(inputs);
-            // Set to 0 the ambient factor so it is only taken into account once during the first light render
-            ambient_factor = 0;
         });
     }
 
-    exclude_object(obj) {
-        // Do not shade objects that use other dedicated shader
-        return obj.material.properties.includes('no_blinn_phong');
-    }
-
     depth() {
-        // Use z buffer
         return {
-            enable: true,
-            mask: true,
-            func: '<=',
+            enable: false,
         };
     }
 
@@ -94,10 +73,15 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
         return {
             enable: true,
             func: {
-                src: 1,
-                dst: 1,
+                src: 'one',
+                dst: 'one',
             },
         };
+    }
+
+    cull() {
+        // draw back face
+        return { enable: true, face: 'back' }; 
     }
 
     uniforms(regl) {
@@ -108,14 +92,13 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
             positionBuffer: regl.prop('position'),
 
             // View (camera) related matrix
-            mat_model_view_projection: regl.prop('mat_model_view_projection'),
+            mat_model_view: regl.prop('mat_model_view'),
+            projection: regl.prop('projection'),
 
             // Light data
             light_position: regl.prop('light_position'),
             light_color: regl.prop('light_color'),
-
-            // Ambient factor
-            ambient_factor: regl.prop('ambient_factor'),
+            light_radius: regl.prop('light_radius'),
         };
     }
 }
@@ -126,12 +109,13 @@ function blinn_phong_deferred_vertex_shader() {
 
         attribute vec3 vertex_positions;
 
-        uniform mat4 mat_model_view_projection;
+        uniform mat4 mat_model_view;
+        uniform mat4 projection;
 
         varying vec4 vPosition;
 
         void main() {
-            gl_Position = mat_model_view_projection * vec4(vertex_positions, 1);
+            gl_Position = projection * mat_model_view * vec4(vertex_positions, 1);
             vPosition = gl_Position;
         }
         `;
@@ -147,7 +131,7 @@ function blinn_phong_deferred_fragment_shader() {
 
         uniform vec3 light_color;
         uniform vec3 light_position;
-        uniform float ambient_factor;
+        uniform float light_radius;
 
         void main()
         {
@@ -174,14 +158,11 @@ function blinn_phong_deferred_fragment_shader() {
             // Compute specular
             float specular = (diffuse > 0.0) ? pow(h_dot_n, material_shininess) : 0.0;
 
-            // Compute ambient
-            vec3 ambient = ambient_factor * material_color * material_ambient;
-
             float light_distance = length(light_position - v2f_frag_pos);
-            float attenuation = 1.0 / pow(light_distance, 0.25);
+            float attenuation = max(0., 1.0 - light_distance / light_radius);
 
             // Compute pixel color
-            vec3 color = ambient + (attenuation * light_color * material_color * (diffuse + specular));
+            vec3 color = (attenuation * light_color * material_color * (diffuse + specular));
 
             gl_FragColor = vec4(color, 1.); // output: RGBA in 0..1 range
         }

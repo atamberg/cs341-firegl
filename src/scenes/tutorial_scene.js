@@ -46,7 +46,8 @@ export class TutorialScene extends Scene {
     // Keep track of the original light for night mode
     this.originalLight = {
       position: [0.0, 10.0, 5.5],
-      color: [1.0, 1.0, 1.0]
+      color: [1.0, 1.0, 1.0],
+      radius: 100,
     };
 
     this.initialize_scene();

@@ -226,11 +226,11 @@ export class SceneRenderer {
             // This was the easiest way to fix the culling issue.
             this.particles.render(scene_state);
 
-            if (scene.ui_params.deferred_shading) {
-                this.shadows_deferred.render(scene_state, this.gBuffer);
-            } else {
-                this.shadows.render(scene_state);
-            }
+            //if (scene.ui_params.deferred_shading) {
+            //    this.shadows_deferred.render(scene_state, this.gBuffer);
+            //} else {
+            //    this.shadows.render(scene_state);
+            //}
             // Render the shadows
         })
 
