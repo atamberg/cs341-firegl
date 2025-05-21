@@ -138,6 +138,7 @@ export class ResourceManager{
             'kloppenheim_07_puresky_blur.jpg',
             'pine.png',
             'billboard.png',
+            'BAKE2.png',
           ];
     }
 
@@ -167,8 +168,8 @@ export class ResourceManager{
         return [
         "pine.obj",
         "terrain.obj",
-        /*"DeadTree.obj",
-        "DeadTreeType1.obj",*/
+        "TreeType1.obj",
+        "DeadTreeType1.obj",
       ];
     }
 

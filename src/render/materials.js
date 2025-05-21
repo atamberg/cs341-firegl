@@ -159,6 +159,11 @@ export const pine = new DiffuseMaterial({
     shininess: 0.5
 });
 
+export const treeType1 = new DiffuseMaterial({
+    texture: 'BAKE2.png',
+    shininess: 0.5
+});
+
 export const terrain = new DiffuseMaterial({
     color: [0.25, 1.00, 0.35],
     shininess: 100

@@ -13,6 +13,7 @@ import { Scene } from "./scene.js";
 import { ResourceManager } from "../scene_resources/resource_manager.js";
 import { RainbowVomitParticles } from "../scene_resources/rainbow_vomit_particles.js";
 import { FireAndSmoke } from "../scene_resources/fire_and_smoke.js";
+import { FireSpreadAndBurn } from "../scene_resources/fire_spread.js";
 
 export class TutorialScene extends Scene {
 
@@ -49,9 +50,12 @@ export class TutorialScene extends Scene {
       color: [1.0, 1.0, 1.0]
     };
 
+    this.fireSpreadSystem = new FireSpreadAndBurn(this);
+
+
     this.initialize_scene();
-    this.initialize_actor_actions();
     this.setup_click_handler();
+    this.initialize_actor_actions();
   }
 
   /**
@@ -87,50 +91,39 @@ export class TutorialScene extends Scene {
       material: MATERIALS.terrain,
     });
 
-    const fire = new FireAndSmoke([0, 0, 0.1], [1.5, 1.5, 1.5], 'billboard');
+    const fire = new FireAndSmoke([0, 0, 0.1], [1.0, 1.0, 1.0], 'billboard');
     this.objects.push(fire);
     this.actors["fire"] = fire;
-
-    // Add fire's light source
-    this.lights.push(fire.light_source);
-
-    //generate positions, can tweak values
-    const treePositions = generateTreePositions(400, 8, 0.4);
-
-    //add trees
-    treePositions.forEach(tree => {
-      this.objects.push({
-        translation: [tree.x, tree.y, tree.z],
-        scale: [tree.scale, tree.scale, tree.scale],
-        mesh_reference: 'pine.obj',
-        material: MATERIALS.pine
-      });
-    });/*
-    //generate positions, can tweak values
-    const treePositions = generateTreePositions(400, 8, 0.4);
-
-    //add trees
-    treePositions.forEach(tree => {
-      this.objects.push({
-        translation: [tree.x, tree.y, tree.z],
-        scale: [tree.scale, tree.scale, tree.scale],
-        mesh_reference: 'pine.obj',
-        material: MATERIALS.pine
-      });
-    });*/
-  
-
     
+    
+    //generate positions, can tweak values
+    const treePositions = generateTreePositions(150, 8, 2.0);
 
+    //add trees
+    treePositions.forEach(tree => {
+      this.objects.push({
+        translation: [tree.x, tree.y, tree.z],
+        scale: [tree.scale, tree.scale, tree.scale],
+        mesh_reference: 'TreeType1.obj',
+        material: MATERIALS.treeType1,
+      });
+    });
   }
 
   /**
    * Initialize the evolve function that describes the behaviour of each actor 
    */
   initialize_actor_actions() {
-
-    // TODO
-
+    
+    for(const name in this.actors){
+      if(name.includes("fire")){
+        console.log(name);
+        const fire = this.actors[name];
+        fire.evolve = (dt) => {
+          this.fireSpreadSystem.evolve(dt);  
+        }
+      } 
+    }
   }
 
   /**
@@ -144,6 +137,7 @@ export class TutorialScene extends Scene {
     
     // Add middle mouse button event listener
     canvas.addEventListener('mousedown', (event) => {
+
       // Only handle middle clicks
       if (event.button !== 1) return;
       
@@ -174,13 +168,13 @@ export class TutorialScene extends Scene {
         invViewMatrix[13],
         invViewMatrix[14]
       );
-      console.log('Camera position:', cameraPos);
+      //console.log('Camera position:', cameraPos);
       
       // Create a 4D homogeneous point for the clicked NDC position
       const ndcNearPoint = vec3.fromValues(ndcX, ndcY, -1.0); // z=-1 for near plane
       const ndcFarPoint = vec3.fromValues(ndcX, ndcY, 1.0);  // z=1 for far plane
       
-      console.log('NDC points:', ndcNearPoint, ndcFarPoint);
+      //console.log('NDC points:', ndcNearPoint, ndcFarPoint);
       
       // Create inverse view-projection matrix
       const vpMatrix = mat4.create();
@@ -193,98 +187,27 @@ export class TutorialScene extends Scene {
       const nearPointWorld = vec3.transformMat4(vec3.create(), ndcNearPoint, invVpMatrix);
       const farPointWorld = vec3.transformMat4(vec3.create(), ndcFarPoint, invVpMatrix);
       
-      console.log('Near point world:', nearPointWorld);
-      console.log('Far point world:', farPointWorld);
-      
-      // Create ray direction from near to far point
+      //console.log('Near point world:', nearPointWorld);
+      //console.log('Far point world:', farPointWorld);
+    
+      const scene_z = 0.15;                      
+      const rayOrigin = cameraPos;              
       const rayDirection = vec3.create();
+      //console.log('Ray origin:', nearPointWorld);
+      //console.log('Ray direction:', rayDirection);
       vec3.subtract(rayDirection, farPointWorld, nearPointWorld);
       vec3.normalize(rayDirection, rayDirection);
-      console.log('Ray origin:', nearPointWorld);
-      console.log('Ray direction:', rayDirection);
+      //we only care about z coordinate, so lets solve t
+      const t = (scene_z - rayOrigin[2])/rayDirection[2];
+  
       
-      // Simple ray-cast to find intersections
-      let hitObject = null;
-      let hitPoint = null;
-      let closestT = Infinity;
-      let objectsChecked = 0;
+      const hitPoint = vec3.create();
+      vec3.scaleAndAdd(hitPoint, rayOrigin, rayDirection, t);
+
       
-      for (const obj of this.objects) {
-        // Skip objects that aren't suitable for fire placement
-        if (!obj.mesh_reference || 
-            obj.mesh_reference === 'mesh_sphere_env_map' || 
-            obj.mesh_reference === 'billboard' || 
-            (typeof obj.evolve === 'function')) {
-          continue;
-        }
-        
-        objectsChecked++;
-        
-        // Simple bounding sphere intersection test
-        const objPos = obj.translation || [0, 0, 0];
-        
-        // Use the largest scale component for the radius
-        let radius = 1.0;
-        if (obj.scale) {
-          radius = Math.max(obj.scale[0], Math.max(obj.scale[1], obj.scale[2]));
-        }
-        
-        console.log('Testing object:', obj.mesh_reference, 'at position:', objPos, 'with radius:', radius);
-        
-        // Ray-sphere intersection test
-        // Calculate coefficients for quadratic equation
-        const oc = vec3.create();
-        vec3.subtract(oc, nearPointWorld, objPos);
-        
-        const a = vec3.dot(rayDirection, rayDirection);
-        const b = 2.0 * vec3.dot(oc, rayDirection);
-        const c = vec3.dot(oc, oc) - (radius * radius);
-        
-        const discriminant = b * b - 4 * a * c;
-        
-        console.log('Object:', obj.mesh_reference, 'Discriminant:', discriminant);
-        
-        if (discriminant >= 0) {
-          // Ray intersects sphere
-          const t = (-b - Math.sqrt(discriminant)) / (2.0 * a);
-          
-          // Ensure intersection is in front of camera and closer than previous hits
-          if (t > 0 && t < closestT) {
-            closestT = t;
-            hitObject = obj;
-            
-            // Calculate hit point
-            hitPoint = vec3.create();
-            vec3.scaleAndAdd(hitPoint, nearPointWorld, rayDirection, t);
-            
-            console.log('Hit detected! Object:', obj.mesh_reference, 'at t:', t, 'Hit point:', hitPoint);
-          }
-        }
-      }
+      console.log('Spawning fire at:', hitPoint);
+      this.spawnFireAtPosition(hitPoint);
       
-      console.log('Objects checked:', objectsChecked, 'Hit object:', hitObject ? hitObject.mesh_reference : 'none');
-      
-      // If we hit an object, spawn a fire at the hit point
-      if (hitObject && hitPoint) {
-        console.log('Spawning fire at position:', hitPoint);
-        // Small offset above the surface to prevent z-fighting
-        hitPoint[2] += 0.05;
-        this.spawnFireAtPosition(hitPoint);
-      } else {
-        console.log('No valid hit detected, not spawning fire');
-        
-        // Fallback: Create fire at a fixed distance in the ray direction
-        const fallbackPoint = vec3.create();
-        vec3.scaleAndAdd(fallbackPoint, nearPointWorld, rayDirection, 5.0); // 5 units away
-        
-        // Make sure the fire is not below ground
-        if (fallbackPoint[2] < 0.1) {
-          fallbackPoint[2] = 0.1; // Minimum height
-        }
-        
-        console.log('Creating fallback fire at:', fallbackPoint);
-        this.spawnFireAtPosition(fallbackPoint);
-      }
     });
   }
   
@@ -301,7 +224,7 @@ export class TutorialScene extends Scene {
     const firePos = [position[0]/2, position[1]/2, position[2]/2];
     const fire = new FireAndSmoke(
       firePos, // Position - will be used as the center for particle effects
-      [0.8, 0.8, 0.8], // Scale (smaller than the main fire)
+      [1.0, 1.0, 1.0], // Scale (smaller than the main fire)
       'billboard' // Use the same billboard mesh
     );
   
@@ -319,11 +242,12 @@ export class TutorialScene extends Scene {
     //   color: [1.0, 0.7, 0.3], // Warm fire color
     // };
     // this.lights.push(lightSource);
-    console.log("Light position: ", lightSource.position)
+    console.log("Light position: ", fire.light_source.position)
     console.log("Container position: ", fire.translation)
     console.log(`Fire created. Total fires: ${this.fire_containers.length}`);
     console.log('Current scene objects:', this.objects.length);
     console.log('Current scene actors:', Object.keys(this.actors).length);
+
   }
 
   /**
@@ -343,13 +267,6 @@ export class TutorialScene extends Scene {
 
     // Create UI elements
     // Note: According to cg_web.js, create_slider expects (title, range, action) format
-
-
-    
-    
-
-
-
 
     // Create sliders for toon shading parameters
     const n_steps_slider = 100;
@@ -428,8 +345,8 @@ function generateTreePositions(count, maxOffset, minTreeDistance) {
     //random positions between [-maxOffset, maxOffset]
     const x = (Math.random() * 2 - 1) * maxOffset;
     const y = (Math.random() * 2 - 1) * maxOffset;
-    //random scale between [0.5, 1.2]
-    const scale = 0.5 + Math.random() * 0.7;
+    //random scale between [0.5, 0.7]
+    const scale = 0.4 + Math.random() * 0.1;
     //check overlaps
     let overlaps = false;
     for (const pos of positions) {
