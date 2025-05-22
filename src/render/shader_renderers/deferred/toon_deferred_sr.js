@@ -1,5 +1,8 @@
 import { mat4 } from "../../../../lib/gl-matrix_3.3.0/esm/index.js";
+import { mat4_matmul_many } from "../../../cg_libraries/cg_math.js";
+import { vec4FromVec3 } from "../../../cg_libraries/cg_math.js";
 import { texture_data, light_to_cam_view } from "../../../cg_libraries/cg_render_utils.js"
+import { cg_mesh_make_uv_sphere } from "../../../cg_libraries/cg_mesh.js";
 import { ResourceManager } from "../../../scene_resources/resource_manager.js";
 import { ShaderRenderer } from "./../shader_renderer.js"
 
@@ -11,14 +14,14 @@ export class ToonDeferredShaderRenderer extends ShaderRenderer {
      * @param {ResourceManager} resource_manager 
      */
     constructor(regl, resource_manager) {
-        resource_manager.resources["toon_deferred.vert.glsl"] = toon_deferred_vertex_shader();
         resource_manager.resources["toon_deferred.frag.glsl"] = toon_deferred_fragment_shader();
         super(
             regl,
             resource_manager,
-            `toon_deferred.vert.glsl`,
+            `deferred.vert.glsl`,
             `toon_deferred.frag.glsl`
         );
+        this.light_sphere = cg_mesh_make_uv_sphere(16);
     }
 
     /**
@@ -27,69 +30,52 @@ export class ToonDeferredShaderRenderer extends ShaderRenderer {
      */
     render(scene_state, gBuffer) {
         const scene = scene_state.scene;
-        const inputs = [];
 
-        let ambient_factor = scene.ambient_factor;
+        const mat_model_view_projection = mat4.create();
 
-        // For every light in the scene we render the toon shading contributions
+        const mat_model = mat4.create();
+
         scene.lights.forEach(light => {
-            for (const obj of scene.objects) {
-                // Check if object should be toon shaded
-                if (this.exclude_object(obj)) continue;
+            const inputs = [];
+            const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view)
+            const radius = light.radius;
 
-                const mesh = this.resource_manager.get_mesh(obj.mesh_reference);
-                const { texture, is_textured } = texture_data(obj, this.resource_manager);
+            mat4.fromTranslation(mat_model, vec4FromVec3(light.position, 1));
+            mat4.scale(mat_model, mat_model, [radius, radius, radius]);
+            mat4_matmul_many(mat_model_view_projection, scene.camera.mat.projection, scene.camera.mat.view, mat_model);
 
-                const {
-                    mat_model_view,
-                    mat_model_view_projection,
-                    mat_normals_model_view
-                } = scene.camera.object_matrices.get(obj);
+            inputs.push({
+                mesh: this.light_sphere,
+                albedoSpecBuffer: gBuffer.color[0],
+                normalBuffer: gBuffer.color[1],
+                positionBuffer: gBuffer.color[2],
 
-                const mat_model = mat4.create();
-                mat4.fromTranslation(mat_model, obj.translation);
-                mat4.scale(mat_model, mat_model, obj.scale);
+                mat_model_view_projection: mat_model_view_projection,
 
-                // Data passed to the pipeline to be used by the shader
-                inputs.push({
-                    mesh: mesh,
+                light_color: light.color,
+                light_position: light_position_cam,
+                light_radius: radius,
 
-                    albedoSpecBuffer: gBuffer.color[0],
-                    normalBuffer: gBuffer.color[1],
-                    positionBuffer: gBuffer.color[2],
-
-                    mat_model_view_projection: mat_model_view_projection,
-                    mat_model: mat_model,
-
-                    light_position: light.position,
-                    light_color: light.color,
-
-                    ambient_factor: ambient_factor,
-
-                    // Toon shading specific parameters
-                    toon_levels: scene.ui_params.toon_levels || 7, // Number of discrete color levels
-                    outline_threshold: scene.ui_params.outline_threshold || 0.2, // Threshold for edge detection
-                    outline_color: scene.ui_params.outline_color || [0.0, 0.0, 0.0], // Black outline by default
-                });
-            }
+                // Toon shading specific parameters
+                toon_levels: scene.ui_params.toon_levels || 7, // Number of discrete color levels
+                outline_threshold: scene.ui_params.outline_threshold || 0.2, // Threshold for edge detection
+                outline_color: scene.ui_params.outline_color || [0.0, 0.0, 0.0], // Black outline by default
+            });
 
             this.pipeline(inputs);
-            // Set to 0 the ambient factor so it is only taken into account once during the first light render
-            ambient_factor = 0;
         });
     }
 
-    exclude_object(obj) {
-        // Do not shade objects that use other dedicated shader
-        return obj.material.properties.includes('no_toon');
-    }
     depth() {
         // Use z buffer
         return {
-            enable: true,
-            mask: true,
-            func: '<=',
+            enable: false,
         };
+    }
+
+    cull() {
+        // draw back face
+        return { enable: true, face: 'back' }; 
     }
 
     blend() {
@@ -117,9 +103,7 @@ export class ToonDeferredShaderRenderer extends ShaderRenderer {
             // Light data
             light_position: regl.prop('light_position'),
             light_color: regl.prop('light_color'),
-
-            // Ambient factor
-            ambient_factor: regl.prop('ambient_factor'),
+            light_radius: regl.prop('light_radius'),
 
             // Toon shading parameters
             toon_levels: regl.prop('toon_levels'),
@@ -129,52 +113,18 @@ export class ToonDeferredShaderRenderer extends ShaderRenderer {
     }
 } 
 
-function toon_deferred_vertex_shader() {
-    return `
-        precision mediump float;
-
-        // Vertex attributes
-        attribute vec3 vertex_positions;
-        attribute vec3 vertex_normal;
-
-        // Varying values passed to the fragment shader
-        varying vec3 v2f_world_pos;
-        varying vec3 v2f_world_normal;
-
-        varying vec4 vPosition;
-
-        // Global uniform variables
-        uniform mat4 mat_model_view_projection;
-        uniform mat4 mat_model;  // Model matrix for world space transformation
-
-        void main()
-        {
-            // Calculate world space position
-            v2f_world_pos = (mat_model * vec4(vertex_positions, 1.0)).xyz;
-
-            // Calculate world space normal
-            v2f_world_normal = (mat_model * vec4(vertex_normal, 0.0)).xyz;
-
-            // Calculate final vertex position on the canvas
-            gl_Position = mat_model_view_projection * vec4(vertex_positions, 1.0);
-            vPosition = gl_Position;
-        }`
-}
-
 function toon_deferred_fragment_shader() {
     return `
         precision mediump float;
 
         // Varying values passed from the vertex shader
-        varying vec3 v2f_world_pos;        // Fragment position in world space
-        varying vec3 v2f_world_normal;     // Normal vector in world space
         varying vec3 v2f_light_dir;        // Direction to light in world space
         varying vec4 vPosition;
 
         // Global variables specified in "uniforms" entry of the pipeline
         uniform vec3 light_color;          // Color of the light
         uniform vec3 light_position;       // Position of the light in world space
-        uniform float ambient_factor;      // How much ambient light to apply
+        uniform float light_radius;        // Radius of the light
 
         // Toon shading parameters
         uniform int toon_levels;           // Number of discrete color bands
@@ -192,41 +142,41 @@ function toon_deferred_fragment_shader() {
             vec3 material_color = texture2D(albedoSpecBuffer, uv).rgb;
             float material_shininess = texture2D(albedoSpecBuffer, uv).a;
 
-            // Calculate light direction in world space
-            vec3 v2f_light_dir = light_position - v2f_world_pos;
-
             // Normalize vectors for lighting calculations
-            vec3 normal = normalize(v2f_world_normal);
-            vec3 light_dir = normalize(v2f_light_dir);
+            vec3 normal = normalize(v2f_normal);
+            vec3 light_dir = normalize(light_position - v2f_frag_pos);
             vec3 view_dir = normalize(-v2f_frag_pos);
+
+            // Calculate specular lighting (shiny highlights)
+            vec3 half_dir = normalize(light_dir + view_dir);
+
+            float h_dot_n = clamp(dot(half_dir, normal), 1e-12, 1.);
             
             // Calculate diffuse lighting (how much light hits the surface)
             float diffuse = max(0.0, dot(normal, light_dir));
-            
+
+            float specular = diffuse > 0. ? pow(h_dot_n, material_shininess) : 0.;
+
             // Quantize the diffuse value to create discrete color bands
             float diffuse_floor = floor(diffuse * float(toon_levels)) / float(toon_levels);
             float diffuse_ceil = diffuse_floor + (1. / float(toon_levels));
             diffuse = diffuse_floor + (diffuse_ceil - diffuse_floor) / 2.;
-
-            // Calculate specular lighting (shiny highlights)
-            vec3 half_dir = normalize(light_dir + view_dir);
-            float specular = pow(max(0.0, dot(normal, half_dir)), material_shininess);
             
             // Quantize the specular value to match the toon style
             float specular_floor = floor(specular * float(toon_levels)) / float(toon_levels);
             float specular_ceil = specular_floor + (1. / float(toon_levels));
             specular = specular_floor + (specular_ceil - specular_floor) / 2.;
 
-            // Calculate ambient lighting (base level of light everywhere)
-            vec3 ambient = ambient_factor * material_color;
+            float light_distance = length(light_position - v2f_frag_pos);
+            float attenuation = max(0., 1.0 - light_distance / light_radius);
 
             // Check for outline
-            float outline = 0.0;
-            vec3 view_normal = normalize(v2f_normal);
-            vec3 view_frag_pos = normalize(v2f_frag_pos);
-            float edge = 1.0 - dot(view_normal, view_frag_pos);
+            //float outline = 0.0;
+            //vec3 view_normal = normalize(v2f_normal);
+            //vec3 view_frag_pos = normalize(v2f_frag_pos);
+            //float edge = 1.0 - dot(view_normal, view_frag_pos);
             // Combine all lighting components to get final color
-            vec3 color = ambient + light_color * material_color * (diffuse + specular);
+            vec3 color = attenuation * light_color * material_color * (diffuse + specular);
             
             gl_FragColor = vec4(color, 1.0);
         } 
