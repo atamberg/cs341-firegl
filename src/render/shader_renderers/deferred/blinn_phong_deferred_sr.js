@@ -15,11 +15,10 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
      */
     constructor(regl, resource_manager) {
         resource_manager.resources["blinn_phong_deferred.frag.glsl"] = blinn_phong_deferred_fragment_shader();
-        resource_manager.resources["blinn_phong_deferred.vert.glsl"] = blinn_phong_deferred_vertex_shader();
         super(
             regl,
             resource_manager,
-            `blinn_phong_deferred.vert.glsl`,
+            `deferred.vert.glsl`,
             `blinn_phong_deferred.frag.glsl`
         );
 
@@ -34,15 +33,16 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
         const scene = scene_state.scene;
         // no ambient lighting is done here
 
-        const mat_model_view = mat4.create();
+        const mat_model_view_projection = mat4.create();
 
         scene.lights.forEach(light => {
             const inputs = [];
             const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view)
             const radius = light.radius;
 
-            mat4.fromTranslation(mat_model_view, vec4FromVec3(light_position_cam, 1.));
-            mat4.scale(mat_model_view, mat_model_view, [radius, radius, radius]);
+            mat4.fromTranslation(mat_model_view_projection, vec4FromVec3(light_position_cam, 1.));
+            mat4.scale(mat_model_view_projection, mat_model_view_projection, [radius, radius, radius]);
+            mat4.multiply(mat_model_view_projection, scene.camera.mat.projection, mat_model_view_projection);
 
             inputs.push({
                 mesh: this.light_sphere,
@@ -50,8 +50,7 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
                 normal: gBuffer.color[1],
                 position: gBuffer.color[2],
 
-                mat_model_view: mat_model_view,
-                projection: scene.camera.mat.projection,
+                mat_model_view_projection: mat_model_view_projection,
 
                 light_color: light.color,
                 light_position: light_position_cam,
@@ -92,8 +91,7 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
             positionBuffer: regl.prop('position'),
 
             // View (camera) related matrix
-            mat_model_view: regl.prop('mat_model_view'),
-            projection: regl.prop('projection'),
+            mat_model_view_projection: regl.prop('mat_model_view_projection'),
 
             // Light data
             light_position: regl.prop('light_position'),
@@ -101,24 +99,6 @@ export class BlinnPhongDeferredShaderRenderer extends ShaderRenderer {
             light_radius: regl.prop('light_radius'),
         };
     }
-}
-
-function blinn_phong_deferred_vertex_shader() {
-    return `
-        precision mediump float;
-
-        attribute vec3 vertex_positions;
-
-        uniform mat4 mat_model_view;
-        uniform mat4 projection;
-
-        varying vec4 vPosition;
-
-        void main() {
-            gl_Position = projection * mat_model_view * vec4(vertex_positions, 1);
-            vPosition = gl_Position;
-        }
-        `;
 }
 
 function blinn_phong_deferred_fragment_shader() {
