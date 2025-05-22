@@ -89,7 +89,7 @@ export class FireSpreadAndBurn{
         
 
         const treeFire = new FireAndSmoke(
-            treePos, 
+            treePos,
             [1.0, 1.0, 1.0], 
             'billboard'
         );

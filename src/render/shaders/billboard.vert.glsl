@@ -19,7 +19,7 @@ void main() {
 	vec3 cameraRight_worldspace = vec3(mat_view[0][0], mat_view[1][0], mat_view[2][0]);
 	vec3 cameraUp_worldspace = vec3(mat_view[0][1], mat_view[1][1], mat_view[2][1]);
 
-	vec3 center_offset = particleCenter_worldspace + vertex_offset;
+	vec3 center_offset = vertex_offset;
 
 	vec3 vertexPosition_worldspace =
 		center_offset
