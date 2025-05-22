@@ -25,18 +25,19 @@ export class ToonShaderRenderer extends ShaderRenderer {
      */
     render(scene_state) {
         const scene = scene_state.scene;
-        const inputs = [];
-
-        let ambient_factor = scene.ambient_factor;
 
         // For every light in the scene we render the toon shading contributions
         scene.lights.forEach(light => {
             for (const obj of scene.objects) {
+
                 // Check if object should be toon shaded
                 if (this.exclude_object(obj)) continue;
+                const inputs = [];
 
                 const mesh = this.resource_manager.get_mesh(obj.mesh_reference);
                 const { texture, is_textured } = texture_data(obj, this.resource_manager);
+                const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view);
+                const radius = light.radius;
 
                 const {
                     mat_model_view,
@@ -57,10 +58,9 @@ export class ToonShaderRenderer extends ShaderRenderer {
                     mat_model: mat_model,
                     mat_normals_model_view: mat_normals_model_view,
 
-                    light_position: light.position,
+                    light_position: light_position_cam,
                     light_color: light.color,
-
-                    ambient_factor: ambient_factor,
+                    light_radius: radius,
 
                     material_texture: texture,
                     is_textured: is_textured,
@@ -72,11 +72,8 @@ export class ToonShaderRenderer extends ShaderRenderer {
                     outline_threshold: scene.ui_params.outline_threshold || 0.2, // Threshold for edge detection
                     outline_color: scene.ui_params.outline_color || [0.0, 0.0, 0.0], // Black outline by default
                 });
+                this.pipeline(inputs);
             }
-
-            this.pipeline(inputs);
-            // Set to 0 the ambient factor so it is only taken into account once during the first light render
-            ambient_factor = 0;
         });
     }
 
@@ -93,13 +90,18 @@ export class ToonShaderRenderer extends ShaderRenderer {
         };
     }
 
+    cull() {
+        // Draw back face to match deferred implementation
+        return { enable: true, face: 'back' }; 
+    }
+
     blend() {
-        // Additive blend mode
+        // Use additive blending to accumulate light contributions
         return {
             enable: true,
             func: {
-                src: 1,
-                dst: 1,
+                src: 'one',
+                dst: 'one',
             },
         };
     }
@@ -115,15 +117,15 @@ export class ToonShaderRenderer extends ShaderRenderer {
             // Light data
             light_position: regl.prop('light_position'),
             light_color: regl.prop('light_color'),
+            light_radius: regl.prop('light_radius'),
 
-            // Ambient factor
-            ambient_factor: regl.prop('ambient_factor'),
 
             // Material data
             material_texture: regl.prop('material_texture'),
             is_textured: regl.prop('is_textured'),
             material_base_color: regl.prop('material_base_color'),
             material_shininess: regl.prop('material_shininess'),
+            
 
             // Toon shading parameters
             toon_levels: regl.prop('toon_levels'),

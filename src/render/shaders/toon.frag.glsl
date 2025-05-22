@@ -13,9 +13,10 @@ uniform sampler2D material_texture;  // Texture for the material (if any)
 uniform bool is_textured;           // Whether to use texture or base color
 uniform vec3 material_base_color;   // Base color of the material
 uniform float material_shininess;   // How shiny the material is
+
 uniform vec3 light_color;          // Color of the light
 uniform vec3 light_position;       // Position of the light in world space
-uniform float ambient_factor;      // How much ambient light to apply
+uniform float light_radius;     
 
 // Toon shading parameters
 uniform int toon_levels;           // Number of discrete color bands
@@ -24,11 +25,6 @@ uniform vec3 outline_color;        // Color of the outline
 
 void main()
 {
-    // Normalize vectors for lighting calculations
-    vec3 normal = normalize(v2f_world_normal);
-    vec3 light_dir = normalize(v2f_light_dir);
-    vec3 view_dir = normalize(-v2f_frag_pos);
-    
     // Get base color from texture or material
     vec3 material_color = material_base_color;
     if (is_textured) {
@@ -36,33 +32,37 @@ void main()
         material_color = frag_color_from_texture.xyz;
     }
 
+    // Normalize vectors for lighting calculations
+    vec3 normal = normalize(v2f_normal);
+    vec3 light_dir = normalize(light_position - v2f_frag_pos);
+    vec3 view_dir = normalize(-v2f_frag_pos);
+
+    // Calculate specular lighting (shiny highlights)
+    vec3 half_dir = normalize(light_dir + view_dir);
+    float h_dot_n = clamp(dot(half_dir, normal), 1e-12, 1.);
+    
     // Calculate diffuse lighting (how much light hits the surface)
     float diffuse = max(0.0, dot(normal, light_dir));
-    
+
+    float specular = diffuse > 0. ? pow(h_dot_n, material_shininess) : 0.;
+
     // Quantize the diffuse value to create discrete color bands
     float diffuse_floor = floor(diffuse * float(toon_levels)) / float(toon_levels);
     float diffuse_ceil = diffuse_floor + (1. / float(toon_levels));
     diffuse = diffuse_floor + (diffuse_ceil - diffuse_floor) / 2.;
-
-    // Calculate specular lighting (shiny highlights)
-    vec3 half_dir = normalize(light_dir + view_dir);
-    float specular = pow(max(0.0, dot(normal, half_dir)), material_shininess);
     
     // Quantize the specular value to match the toon style
     float specular_floor = floor(specular * float(toon_levels)) / float(toon_levels);
     float specular_ceil = specular_floor + (1. / float(toon_levels));
     specular = specular_floor + (specular_ceil - specular_floor) / 2.;
 
-    // Calculate ambient lighting (base level of light everywhere)
-    vec3 ambient = ambient_factor * material_color;
+    float light_distance = length(light_position - v2f_frag_pos);
+    float attenuation = max(0., 1.0 - light_distance / light_radius);
 
-    // Check for outline
-    float outline = 0.0;
-    vec3 view_normal = normalize(v2f_normal);
-    vec3 view_frag_pos = normalize(v2f_frag_pos);
-    float edge = 1.0 - dot(view_normal, view_frag_pos);
     // Combine all lighting components to get final color
-    vec3 color = ambient + light_color * material_color * (diffuse + specular);
+    // Scale down the contribution of each light to prevent over-brightening
+    vec3 color = attenuation * light_color * material_color * (diffuse + specular);
     
+    // Use alpha of 1.0 for proper additive blending
     gl_FragColor = vec4(color, 1.0);
 } 
