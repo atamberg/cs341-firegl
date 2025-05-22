@@ -114,12 +114,13 @@ export class TutorialScene extends Scene {
 
     // Add resources
     this.resource_manager.add_procedural_mesh("mesh_sphere_env_map", cg_mesh_make_uv_sphere(16));
-    this.objects.push({
+    this.sky = {
       translation: [0, 0, 0],
       scale: [80., 80., 80.],
       mesh_reference: 'mesh_sphere_env_map',
       material: MATERIALS.sunset_sky
-    });
+    }
+    this.objects.push(this.sky);
 
     this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
 
@@ -383,11 +384,13 @@ export class TutorialScene extends Scene {
         if(lightIndex !== -1){
           this.lights.splice(lightIndex, 1);
         }
+        this.sky.overlay = [0.1, 0.1, 0.1];
       } else {
         // Add the original light source
         if(!this.lights.includes(this.originalLight)){
           this.lights.push(this.originalLight);
         }
+        this.sky.overlay = [1, 1, 1];
       }
       this.updateStatusBox();
     });

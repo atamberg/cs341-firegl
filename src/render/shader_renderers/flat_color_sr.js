@@ -49,6 +49,7 @@ export class FlatColorShaderRenderer extends ShaderRenderer {
                 material_texture: texture,
                 is_textured: is_textured,
                 material_base_color: obj.material.color,
+                material_overlay: obj.overlay == null ? [1,1,1] : obj.overlay,
             });
         }
 
@@ -77,6 +78,7 @@ export class FlatColorShaderRenderer extends ShaderRenderer {
             material_texture: regl.prop('material_texture'),
             is_textured: regl.prop('is_textured'),
             material_base_color: regl.prop('material_base_color'),
+            material_overlay: regl.prop('material_overlay')
         };
     }
 }

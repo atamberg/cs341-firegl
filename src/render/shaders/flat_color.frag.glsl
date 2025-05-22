@@ -7,6 +7,7 @@ varying vec2 v2f_uv;
 uniform sampler2D material_texture; // Texture to sample color from
 uniform bool is_textured;
 uniform vec3 material_base_color;
+uniform vec3 material_overlay;
 
 void main()
 {
@@ -17,6 +18,7 @@ void main()
         vec4 frag_color_from_texture = texture2D(material_texture, v2f_uv);
         material_color = frag_color_from_texture.xyz;
     }
+    material_color *= material_overlay;
 
-	gl_FragColor = vec4(material_color, 1.); // output: RGBA in 0..1 range
+    gl_FragColor = vec4(material_color, 1.); // output: RGBA in 0..1 range
 }
