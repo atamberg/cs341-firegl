@@ -29,10 +29,12 @@ export class TutorialScene extends Scene {
       bloom: false,
       bloom_threshold: 0.8,
       bloom_intensity: 1.0,
+      depth_threshold: 0.1,
       exposure: 1.0,
       toon_shading: false,
       toon_levels: 4,
       toon_scale: 1.0,
+      outline_color: [0.0, 0.0, 0.0],
       outline_threshold: 0.5,
       outline_width: 0.5,
       outline_smoothness: 0.5,
@@ -53,6 +55,8 @@ export class TutorialScene extends Scene {
 
     this.fireSpreadSystem = new FireSpreadAndBurn(this);
 
+    //initiliaze cursor to keep track when spawning fire
+    this.cursor = {x: 0, y: 0};
 
     this.initialize_scene();
     this.setup_click_handler();
@@ -143,21 +147,27 @@ export class TutorialScene extends Scene {
   setup_click_handler() {
     // Get the canvas element
     const canvas = document.getElementsByTagName('canvas')[0];
+
+    canvas.addEventListener('mousemove', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      this.cursor.x = event.clientX - rect.left;
+      this.cursor.y = event.clientY - rect.top;
+    });
     
     console.log('Setting up click handler');
     
-    // Add middle mouse button event listener
-    canvas.addEventListener('mousedown', (event) => {
+    // Add f key event listener
+    window.addEventListener('keydown', (event) => {
 
       // Only handle middle clicks
-      if (event.button !== 1) return;
+      if (event.key !== 'f' && event.key !== 'F') return;
       
       console.log('Click detected! Event:', event.clientX, event.clientY);
       
       // Get click position in pixel coordinates
       const rect = canvas.getBoundingClientRect();
-      const pixelX = event.clientX - rect.left;
-      const pixelY = event.clientY - rect.top;
+      const pixelX = this.cursor.x;
+      const pixelY = this.cursor.y;
       
       // Calculate normalized device coordinates (NDC) from mouse position
       const ndcX = (pixelX / rect.width)*2 - 1;
@@ -265,15 +275,7 @@ export class TutorialScene extends Scene {
    * This function is called in main() if the scene is active.
    */
   initialize_ui_params() {
-    // Initialize toon shading parameters with optimal defaults
-    this.ui_params.toon_levels = 4;        // Number of discrete color bands (7 gives good balance)
-    this.ui_params.toon_scale = 0.7;       // Scale factor (0.7 preserves color intensity well)
-    this.ui_params.outline_threshold = 0.2; // Fixed outline threshold
-    this.ui_params.outline_color = [0.0, 0.0, 0.0]; // Black outlines
-    this.ui_params.depth_threshold = 0.1;
-
-    this.ui_params.toon_shading = false;
-    this.ui_params.bloom = false;
+    
 
     // Create UI elements
     // Note: According to cg_web.js, create_slider expects (title, range, action) format
@@ -281,11 +283,14 @@ export class TutorialScene extends Scene {
     // Create sliders for toon shading parameters
     const n_steps_slider = 100;
 
-    // Toon levels slider (2-10 levels)
+    //keep track of initial params
+   
+
+    // Toon levels slider (4-14 levels)
     // Controls how many discrete color bands are used
     // Higher values = smoother transitions, lower values = more cartoon-like
-    create_slider("Toon Levels", [2, 10], (i) => {
-      this.ui_params.toon_levels = Number(i);
+    create_slider("Toon Levels", [0, 10], (i) => {
+      this.ui_params.toon_levels = 4 + Number(i);
     });
 
     // Toon scale slider (0.5-2.0)
@@ -325,10 +330,15 @@ export class TutorialScene extends Scene {
       // Toggle light sources
       if (this.ui_params.night_mode) {
         // Remove the original light source
-        this.lights = this.lights.filter(light => light !== this.originalLight);
+        const lightIndex = this.lights.indexOf(this.originalLight);
+        if(lightIndex !== -1){
+          this.lights.splice(lightIndex, 1);
+        }
       } else {
         // Add the original light source
-        this.lights.push(this.originalLight);
+        if(!this.lights.includes(this.originalLight)){
+          this.lights.push(this.originalLight);
+        }
       }
     });
 

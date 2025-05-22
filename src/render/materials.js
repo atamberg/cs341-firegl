@@ -180,7 +180,7 @@ export const trunk = new DiffuseMaterial({
 });
 
 export const burntTree = new DiffuseMaterial({
-    color: [1.03, 0.76, 0.21],
+    color: [0.34, 0.34, 0.04],
     shininess: 0.1
 });
 
