@@ -122,8 +122,6 @@ function blinn_phong_deferred_fragment_shader() {
             vec3 material_color = texture2D(albedoSpecBuffer, uv).rgb;
             float material_shininess = texture2D(albedoSpecBuffer, uv).a;
 
-            float material_ambient = 0.6;
-
             // Blinn-Phong lighting model 
             vec3 v = normalize(-v2f_frag_pos);
             vec3 l = normalize(light_position - v2f_frag_pos);

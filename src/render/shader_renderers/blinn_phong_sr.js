@@ -26,14 +26,13 @@ export class BlinnPhongShaderRenderer extends ShaderRenderer {
     render(scene_state){
 
         const scene = scene_state.scene;
-        const inputs = [];
 
         let ambient_factor = scene.ambient_factor;
 
         // For every light in the scene we render the blinn-phong contributions
         // Results will be added on top of each other (see this.blend())
         scene.lights.forEach(light => {
-
+            const inputs = [];
             // Transform light position into camera space
             const light_position_cam = light_to_cam_view(light.position, scene.camera.mat.view);
 
@@ -61,6 +60,7 @@ export class BlinnPhongShaderRenderer extends ShaderRenderer {
 
                     light_position: light_position_cam,
                     light_color: light.color,
+                    light_radius: light.radius || 10.0, // Add light radius with fallback
 
                     ambient_factor : ambient_factor,
 
@@ -113,6 +113,7 @@ export class BlinnPhongShaderRenderer extends ShaderRenderer {
             // Light data
             light_position: regl.prop('light_position'),
             light_color: regl.prop('light_color'),
+            light_radius: regl.prop('light_radius'),
 
             // Ambient factor
             ambient_factor: regl.prop('ambient_factor'),

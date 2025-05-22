@@ -13,6 +13,7 @@ uniform float material_shininess;
 uniform vec3 light_color;
 uniform vec3 light_position;
 uniform float ambient_factor;
+uniform float light_radius;
 
 void main()
 {
@@ -21,8 +22,6 @@ void main()
         vec4 frag_color_from_texture = texture2D(material_texture, v2f_uv);
         material_color = frag_color_from_texture.xyz;
     }
-
-	float material_ambient = 0.6;
 
 	// Blinn-Phong lighting model 
     vec3 v = normalize(-v2f_frag_pos);
@@ -37,15 +36,13 @@ void main()
 
     // Compute specular
     float specular = (diffuse > 0.0) ? pow(h_dot_n, material_shininess) : 0.0;
-
-    // Compute ambient
-    vec3 ambient = ambient_factor * material_color * material_ambient;
-
+    
     float light_distance = length(light_position - v2f_frag_pos);
-    float attenuation = 1.0 / pow(light_distance, 0.25);
 
-    // Compute pixel color
-    vec3 color = ambient + (attenuation * light_color * material_color * (diffuse + specular));
+    float attenuation = max(0.0, 1.0 - light_distance / light_radius);
 
-	gl_FragColor = vec4(color, 1.);; // output: RGBA in 0..1 range
+    // Compute pixel color    
+    vec3 color = (attenuation * light_color * material_color * (diffuse + specular));
+
+	gl_FragColor = vec4(color, 1.); // output: RGBA in 0..1 range
 }
