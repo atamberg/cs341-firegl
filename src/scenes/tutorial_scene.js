@@ -41,6 +41,28 @@ export class TutorialScene extends Scene {
       night_mode: false,
       deferred_shading: true,
     };
+    
+    // Create status box for boolean parameters
+    this.statusBox = document.createElement('div');
+    this.statusBox.id = 'boolParamsStatus';
+    Object.assign(this.statusBox.style, {
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      padding: '10px',
+      background: 'rgba(0,0,0,0.7)',
+      color: '#fff',
+      fontSize: '14px',
+      borderRadius: '5px',
+      fontFamily: 'monospace',
+      zIndex: '1000',
+      maxWidth: '200px',
+    });
+    document.body.appendChild(this.statusBox);
+    
+    // For tracking parameter changes
+    this.lastParamState = JSON.stringify(this.getParamState());
+    this.updateStatusBox(); // Initialize status box
   
     // Collection to store fire containers created by clicks
     this.fire_containers = [];
@@ -144,15 +166,35 @@ export class TutorialScene extends Scene {
    * Initialize the evolve function that describes the behaviour of each actor 
    */
   initialize_actor_actions() {
-    
-    for(const name in this.actors){
-      if(name.includes("fire")){
+    // Define the evolve function for each actor
+    for (const name in this.actors) {
+      if (name.includes("fire")) {
         console.log(name);
         const fire = this.actors[name];
         fire.evolve = (dt) => {
-          this.fireSpreadSystem.evolve(dt);  
+          // Original fire spread functionality
+          this.fireSpreadSystem.evolve(dt);
+          
+          // Check if UI parameters have changed and update status box if needed
+          this.checkAndUpdateStatusBox();
+        };
+      } else {
+        // For other actors
+        const actor = this.actors[name];
+        actor.evolve = (dt) => {
+          // Check if UI parameters have changed and update status box if needed
+          this.checkAndUpdateStatusBox();
+        };
+      }
+    }
+    
+    // If there are no actors, create a dummy actor to ensure the status box updates
+    if (Object.keys(this.actors).length === 0) {
+      this.actors['_statusUpdater'] = {
+        evolve: (dt) => {
+          this.checkAndUpdateStatusBox();
         }
-      } 
+      };
     }
   }
 
@@ -347,11 +389,68 @@ export class TutorialScene extends Scene {
           this.lights.push(this.originalLight);
         }
       }
+      this.updateStatusBox();
     });
+    
+
 
     // Store the original light source
     this.originalLight = this.lights[0];
+  
+  // Update status box with current boolean parameter values
+  this.updateStatusBox();
+}
+
+/**
+ * Gets the current state of boolean parameters for comparison
+ */
+getParamState() {
+  return {
+    bloom: this.ui_params.bloom,
+    toon_shading: this.ui_params.toon_shading,
+    night_mode: this.ui_params.night_mode,
+    deferred_shading: this.ui_params.deferred_shading
+  };
+}
+
+/**
+ * Updates the status box with current boolean parameter values
+ */
+updateStatusBox() {
+  if (!this.statusBox) return;
+  
+  const boolParams = {
+    'Bloom': this.ui_params.bloom,
+    'Toon Shading': this.ui_params.toon_shading,
+    'Night Mode': this.ui_params.night_mode,
+    'Deferred Shading': this.ui_params.deferred_shading
+  };
+  
+  let html = '<strong>Parameters:</strong><br>';
+  
+  for (const [param, value] of Object.entries(boolParams)) {
+    const status = value ? 'ON' : 'OFF';
+    const color = value ? '#4CAF50' : '#F44336';
+    html += `<div style="margin: 5px 0">
+      <span>${param}:</span>
+      <span style="color: ${color}; font-weight: bold">${status}</span>
+    </div>`;
   }
+  
+  this.statusBox.innerHTML = html;
+}
+
+/**
+ * Check if parameters have changed and update status box if needed
+ * This is called every frame to ensure the status box is always up to date
+ */
+checkAndUpdateStatusBox() {
+  const currentState = JSON.stringify(this.getParamState());
+  if (currentState !== this.lastParamState) {
+    this.updateStatusBox();
+    this.lastParamState = currentState;
+  }
+}  
 
 }
 /**
