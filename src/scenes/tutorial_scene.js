@@ -96,6 +96,14 @@ export class TutorialScene extends Scene {
     this.objects.push(fire);
     this.actors["fire"] = fire;
     
+    /*
+    this.objects.push({
+      translation: [0.5,0.5,0.1],
+      scale: [1.0,1.0,1.0],
+      mesh_reference: 'TreeType1.obj',
+      material: MATERIALS.treeType1,
+    });*/
+    
     
     //generate positions, can tweak values
     const treePositions = generateTreePositions(150, 8, 2.0);
@@ -150,8 +158,8 @@ export class TutorialScene extends Scene {
       const pixelY = event.clientY - rect.top;
       
       // Calculate normalized device coordinates (NDC) from mouse position
-      const ndcX = (pixelX / canvas.width - 0.5);
-      const ndcY = (0.5 - pixelY / canvas.height);  // Flip Y to match WebGL convention
+      const ndcX = (pixelX / rect.width)*2 - 1;
+      const ndcY = 1 - (pixelY / rect.height) * 2;  // Flip Y to match WebGL convention
       
       console.log('Canvas dimensions:', canvas.width, canvas.height);
       console.log('Pixel coords:', pixelX, pixelY);
@@ -191,19 +199,18 @@ export class TutorialScene extends Scene {
       //console.log('Near point world:', nearPointWorld);
       //console.log('Far point world:', farPointWorld);
     
-      const scene_z = 0.15;                      
-      const rayOrigin = cameraPos;              
+      const scene_z = 0.15;                                  
       const rayDirection = vec3.create();
       //console.log('Ray origin:', nearPointWorld);
       //console.log('Ray direction:', rayDirection);
       vec3.subtract(rayDirection, farPointWorld, nearPointWorld);
       vec3.normalize(rayDirection, rayDirection);
       //we only care about z coordinate, so lets solve t
-      const t = (scene_z - rayOrigin[2])/rayDirection[2];
+      const t = (scene_z - nearPointWorld[2])/rayDirection[2];
   
       
       const hitPoint = vec3.create();
-      vec3.scaleAndAdd(hitPoint, rayOrigin, rayDirection, t);
+      vec3.scaleAndAdd(hitPoint, nearPointWorld, rayDirection, t);
 
       
       console.log('Spawning fire at:', hitPoint);
@@ -222,12 +229,14 @@ export class TutorialScene extends Scene {
     console.log(`Creating new fire with ID: ${fireId} at position:`, position);
     
     // Create fire container at exact same position as light
-    const firePos = [position[0], position[1], position[2]];
+    const firePos = [...position];
     const fire = new FireAndSmoke(
       firePos, // Position - will be used as the center for particle effects
       [1.0, 1.0, 1.0], // Scale (smaller than the main fire)
       'billboard' // Use the same billboard mesh
     );
+    
+   
   
     
     // Add to scene objects and actors
