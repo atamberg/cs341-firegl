@@ -118,7 +118,7 @@ export class TutorialScene extends Scene {
       translation: [0, 0, 0],
       scale: [80., 80., 80.],
       mesh_reference: 'mesh_sphere_env_map',
-      material: MATERIALS.sunset_sky
+      material: MATERIALS.sunset_sky,
     }
     this.objects.push(this.sky);
 
@@ -129,7 +129,7 @@ export class TutorialScene extends Scene {
     // Add ground
     this.objects.push({
       translation: [0, 0, 0.25],
-      scale: [0.3, 0.3, 0.3],
+      scale: [0.6, 0.6, 0.6],
       mesh_reference: 'terrain.obj',
       material: MATERIALS.terrain,
     });
@@ -148,7 +148,7 @@ export class TutorialScene extends Scene {
     
     
     //generate positions, can tweak values
-    const treePositions = generateTreePositions(150, 8, 2.0);
+    const treePositions = generateTreePositions(400, 16, 1);
 
     //add trees
     treePositions.forEach(tree => {
