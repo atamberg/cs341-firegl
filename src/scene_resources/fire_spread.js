@@ -1,6 +1,7 @@
-import { dist } from "../../lib/gl-matrix_3.3.0/esm/vec3.js";
+import { dist, scale } from "../../lib/gl-matrix_3.3.0/esm/vec3.js";
 import { FireAndSmoke } from "../scene_resources/fire_and_smoke.js";
 import * as MATERIALS from "../render/materials.js"
+import { vec3 } from "../../lib/gl-matrix_3.3.0/esm/index.js";
 
 export class FireSpreadAndBurn{
     constructor(scene){
@@ -114,12 +115,21 @@ export class FireSpreadAndBurn{
             let time = this.burnTimers.get(tree) + dt;
             this.burnTimers.set(tree, time);
 
-            if(time >= this.burnDuration){
+            if(time > this.burnDuration - .75 && time < this.burnDuration - .5) {
+                vec3.scale(tree.scale, tree.original_scale , 1 - 0.25 * (time - this.burnDuration + .75) / .25);
+            }
 
+            if(time > this.burnDuration - .5 && time < this.burnDuration) {
                 tree.material = MATERIALS.burntTree;
                 tree.mesh_reference = 'DeadTreeType1.obj';
-                tree.scale = [tree.scale[0]*1.5, tree.scale[0]*1.5,tree.scale[0]*1.5];
-            
+                vec3.scale(tree.scale, tree.burned_scale, 0.75 + 0.25 * (time - this.burnDuration + 0.5) / .5);
+            }
+
+            if(time >= this.burnDuration){
+                // just in case
+                tree.material = MATERIALS.burntTree;
+                tree.mesh_reference = 'DeadTreeType1.obj';
+                tree.scale = tree.burned_scale;
 
                 //remove tracking of tree burning
                 this.burningTrees.delete(tree);
