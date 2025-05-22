@@ -35,7 +35,7 @@ export class FireSpreadAndBurn{
 
             this.scene.fire_containers.forEach(fire => {
                 fire.emission_radius += 0.3;
-
+                fire.light_source.radius += 0.5; 
                 if(fire.emission_radius > this.maxFireSpread){
                     fire.emission_radius = this.maxFireSpread;
                 } else {
@@ -99,7 +99,7 @@ export class FireSpreadAndBurn{
         
         this.scene.objects.push(treeFire);
         this.scene.actors[fireId] = treeFire;
-
+        treeFire.light_source.radius = 0;
         this.scene.lights.push(treeFire.light_source);
         //keep track of burning trees
         this.burningTrees.set(tree, treeFire);
