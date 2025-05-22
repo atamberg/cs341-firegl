@@ -91,13 +91,9 @@ export class FireSpreadAndBurn{
 
         const treeFire = new FireAndSmoke(
             treePos,
-            [1.0, 1.0, 1.0], 
+            [treeScale*3, treeScale*3, treeScale*3 ], 
             'billboard'
         );
-
-        console.log("Fire position:", treeFire.translation);
-
-        
 
         const fireId = `fire_${this.scene.fireIndex++}`;
         

@@ -53,6 +53,8 @@ export class TutorialScene extends Scene {
 
     this.fireSpreadSystem = new FireSpreadAndBurn(this);
 
+    //initiliaze cursor to keep track when spawning fire
+    this.cursor = {x: 0, y: 0};
 
     this.initialize_scene();
     this.setup_click_handler();
@@ -143,21 +145,27 @@ export class TutorialScene extends Scene {
   setup_click_handler() {
     // Get the canvas element
     const canvas = document.getElementsByTagName('canvas')[0];
+
+    canvas.addEventListener('mousemove', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      this.cursor.x = event.clientX - rect.left;
+      this.cursor.y = event.clientY - rect.top;
+    });
     
     console.log('Setting up click handler');
     
-    // Add middle mouse button event listener
-    canvas.addEventListener('mousedown', (event) => {
+    // Add f key event listener
+    window.addEventListener('keydown', (event) => {
 
       // Only handle middle clicks
-      if (event.button !== 1) return;
+      if (event.key !== 'f' && event.key !== 'F') return;
       
       console.log('Click detected! Event:', event.clientX, event.clientY);
       
       // Get click position in pixel coordinates
       const rect = canvas.getBoundingClientRect();
-      const pixelX = event.clientX - rect.left;
-      const pixelY = event.clientY - rect.top;
+      const pixelX = this.cursor.x;
+      const pixelY = this.cursor.y;
       
       // Calculate normalized device coordinates (NDC) from mouse position
       const ndcX = (pixelX / rect.width)*2 - 1;
