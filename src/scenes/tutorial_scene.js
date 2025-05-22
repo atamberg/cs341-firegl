@@ -113,6 +113,8 @@ export class TutorialScene extends Scene {
       this.objects.push({
         translation: [tree.x, tree.y, tree.z],
         scale: [tree.scale, tree.scale, tree.scale],
+        original_scale: [tree.scale, tree.scale, tree.scale],
+        burned_scale: [tree.scale * 2.5, tree.scale * 2.5, tree.scale * 2.5],
         mesh_reference: 'TreeType1.obj',
         material: MATERIALS.treeType1,
       });

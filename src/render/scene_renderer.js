@@ -57,6 +57,8 @@ export class SceneRenderer {
         this.blinn_phong_deferred = new BlinnPhongDeferredShaderRenderer(regl, resource_manager);
         this.shadows_deferred = new ShadowsDeferredShaderRenderer(regl, resource_manager);
         this.toon_deferred = new ToonDeferredShaderRenderer(regl, resource_manager);
+
+        this.current_frame = this.regl.texture({copy: true, width: window.innerWidth, height: window.innerHeight});
     }
 
     /**
@@ -244,11 +246,13 @@ export class SceneRenderer {
             // Render the bloom effect directly to the screen
             this.bloom.render(scene_state, baseTexture);
         }        
+
+        this.current_frame({copy: true});
         // Apply Sobel outline effect
         if (scene.ui_params.toon_shading) {
             this.sobel_outline.render({
                 ...scene_state,
-                depth_texture: baseTexture
+                depth_texture: this.current_frame
             });
         }
 
