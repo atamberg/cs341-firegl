@@ -41,7 +41,7 @@ export class TutorialScene extends Scene {
       night_mode: false,
       deferred_shading: true,
     };
-    
+  
     // Collection to store fire containers created by clicks
     this.fire_containers = [];
     this.fireIndex = 0;
@@ -58,6 +58,21 @@ export class TutorialScene extends Scene {
     //initiliaze cursor to keep track when spawning fire
     this.cursor = {x: 0, y: 0};
 
+    //fire hint text message
+    const hint = document.createElement('div');
+    hint.id = 'fireHint';
+    hint.textContent = 'Press F to start a fire';
+    Object.assign(hint.style, {
+      position: 'fixed',
+      bottom: '20px',
+      padding: '6px 12px',
+      background: 'rgba(0,0,0,0.6)',
+      color: '#fff',
+      fontSize: '25px',
+    });
+    document.body.appendChild(hint);
+
+    //initializations
     this.initialize_scene();
     this.setup_click_handler();
     this.initialize_actor_actions();
@@ -248,7 +263,10 @@ export class TutorialScene extends Scene {
       'billboard' // Use the same billboard mesh
     );
     
-   
+    const hint = document.getElementById('fireHint');
+    if(hint){ 
+      hint.style.display = 'none';
+    }
   
     
     // Add to scene objects and actors
@@ -276,30 +294,16 @@ export class TutorialScene extends Scene {
    */
   initialize_ui_params() {
     
-
     // Create UI elements
     // Note: According to cg_web.js, create_slider expects (title, range, action) format
-
-    // Create sliders for toon shading parameters
-    const n_steps_slider = 100;
-
     //keep track of initial params
-   
-
+  
     // Toon levels slider (4-14 levels)
     // Controls how many discrete color bands are used
     // Higher values = smoother transitions, lower values = more cartoon-like
     create_slider("Toon Levels", [0, 10], (i) => {
       this.ui_params.toon_levels = 4 + Number(i);
     });
-
-    // Toon scale slider (0.5-2.0)
-    // Controls the intensity of the shading
-    // Lower values = more subtle shading, higher values = more dramatic
-    create_slider("Toon Scale", [0, n_steps_slider], (i) => {
-      this.ui_params.toon_scale = 0.5 + (i * 1.5 / n_steps_slider);
-    });
-
 
     const sobel_steps = 25;
     create_slider("Sobel Threshold", [0, sobel_steps], (i) => {
@@ -309,17 +313,20 @@ export class TutorialScene extends Scene {
         // Bloom threshold slider
     create_slider("Bloom Threshold", [0, 100], (value) => {
       this.ui_params.bloom_threshold = Number(value)/100;
+     
     });
     
     // Bloom intensity slider
-    create_slider("Bloom Intensity", [0, 10], (value) => {
+    create_slider("Bloom Intensity", [1, 10], (value) => {
       this.ui_params.bloom_intensity = Number(value);
+      
     });
     
     
     // Exposure slider for HDR tone mapping
-    create_slider("Exposure", [0, 3], (value) => {
+    create_slider("Bloom Exposure", [0, 3], (value) => {
       this.ui_params.exposure = Number(value);
+      
     });
 
     // Create a toggle button for night mode
