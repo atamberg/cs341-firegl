@@ -238,14 +238,19 @@ export class SceneRenderer {
 
         // Mix the base color of the scene with the shadows information to create the final result
         this.map_mixer.render(scene_state, this.texture("shadows"), baseTexture);
-        // Render particles
+        
+        // Render particles - do this before bloom so they're included in the bloom effect
         this.particles.render(scene_state);
+        
+        // Copy the current frame with particles to use for bloom
+        this.current_frame({copy: true});
         
         // Apply bloom effect if enabled
         if (scene.ui_params.bloom) {
-            // Render the bloom effect directly to the screen
-            this.bloom.render(scene_state, baseTexture);
-        }        
+            // Render the bloom effect directly to the screen using the current frame
+            // which includes the particles
+            this.bloom.render(scene_state, this.current_frame);
+        }
 
         this.current_frame({copy: true});
         // Apply Sobel outline effect
