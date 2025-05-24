@@ -27,8 +27,6 @@ export class BlinnPhongShaderRenderer extends ShaderRenderer {
 
         const scene = scene_state.scene;
 
-        let ambient_factor = scene.ambient_factor;
-
         // For every light in the scene we render the blinn-phong contributions
         // Results will be added on top of each other (see this.blend())
         scene.lights.forEach(light => {
@@ -62,8 +60,6 @@ export class BlinnPhongShaderRenderer extends ShaderRenderer {
                     light_color: light.color,
                     light_radius: light.radius,
 
-                    ambient_factor : ambient_factor,
-
                     material_texture: texture,
                     is_textured: is_textured,
                     material_base_color: obj.material.color,
@@ -74,7 +70,6 @@ export class BlinnPhongShaderRenderer extends ShaderRenderer {
             
             this.pipeline(inputs);
             // Set to 0 the ambient factor so it is only taken into account once during the first light render
-            ambient_factor = 0;
         });
     }
 

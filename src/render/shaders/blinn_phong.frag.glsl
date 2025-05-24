@@ -12,7 +12,6 @@ uniform vec3 material_base_color;
 uniform float material_shininess;
 uniform vec3 light_color;
 uniform vec3 light_position;
-uniform float ambient_factor;
 uniform float light_radius;
 
 void main()
