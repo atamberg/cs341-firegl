@@ -60,7 +60,7 @@ export class BlinnPhongShaderRenderer extends ShaderRenderer {
 
                     light_position: light_position_cam,
                     light_color: light.color,
-                    light_radius: light.radius || 10.0, // Add light radius with fallback
+                    light_radius: light.radius,
 
                     ambient_factor : ambient_factor,
 
