@@ -14,16 +14,25 @@ void main() {
     vec4 original = texture2D(u_original, v_texCoord);
     vec4 bloom = texture2D(u_bloom, v_texCoord);
     
-    // Add bloom to the original color using screen blending for better color preservation
-    // Screen blend: 1.0 - (1.0 - a) * (1.0 - b)
-    vec3 bloomColor = bloom.rgb * u_bloom_intensity;
-    vec3 blendedColor = vec3(1.0) - (vec3(1.0) - original.rgb) * (vec3(1.0) - bloomColor);
+    // Calculate original luminance
+    float originalLuminance = dot(original.rgb, vec3(0.2126, 0.7152, 0.0722));
     
-    // Apply a simplified tone mapping that preserves colors better
+    // Scale bloom by intensity
+    vec3 bloomColor = bloom.rgb * u_bloom_intensity;
+    
+    // Use a modified additive blend
+    // helps prevent color shifting when many light sources are present
+    vec3 blendedColor = original.rgb + bloomColor * (1.0 - originalLuminance * 0.5);
+    
+    // Apply exposure adjustment
     vec3 result = blendedColor * u_exposure;
     
+    // Apply a soft saturation control to prevent over-saturation
+    float luminance = dot(result, vec3(0.2126, 0.7152, 0.0722));
+    vec3 saturationAdjusted = mix(vec3(luminance), result, 0.9); // Slightly reduce saturation
+    
     // Ensure we don't exceed valid color range
-    result = clamp(result, vec3(0.0), vec3(1.0));
+    result = clamp(saturationAdjusted, vec3(0.0), vec3(1.0));
     
     // Output the final color with original alpha
     gl_FragColor = vec4(result, original.a);
