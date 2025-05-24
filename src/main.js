@@ -1,14 +1,15 @@
 import { createREGL } from "../lib/regljs_2.1.0/regl.module.js"
+import { CanvasVideoRecording } from "./icg_screenshot.js"
 
 // UI functions
-import { 
+import {
   DOM_loaded_promise,
-  create_button, 
-  create_slider, 
+  create_button,
+  create_slider,
   clear_overlay,
-  create_button_with_hotkey, 
-  create_hotkey_action, 
-  toggle_overlay_visibility 
+  create_button_with_hotkey,
+  create_hotkey_action,
+  toggle_overlay_visibility
 } from "./cg_libraries/cg_web.js"
 
 // Render
@@ -25,6 +26,9 @@ DOM_loaded_promise.then(main)
 
 async function main() {
 
+  const debug_overlay = document.getElementById('overlay');
+  const debug_text = document.getElementById('debug-text');
+
   /*---------------------------------------------------------------
     1. Canvas Setup
   ---------------------------------------------------------------*/
@@ -40,19 +44,35 @@ async function main() {
 
   // The <canvas> object (HTML element for drawing graphics) was created by REGL: we take a handle to it
   const canvas_elem = document.getElementsByTagName('canvas')[0]
-  {
-    // Resize canvas to fit the window
-    function resize_canvas() {
-      canvas_elem.width = window.innerWidth
-      canvas_elem.height = window.innerHeight
-    }
-    resize_canvas()
-    window.addEventListener('resize', resize_canvas)
-  }
+  canvas_elem.width = 1920;
+  canvas_elem.height = 1080;
+  //{
+  //  // Resize canvas to fit the window
+  //  function resize_canvas() {
+  //    canvas_elem.width = window.innerWidth
+  //    canvas_elem.height = window.innerHeight
+  //  }
+  //  resize_canvas()
+  //  window.addEventListener('resize', resize_canvas)
+  //}
+  const video = new CanvasVideoRecording({
+    canvas: canvas_elem,
+    videoBitsPerSecond: 250*1024*1024, // tweak that if the quality is bad 
+    // https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/MediaRecorder
+  });
 
   /*---------------------------------------------------------------
     2. UI Setup
   ---------------------------------------------------------------*/
+
+  function video_start_stop() {
+    if (video.is_recording()) {
+      video.stop();
+    } else {
+      video.start();
+    }
+  };
+
 
   /**
    * Object used to propagate parameters that the user can change in the interface.
@@ -62,10 +82,15 @@ async function main() {
     is_paused: false,
   }
 
-  function initialize_ui_params(){
+  function initialize_ui_params() {
 
+    create_hotkey_action("Stop/Start recording", 'r', () => {video_start_stop()});
     // Bind a hotkey to hide the overlay
-    create_hotkey_action("Hide overlay", "h", ()=>{toggle_overlay_visibility()});
+    create_hotkey_action("Hide overlay", "h", () => { toggle_overlay_visibility() });
+
+    create_hotkey_action("Debug", 'z', () => {
+            debug_overlay.classList.toggle('hide');
+    })
 
     // Create a pause button
     create_hotkey_action("Pause", "p", () => {
@@ -125,7 +150,7 @@ async function main() {
 
   const active_scene = tutorial_scene;
   // const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
-  
+
   /*---------------------------------------------------------------
     5. UI Instantiation
   ---------------------------------------------------------------*/
@@ -141,6 +166,7 @@ async function main() {
   // Time variable
   let dt = 0;
   let prev_regl_time = 0;
+  const ticksixty = 17;
 
   regl.frame((frame) => {
 
@@ -176,6 +202,13 @@ async function main() {
     ---------------------------------------------------------------*/
 
     scene_renderer.render(scene_state);
+
+    if (video.is_recording()) {
+      video.push_frame();
+      debug_text.textContent = `Recording in progress: ${video.num_frames} frames`;
+    } else {
+      debug_text.textContent = '';
+    }
 
   })
 
