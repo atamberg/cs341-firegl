@@ -42,28 +42,28 @@ TODO
 	</thead>
 	<tbody>
 		<tr>
-			<td>Feature 1</td>
+			<td>Mesh and Scene Design</td>
 			<td>5</td>
 			<td style="background-color: #d4edda;">Completed</td>
 		</tr>
 		<tr>
-			<td>Feature 2</td>
+			<td>Bloom</td>
 			<td>5</td>
-			<td style="background-color: #cce5ff;">Missing</td>
+			<td style="background-color: #d4edda;">Completed</td>
 		</tr>
 		<tr>
-			<td>Feature 3</td>
-			<td>10</td>
-			<td style="background-color: #e8ebca;">Partially Completed</td>
-		</tr>
-		<tr>
-			<td>Feature 4</td>
+			<td>Toon Shaders</td>
 			<td>10</td>
 			<td style="background-color: #d4edda;">Completed</td>
 		</tr>
 		<tr>
-			<td>Feature 5</td>
-			<td>20</td>
+			<td>Deferred Shading</td>
+			<td>15</td>
+			<td style="background-color: #d4edda;">Completed</td>
+		</tr>
+		<tr>
+			<td>Particle Effects</td>
+			<td>15</td>
 			<td style="background-color: #d4edda;">Completed</td>
 		</tr>
 	</tbody>
@@ -159,7 +159,7 @@ TODO
 	</thead>
 	<tbody>
 		<tr>
-			<td>Name 1</td>
+			<td>Leopold Popper</td>
 			<td></td>
 			<td style="background-color: #f0f0f0;"></td>
 			<td></td>
@@ -170,7 +170,7 @@ TODO
 			<td></td>
 		</tr>
 		<tr>
-			<td>Name 2</td>
+			<td>Ali Gorgani</td>
 			<td></td>
 			<td style="background-color: #f0f0f0;"></td>
 			<td></td>
@@ -181,7 +181,7 @@ TODO
 			<td></td>
 		</tr>
 		<tr>
-			<td>Name 3</td>
+			<td>Anthony Tamberg</td>
 			<td></td>
 			<td style="background-color: #f0f0f0;"></td>
 			<td></td>
@@ -204,15 +204,15 @@ TODO
 	</thead>
 	<tbody>
 		<tr>
-			<td>Name 1</td>
+			<td>Leopold Popper</td>
 			<td>1/3</td>
 		</tr>
 		<tr>
-			<td>Name 2</td>
+			<td>Ali Gorgani</td>
 			<td>1/3</td>
 		</tr>
 		<tr>
-			<td>Name 3</td>
+			<td>Anthony Tamberg</td>
 			<td>1/3</td>
 		</tr>
 	</tbody>
@@ -226,4 +226,8 @@ TODO
 
 ## References
 
-TODO
+[Regl API](https://github.com/regl-project/regl/blob/main/API.md)
+[Regl GPU Instancing Example](https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js)
+[Regl Deferred Shading Example](https://github.com/regl-project/regl/blob/main/example/deferred_shading.js)
+[Deferred Shading Tutorial](https://learnopengl.com/Advanced-Lighting/Deferred-Shading)
+[Billboards and Particles Tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/)
