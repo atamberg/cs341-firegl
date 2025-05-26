@@ -160,10 +160,10 @@ TODO
 	<tbody>
 		<tr>
 			<td>Leopold Popper</td>
+			<td>1</td>
+			<td style="background-color: #f0f0f0;">2</td>
 			<td></td>
-			<td style="background-color: #f0f0f0;"></td>
-			<td></td>
-			<td></td>
+			<td>10</td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -171,10 +171,10 @@ TODO
 		</tr>
 		<tr>
 			<td>Ali Gorgani</td>
+			<td>1</td>
+			<td style="background-color: #f0f0f0;">1</td>
 			<td></td>
-			<td style="background-color: #f0f0f0;"></td>
-			<td></td>
-			<td></td>
+			<td>11</td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -182,13 +182,13 @@ TODO
 		</tr>
 		<tr>
 			<td>Anthony Tamberg</td>
+			<td>1</td>
+			<td style="background-color: #f0f0f0;">0</td>
 			<td></td>
-			<td style="background-color: #f0f0f0;"></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td>9</td>
+			<td>6</td>
+			<td>14</td>
+			<td>10</td>
 			<td></td>
 		</tr>
 	</tbody>
