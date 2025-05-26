@@ -164,6 +164,11 @@ export const treeType1 = new DiffuseMaterial({
     shininess: 0.5
 });
 
+export const treeType2 = new DiffuseMaterial({
+    texture: 'BAKE3.png',
+    shininess: 0.5
+});
+
 export const terrain = new DiffuseMaterial({
     color: [0.25, 1.00, 0.35],
     shininess: 100

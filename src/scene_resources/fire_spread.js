@@ -57,10 +57,13 @@ export class FireSpreadAndBurn{
                 
                 this.scene.objects.forEach(obj => {
                     //skip objects that are not trees, or if tree already burnt, or if tree already burning
-                    if(obj.mesh_reference !== 'TreeType1.obj' || this.burnedTrees.has(obj) || this.burningTrees.has(obj)){
+                    if((obj.mesh_reference !== 'TreeType2.obj' &&
+                        obj.mesh_reference !== 'TreeType1.obj')|| 
+                        this.burnedTrees.has(obj) || 
+                        this.burningTrees.has(obj)){
                         return;
                     }
-
+                    
             
                     const distance = dist(firePosition, obj.translation);
 
@@ -117,14 +120,19 @@ export class FireSpreadAndBurn{
 
             if(time > this.burnDuration - .5 && time < this.burnDuration) {
                 tree.material = MATERIALS.burntTree;
-                tree.mesh_reference = 'DeadTreeType1.obj';
+                if(tree.mesh_reference == 'TreeType1.obj'){
+                    tree.mesh_reference = 'DeadTreeType1.obj';
+                } else if(tree.mesh_reference == 'TreeType2.obj'){
+                    tree.mesh_reference = 'DeadTreeType2.obj';
+                }
+
+                //tree.mesh_reference = tree.mesh_reference == 'TreeType1.obj' ? 'DeadTreeType1.obj': 'DeadTreeType2.obj';
                 vec3.scale(tree.scale, tree.burned_scale, 0.75 + 0.25 * (time - this.burnDuration + 0.5) / .5);
             }
 
             if(time >= this.burnDuration){
-                // just in case
-                tree.material = MATERIALS.burntTree;
-                tree.mesh_reference = 'DeadTreeType1.obj';
+                
+                console.log("DEAD TREE :" , tree.mesh_reference);
                 tree.scale = tree.burned_scale;
 
                 //remove tracking of tree burning

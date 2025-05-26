@@ -162,7 +162,6 @@ export class TutorialScene extends Scene {
       });
     });
   }
-
   /**
    * Initialize the evolve function that describes the behaviour of each actor 
    */
@@ -340,7 +339,6 @@ export class TutorialScene extends Scene {
     // Create UI elements
     // Note: According to cg_web.js, create_slider expects (title, range, action) format
     //keep track of initial params
-  
     // Toon levels slider (4-14 levels)
     // Controls how many discrete color bands are used
     // Higher values = smoother transitions, lower values = more cartoon-like

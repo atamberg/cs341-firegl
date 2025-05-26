@@ -139,6 +139,7 @@ export class ResourceManager{
             'pine.png',
             'billboard.png',
             'BAKE2.png',
+            'BAKE3.png',
           ];
     }
 
@@ -170,6 +171,8 @@ export class ResourceManager{
         "terrain.obj",
         "TreeType1.obj",
         "DeadTreeType1.obj",
+        "TreeType2.obj",
+        "DeadTreeType2.obj",
       ];
     }
 
