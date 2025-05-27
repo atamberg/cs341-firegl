@@ -2,7 +2,7 @@
 title: Final Project Report CS-341 2025
 ---
 
-# FireGL -- Fire Simulation in WebGL
+# FireGL - Fire Simulation in WebGL
 
 <div>
 <video src="videos/demo_teaser.mp4" height="300px" autoplay loop></video>
