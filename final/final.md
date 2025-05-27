@@ -4,10 +4,12 @@ title: Final Project Report CS-341 2025
 
 # FireGL - Fire Simulation in WebGL
 
+<div style="display:flex; justify-content: space-around; align-items: center;">
 <div>
-<video src="videos/demo_teaser.mp4" height="300px" autoplay loop></video>
+<video src="videos/minifire.webm" height="400px" autoplay loop style="vertical-align: middle;"></video>
 </div>
-<figcaption style="text-align: center;">A short teaser video, gif, or image showing an overview of the final result.</figcaption>
+</div>
+<figcaption style="text-align: center;">Close-up fire with cycling toon and bloom post-processing effects</figcaption>
 
 ## Abstract
 
@@ -16,15 +18,7 @@ TODO
 
 ## Overview
 
-<div style="display: flex; justify-content: space-around; align-items: center;">
-<div>
-<img src="images/demo_detail.png" height="210px" style="vertical-align: middle;">
-</div>
-<div>
-<video src="videos/video-group64.mp4" height="210px" autoplay loop style="vertical-align: middle;"></video>
-</div>
-</div>
-<figcaption style="text-align: center;">Our final video showing off the major features of our project</figcaption>
+![Our final video showing off most major features](videos/video-group64.mp4){width="700px"}
 
 TODO
 
@@ -143,11 +137,13 @@ TODO
 
 ### Failed Experiments
 
-TODO
+- Shadows
 
 ### Challenges
 
-TODO
+- Deferred Shading
+- Particles
+- Fire spread
 
 
 ## Contributions
@@ -236,8 +232,8 @@ TODO
 
 ## References
 
-[Regl API](https://github.com/regl-project/regl/blob/main/API.md)
-[Regl GPU Instancing Example](https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js)
-[Regl Deferred Shading Example](https://github.com/regl-project/regl/blob/main/example/deferred_shading.js)
-[Deferred Shading Tutorial](https://learnopengl.com/Advanced-Lighting/Deferred-Shading)
-[Billboards and Particles Tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/)
+- [Regl API](https://github.com/regl-project/regl/blob/main/API.md)
+- [Regl GPU Instancing Example](https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js)
+- [Regl Deferred Shading Example](https://github.com/regl-project/regl/blob/main/example/deferred_shading.js)
+- [Deferred Shading Tutorial](https://learnopengl.com/Advanced-Lighting/Deferred-Shading)
+- [Billboards and Particles Tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/)
