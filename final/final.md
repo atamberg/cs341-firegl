@@ -107,7 +107,7 @@ TODO
 
 #### Implementation
 
-Our deferred shading pipeline uses a standard G-buffer, storing camera-space position, normal, and albedo (material color) vectors, along with a specular intensity scalar, in three color buffers inside the G-buffer. We found storing camera-space vectors to be simpler for our needs than storing world-space vectors like most tutorials recommend. We use a unified vertex shader (`deferred.vert.glsl`) to pass buffer data to all the inputs of the deferred fragment shaders.
+Our deferred shading pipeline uses a standard G-buffer, storing camera-space position, normal, and albedo (material color) vectors, along with a specular intensity scalar, in three color buffers inside the G-buffer. We found storing camera-space vectors to be simpler for our needs than storing world-space vectors like most tutorials recommend. We use a unified vertex shader [deferred.vert.glsl](../src/render/shaders/deferred/deferred.vert.glsl) to pass buffer data to all the inputs of the deferred fragment shaders.
 
 We rewrote the lighting shaders (deferred versions only) to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We adjusted the non deferred shaders (without changed the original computation) so that we could compare the two more easily.
 
@@ -172,7 +172,7 @@ TODO
 			<td>Leopold Popper</td>
 			<td>1</td>
 			<td style="background-color: #f0f0f0;">2</td>
-			<td></td>
+			<td>0</td>
 			<td>10</td>
 			<td></td>
 			<td></td>
@@ -183,7 +183,7 @@ TODO
 			<td>Ali Gorgani</td>
 			<td>1</td>
 			<td style="background-color: #f0f0f0;">1</td>
-			<td></td>
+			<td>0</td>
 			<td>11</td>
 			<td></td>
 			<td></td>
@@ -194,12 +194,12 @@ TODO
 			<td>Anthony Tamberg</td>
 			<td>1</td>
 			<td style="background-color: #f0f0f0;">0</td>
-			<td></td>
+			<td>0</td>
 			<td>9</td>
 			<td>6</td>
 			<td>14</td>
 			<td>10</td>
-			<td></td>
+			<td>40</td>
 		</tr>
 	</tbody>
 </table>
