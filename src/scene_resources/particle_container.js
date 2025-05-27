@@ -1,17 +1,6 @@
 import * as MATERIALS from "../render/materials.js";
 
-//export class Particle {
-//    constructor(pos, speed, color, size, angle, weight, life) {
-//        this.pos = pos;
-//        this.speed = speed;
-//        this.color = color;
-//        this.size = size;
-//        this.angle = angle;
-//        this.weight = weight;
-//        this.life = life;
-//    }
-//}
-
+// Particle container superclass, inspired by https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
 export class ParticleContainer {
     constructor(translation, scale, mesh_reference) {
         this.translation = translation;
@@ -24,7 +13,7 @@ export class ParticleContainer {
         this.particle_count = 0;
         this.max_particles = 100000;
     }
-
+    
     find_unused_particle() {
         for (let i = this.last_used_particle; i < this.max_particles; ++i) {
             if (this.particle_list[i].life <= 0) {
@@ -43,6 +32,6 @@ export class ParticleContainer {
         return 0;
     }
 
+    // To be overrided in subclass
     evolve(dt) { }
-
 }

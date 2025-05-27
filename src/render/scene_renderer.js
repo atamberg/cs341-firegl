@@ -225,6 +225,7 @@ export class SceneRenderer {
             this.pre_processing.render(scene_state);
 
             // Render the shadows
+            // Disabled due to performance reasons, keeping map mixer for flexibility even if its not currently necessary
             //if (scene.ui_params.deferred_shading) {
             //    this.shadows_deferred.render(scene_state, this.gBuffer);
             //} else {

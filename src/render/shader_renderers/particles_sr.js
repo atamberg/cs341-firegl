@@ -24,6 +24,7 @@ export class ParticlesShaderRender extends ShaderRenderer {
                 mat_normals_model_view
             } = scene.camera.object_matrices.get(obj);
 
+            // using gpu instancing to push particle data into buffer
             inputs.push({
                 mesh: this.resource_manager.get_mesh(obj.mesh_reference),
                 particle_offsets: {
@@ -102,7 +103,7 @@ export class ParticlesShaderRender extends ShaderRenderer {
             vert: this.vert_shader,
             frag: this.frag_shader,
 
-            instances: regl.prop('particle_count')
+            instances: regl.prop('particle_count') // enable gpu instancing
         });
     }
 }
