@@ -2,7 +2,7 @@
 title: Final Project Report CS-341 2025
 ---
 
-# Project Title
+# FireGL -- Fire Simulation in WebGL
 
 <div>
 <video src="videos/demo_teaser.mp4" height="300px" autoplay loop></video>
@@ -21,10 +21,10 @@ TODO
 <img src="images/demo_detail.png" height="210px" style="vertical-align: middle;">
 </div>
 <div>
-<video src="videos/demo_detail.mp4" height="210px" autoplay loop style="vertical-align: middle;"></video>
+<video src="videos/video-group64.mp4" height="210px" autoplay loop style="vertical-align: middle;"></video>
 </div>
 </div>
-<figcaption style="text-align: center;">Some more visuals focusing on interesting details of your scene.</figcaption>
+<figcaption style="text-align: center;">Our final video showing off the major features of our project</figcaption>
 
 TODO
 
@@ -70,7 +70,7 @@ TODO
 </table>
 
 
-### Feature 1
+### Mesh and Scene Design
 
 #### Implementation
 
@@ -81,7 +81,7 @@ TODO
 TODO
 
 
-### Feature 2
+### Bloom
 
 #### Implementation
 
@@ -92,7 +92,7 @@ TODO
 TODO
 
 
-### Feature 3
+### Toon Shaders
 
 #### Implementation
 
@@ -103,7 +103,7 @@ TODO
 TODO
 
 
-### Feature 4
+### Deferred Shading
 
 #### Implementation
 
@@ -114,7 +114,7 @@ TODO
 TODO
 
 
-### Feature 5
+### Particle Effects
 
 #### Implementation
 
