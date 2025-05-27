@@ -107,7 +107,11 @@ TODO
 
 #### Implementation
 
-TODO
+Our deferred shading pipeline uses a standard G-buffer, storing camera-space position, normal, and albedo (material color) vectors, along with a specular intensity scalar, in three color buffers inside the G-buffer. We found storing camera-space vectors to be simpler for our needs than storing world-space vectors like most tutorials recommend. We use a unified vertex shader (`deferred.vert.glsl`) to pass buffer data to all the inputs of the deferred fragment shaders.
+
+We rewrote the lighting shaders (deferred versions only) to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We adjusted the non deferred shaders (without changed the original computation) so that we could compare the two more easily.
+
+All lights use the same mesh so in theory we could render them with GPU instancing.
 
 #### Validation
 
@@ -118,7 +122,9 @@ TODO
 
 #### Implementation
 
-TODO
+We began by implementing a basic billboard shader. To support real particle systems, we extended our particle containers to store lists of particles and render the same mesh instance for each one. Initial performance was poor, as the draw logic iterated over each particle on the CPU (JavaScript side). To address this, we implemented GPU instancing, allowing us to upload particle data, such as position offsets, colors, and sizes, in a single draw call per container. This optimization significantly improved rendering performance. We still use the original billboard fragment and vertex shaders for our particles, but we could replace them with alternate shaders, e.g., shaders that render 3D meshes to achieve 3D particles instead. 
+
+We removed the original `billboard_sr.js` file after we were able to fully replicate our 'billboard' with a particle container.
 
 #### Validation
 
@@ -129,7 +135,11 @@ TODO
 
 ### Additional Components
 
-TODO
+- Overlay for skybox for a toggleable night mode
+- Natural fire spread
+- Manual fire spread (F key)
+- 
+
 
 ### Failed Experiments
 
