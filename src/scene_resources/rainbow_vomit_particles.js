@@ -23,7 +23,7 @@ export class RainbowVomitParticles extends ParticleContainer {
             this.particle_list[j] = {
                 color: random(vec3.create()),
                 life: 20,
-                speed: fromValues(3 * Math.cos(i), 5 * Math.sin(i), 50),
+                speed: fromValues(3 * Math.cos(i), 5 * Math.sin(i), 25),
                 offset: [Math.cos(i), Math.sin(i), 0],
                 scale_multiplier: [1, 1, 1],
             };
