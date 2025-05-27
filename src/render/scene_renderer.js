@@ -14,6 +14,10 @@ import { BlinnPhongDeferredShaderRenderer } from "./shader_renderers/deferred/bl
 import { ShadowsDeferredShaderRenderer } from "./shader_renderers/deferred/shadows_deferred_sr.js"
 import { ToonDeferredShaderRenderer } from "./shader_renderers/deferred/toon_deferred_sr.js"
 import { BloomShaderRenderer } from "./shader_renderers/bloom_sr.js"
+import { NormalDeferredShaderRenderer } from "./shader_renderers/deferred/normal_sr.js"
+import { PositionDeferredShaderRenderer } from "./shader_renderers/deferred/position_sr.js"
+import { AlbedoDeferredShaderRenderer } from "./shader_renderers/deferred/albedo_sr.js"
+import { SpecularDeferredShaderRenderer } from "./shader_renderers/deferred/specular_sr.js"
 
 export class SceneRenderer {
 
@@ -57,6 +61,10 @@ export class SceneRenderer {
         this.blinn_phong_deferred = new BlinnPhongDeferredShaderRenderer(regl, resource_manager);
         this.shadows_deferred = new ShadowsDeferredShaderRenderer(regl, resource_manager);
         this.toon_deferred = new ToonDeferredShaderRenderer(regl, resource_manager);
+        this.normal_deferred = new NormalDeferredShaderRenderer(regl, resource_manager);
+        this.position_deferred = new PositionDeferredShaderRenderer(regl, resource_manager);
+        this.albedo_deferred = new AlbedoDeferredShaderRenderer(regl, resource_manager);
+        this.specular_deferred = new SpecularDeferredShaderRenderer(regl, resource_manager);
 
         this.current_frame = this.regl.texture({copy: true, width: window.innerWidth, height: window.innerHeight});
     }
@@ -274,6 +282,10 @@ export class SceneRenderer {
         // this.shadows.render(scene_state);
 
 
+        //this.normal_deferred.render(scene_state, this.gBuffer);
+        //this.position_deferred.render(scene_state, this.gBuffer);
+        //this.albedo_deferred.render(scene_state, this.gBuffer);
+        //this.specular_deferred.render(scene_state, this.gBuffer);
 
         // Visualize cubemap
         // this.mirror.env_capture.visualize();

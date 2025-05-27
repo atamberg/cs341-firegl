@@ -163,6 +163,8 @@ export class ResourceManager{
             'deferred/blinn_phong.frag.glsl',
             'deferred/toon.frag.glsl',
             'deferred/shadows.frag.glsl',
+            'deferred/buffer_to_screen.frag.glsl',
+            'deferred/specular.frag.glsl',
             'light_extraction.vert.glsl', 'light_extraction.frag.glsl',
             'gaussian_blur.vert.glsl', 'gaussian_blur.frag.glsl',
             'bloom_combine.vert.glsl', 'bloom_combine.frag.glsl',
