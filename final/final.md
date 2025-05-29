@@ -197,14 +197,15 @@ TODO TODO TODO TODO
 <figcaption>Dynamic lighting with multiple orbital light sources</figcaption>
 </div>
 
-<div style="text-align: center;">
-<video src="videos/parameter_display.webm" width="350" autoplay loop></video>
-<figcaption>Close-up of Parameter Display Changing</figcaption>
-</div>
-
-<div style="text-align: center;">
-<video src="videos/firespread_closeup.mp4" width="350" autoplay loop></video>
-<figcaption>Close-up of Fire Spread</figcaption>
+<div style="display: flex; justify-content: center; gap: 20px; text-align: center;">
+  <figure>
+    <video src="videos/parameter_display.webm" width="350" autoplay loop></video>
+    <figcaption>Close-up of Parameter Display Changing</figcaption>
+  </figure>
+  <figure>
+    <video src="videos/firespread_closeup.mp4" width="350" autoplay loop></video>
+    <figcaption>Close-up of Fire Spread</figcaption>
+  </figure>
 </div>
 
 ##### Mesh Design
@@ -678,10 +679,33 @@ Each particle has an offset from the base particle container position, a color i
 
 ##### Fire Particles
 
+TODO TODO TODO TODO
 
 
 #### Validation
 
+We can see fire particles working in the [videos above](#top) and [here](#validation).
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
+  <figure>
+    <video src="videos/fire_closeup.mp4" width="350" autoplay loop></video>
+    <figcaption>a Fire Particle Container</figcaption>
+  </figure>
+  <figure>
+    <video src="videos/billboard.mp4" width="350" autoplay loop></video>
+    <figcaption>Billboard with a texture</figcaption>
+  </figure>
+  <figure>
+    <video src="videos/vomit_cropped.mp4" width="350" autoplay loop></video>
+    <figcaption>Non-GPU Instanced Rainbow Vomit (video from milestone)</figcaption>
+  </figure>
+  <figure>
+    <video src="videos/vomit_gpu.mp4" width="350" autoplay loop></video>
+    <figcaption>GPU Instanced Rainbow Vomit</figcaption>
+  </figure>
+</div>
+
+Although GPU instancing hasn't eliminated lag entirely, especially since the `evolve()` runs entirely on the cpu, we can see that without gpu instancing there is significantly more lag coming from rendering each particle individually.
 TODO
 
 
@@ -690,9 +714,6 @@ TODO
 ### Additional Components
 
 - Overlay for skybox for a toggleable night mode
-- Natural fire spread
-- Manual fire spread (F key)
-- 
 
 
 ### Failed Experiments
