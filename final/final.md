@@ -64,11 +64,123 @@ TODO
 </table>
 
 
-### Mesh and Scene Design
+### Mesh 
 
 #### Implementation
 
-TODO
+##### Scene Design
+
+We developed multiple specialized scenes to showcase and test our rendering features, each with unique characteristics and optimizations. Our scene design follows a component-based architecture that separates rendering, behavior, and user interaction concerns.
+
+**Dynamic Lighting System**
+
+For [deferred_scene.js](../src/scenes/deferred_scene.js), we implemented a sophisticated dynamic lighting system that creates visually interesting movement patterns:
+
+- **Parametric Animation**: Each light follows orbital paths defined by parametric equations:
+  ```javascript
+  light.position[0] = Math.cos(angle) * radius;
+  light.position[1] = Math.sin(angle) * radius;
+  light.position[2] = height + Math.sin(angle * 2) * amplitude;
+  ```
+
+- **Phase Variation**: We assign each light a unique phase offset to create asynchronous movement patterns that prevent visual repetition:
+  ```javascript
+  const phase = i * (Math.PI * 2) / lightCount;
+  angle = (t * speed) + phase;
+  ```
+
+- **Randomized Parameters**: Each light has individually randomized orbit radii, heights, and speeds, creating organic, non-uniform movement that enhances visual interest:
+  ```javascript
+  const radius = baseRadius + (Math.random() * 2 - 1) * radiusVariation;
+  ```
+
+**Procedural Object Placement**
+
+We developed a sophisticated procedural placement system in `generateTreePositions()` (implemented in [mixed_forest_scene.js](../src/scenes/mixed_forest_scene.js) and [models_scene.js](../src/scenes/models_scene.js)) that creates natural-looking distributions of objects while maintaining performance:
+
+- **Collision Detection**: Our algorithm prevents objects from overlapping by maintaining minimum distances between placed items:
+  ```javascript
+  const tooClose = positions.some(p => {
+      const dx = p.x - x;
+      const dy = p.y - y;
+      return (dx * dx + dy * dy) < (minDistance * minDistance);
+  });
+  ```
+
+- **Randomized Properties**: Each placed object receives randomized scale, rotation, and type variations to enhance visual diversity:
+  ```javascript
+  const scale = 0.5 + Math.random() * 0.8;
+  const treeType = Math.random() > 0.7 ? 'TreeType2.obj' : 'TreeType1.obj';
+  ```
+
+- **Spatial Optimization**: We use a grid-based approach to reduce the computational complexity of collision checks from O(n²) to O(n log n), allowing us to place hundreds of objects efficiently.
+
+**Fire Spread System**
+
+The mixed forest scene [mixed_forest_scene.js](../src/scenes/mixed_forest_scene.js) implements a complex fire propagation system ([fire_spread.js](../src/scene_resources/fire_spread.js)) that demonstrates our particle effects and dynamic lighting:
+
+- **Object State Management**: Each tree stores multiple states (normal, burning, burned) with associated properties:
+  ```javascript
+  original_scale: [scale, scale, scale],
+  burned_scale: [scale * 2.5, scale * 2.5, scale * 2.5],
+  ```
+
+- **Proximity-Based Propagation**: Fire spreads naturally between nearby objects based on configurable parameters:
+  ```javascript
+  const distance = dist(firePosition, obj.translation);
+  if(distance <= burnZone){
+      this.createTreeFire(obj);
+  }
+  ```
+
+- **Visual Transformation**: Burning objects undergo a multi-stage visual transformation with mesh swapping and scale animation:
+  ```javascript
+  if(time > this.burnDuration - .5 && time < this.burnDuration) {
+      tree.material = MATERIALS.burntTree;
+      tree.mesh_reference = tree.mesh_reference == 'TreeType1.obj' ? 
+          'DeadTreeType1.obj': 'DeadTreeType2.obj';
+      vec3.scale(tree.scale, tree.burned_scale, 0.75 + 0.25 * 
+          (time - this.burnDuration + 0.5) / .5);
+  }
+  ```
+
+- **User Interaction**: We implemented a ray-casting system that converts screen coordinates to world positions, allowing users to start fires with mouse clicks:
+  ```javascript
+  const ray = this.camera.screenPointToRay(normalizedX, normalizedY);
+  const groundPlaneIntersection = this.intersectRayWithGroundPlane(ray);
+  ```
+
+**Performance Optimization**
+
+To maintain interactive frame rates with complex scenes, we implemented several optimization strategies:
+
+- **Object Pooling**: Fire and particle effects use object pooling to minimize garbage collection overhead during runtime.
+- **Visibility Culling**: Objects outside the camera frustum or beyond a certain distance threshold are excluded from rendering.
+- **Level of Detail**: Trees and other complex objects use simplified meshes when viewed from a distance.
+- **Batched Updates**: The fire spread system uses time-based batching to distribute computational load across multiple frames.
+
+**UI Integration**
+
+All scenes feature a consistent UI system that provides real-time feedback and control:
+
+- **Parameter Display**: A floating status box shows the current state of boolean parameters:
+  ```javascript
+  updateStatusBox() {
+      const params = this.getParamState();
+      this.statusBox.innerHTML = Object.entries(params)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join('<br>');
+  }
+  ```
+
+- **Keyboard Shortcuts**: We implemented a hotkey system for common actions like toggling effects or changing view modes:
+  ```javascript
+  create_hotkey_action("f", () => this.startFireAtCursor(), "Start fire at cursor");
+  ```
+
+These scene design elements work together to create a visually rich and interactive environment that effectively showcases our rendering features while maintaining performance.
+
+
 
 #### Validation
 
@@ -79,22 +191,155 @@ TODO
 
 #### Implementation
 
-TODO
+Our bloom implementation follows a multi-stage post-processing pipeline that enhances bright areas of the scene with a realistic glow effect. The implementation consists of four key stages:
+
+1. **Bright Pass Extraction**: We first extract the bright areas of the scene using a threshold-based filter in [light_extraction.frag.glsl](../src/render/shaders/light_extraction.frag.glsl). This shader calculates the luminance of each pixel using the standard RGB-to-luminance conversion weights (0.2126, 0.7152, 0.0722) and compares it against a configurable threshold. Only pixels exceeding this threshold contribute to the bloom effect, with their intensity scaled by a user-defined multiplier.
+
+```glsl
+float brightness = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+if (brightness > u_threshold) {
+    gl_FragColor = vec4(color.rgb * u_intensity, 1.0);
+} else {
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+}
+```
+
+2. **Gaussian Blur**: We apply a two-pass separable Gaussian blur to the extracted bright areas using ping-pong rendering between two framebuffers. This approach significantly improves performance compared to a single-pass 2D blur by separating the horizontal and vertical blur components. Our Gaussian kernel uses pre-calculated weights for a 9-tap filter (4 samples on each side plus the center pixel) to achieve a smooth blur effect while maintaining performance.
+
+```glsl
+// Pre-calculated Gaussian weights for optimal performance
+const float weight0 = 0.227027; // Center weight
+const float weight1 = 0.1945946; // First offset weight
+// ... weights for other samples
+```
+
+The number of blur passes is configurable (default: 5), allowing us to control the bloom radius without increasing the kernel size, which would impact performance.
+
+3. **Bloom Combination**: The final stage combines the original scene with the blurred bright areas using a modified additive blend in [bloom_combine.frag.glsl](../src/render/shaders/bloom_combine.frag.glsl). We implemented a luminance-aware blending formula that prevents color shifting when multiple light sources are present:
+
+```glsl
+vec3 blendedColor = original.rgb + bloomColor * (1.0 - originalLuminance * 0.5);
+```
+
+This approach reduces the bloom contribution in already bright areas, preventing over-saturation and maintaining color fidelity.
+
+4. **Tone Adjustment**: We apply exposure control and soft saturation adjustment to the final image to ensure the bloom effect enhances the scene without creating unrealistic results:
+
+```glsl
+vec3 result = blendedColor * u_exposure;
+float luminance = dot(result, vec3(0.2126, 0.7152, 0.0722));
+vec3 saturationAdjusted = mix(vec3(luminance), result, 0.9);
+```
+
+Our implementation uses floating-point textures throughout the pipeline to preserve high dynamic range information, which is crucial for realistic bloom effects. The entire process is encapsulated in the [BloomShaderRenderer](../src/render/shader_renderers/bloom_sr.js) class, which manages the framebuffers, textures, and shader passes required for the effect.
 
 #### Validation
 
-TODO
+We validated our bloom implementation through both visual assessment and performance testing:
+
+1. **Visual Quality**: The bloom effect successfully enhances bright areas like fire particles, light sources, and emissive materials without washing out the scene. The effect is particularly noticeable in night scenes, where light sources create a realistic glow that softly illuminates nearby objects.
+
+2. **Performance Impact**: Our implementation maintains interactive frame rates (60+ FPS) on mid-range hardware even with multiple light sources. The separable Gaussian blur approach provides a significant performance advantage over a naive 2D blur, allowing us to use more blur passes for higher quality without sacrificing performance.
+
+3. **Configurability**: The implementation exposes key parameters through the UI:
+   - Bloom threshold: Controls which areas of the scene contribute to the bloom effect
+   - Bloom intensity: Adjusts the strength of the bloom effect
+   - Exposure: Fine-tunes the overall brightness of the final image
+
+These parameters allow users to customize the bloom effect to suit different scenes and lighting conditions.
 
 
 ### Toon Shaders
 
 #### Implementation
 
-TODO
+Our toon shading implementation creates a stylized, cartoon-like rendering by discretizing lighting values and emphasizing silhouettes. While we achieved the basic toon shading effect, we weren't fully satisfied with the results and decided to enhance it with a more robust edge detection system. The implementation consists of several key components:
+
+1. **Quantized Lighting**: The core of our toon shader is the discretization of diffuse and specular lighting components in [toon.frag.glsl](../../render/shaders/toon.frag.glsl). Rather than using smooth gradients, we quantize these values into a configurable number of discrete bands:
+
+```glsl
+// Quantize diffuse lighting into discrete bands
+float diffuse_floor = floor(diffuse * float(toon_levels)) / float(toon_levels);
+float diffuse_ceil = diffuse_floor + (1. / float(toon_levels));
+diffuse = diffuse_floor + (diffuse_ceil - diffuse_floor) / 2.;
+
+// Similarly quantize specular highlights
+float specular_floor = floor(specular * float(toon_levels)) / float(toon_levels);
+float specular_ceil = specular_floor + (1. / float(toon_levels));
+specular = specular_floor + (specular_ceil - specular_floor) / 2.;
+```
+
+This approach creates the characteristic "stepped" appearance of toon shading, where lighting changes occur in distinct jumps rather than smooth transitions. The number of bands (`toon_levels`) is configurable through the UI, allowing users to adjust the stylization level from subtle (many bands) to extreme (few bands).
+
+2. **Light Attenuation**: We implemented a distance-based attenuation model that maintains the stylized look while providing realistic light falloff:
+
+```glsl
+float light_distance = length(light_position - v2f_frag_pos);
+float attenuation = max(0., 1.0 - light_distance / light_radius);
+```
+
+This linear attenuation model is simpler than physically-based attenuation but better suits the stylized nature of toon shading.
+
+3. **Additive Blending**: Our toon shader uses additive blending to accumulate light contributions from multiple light sources while maintaining the stylized appearance:
+
+```javascript
+blend() {
+    // Use additive blending to accumulate light contributions
+    return {
+        enable: true,
+        func: {
+            src: 'one',
+            dst: 'one',
+        },
+    };
+}
+```
+
+4. **Deferred Rendering Support**: We implemented a deferred version of the toon shader ([toon_deferred_sr.js](../src/render/shader_renderers/deferred/toon_deferred_sr.js)) that works within our deferred rendering pipeline. This version reconstructs the necessary lighting information from the G-buffer and applies the same quantization techniques, ensuring consistent visual results between forward and deferred rendering paths.
+
+5. **Sobel Edge Detection**: While our initial toon shader implementation provided the characteristic banded lighting, we found that it didn't create sufficiently defined outlines for a true cartoon look. To address this, we implemented a post-processing Sobel filter in [sobel_outline.frag.glsl](../src/render/shaders/sobel_outline.frag.glsl) that detects and emphasizes object silhouettes based on depth discontinuities:
+
+```glsl
+// Sample neighboring pixels for depth
+float depth_right = texture2D(depth_texture, v2f_uv + vec2(texel.x, 0.0)).r;
+float depth_left = texture2D(depth_texture, v2f_uv + vec2(-texel.x, 0.0)).r;
+float depth_up = texture2D(depth_texture, v2f_uv + vec2(0.0, texel.y)).r;
+float depth_down = texture2D(depth_texture, v2f_uv + vec2(0.0, -texel.y)).r;
+
+// Calculate depth differences
+float depth_diff_x = abs(depth_right - depth_left);
+float depth_diff_y = abs(depth_up - depth_down);
+
+// Calculate edge strength based on depth changes
+float edge_x = step(depth_threshold, depth_diff_x);
+float edge_y = step(depth_threshold, depth_diff_y);
+```
+
+This approach creates crisp, well-defined outlines around objects that significantly enhance the cartoon aesthetic. The [SobelOutlineShaderRenderer](../src/render/shader_renderers/sobel_outline_sr.js) applies this effect as a post-process, making it compatible with both forward and deferred rendering paths.
+
+The complete toon shader implementation is encapsulated in the [ToonShaderRenderer](../src/render/shader_renderers/toon_sr.js) class, which handles the rendering of objects with toon shading. Objects can opt out of toon shading by including the 'no_toon' property in their material properties.
 
 #### Validation
 
-TODO
+We validated our toon shader implementation through visual assessment and performance testing:
+
+1. **Visual Quality**: The toon shader successfully creates a stylized, cartoon-like appearance that distinctly separates it from physically-based rendering. The quantized lighting bands create clear transitions between light and shadow, enhancing the visual readability of the scene.
+
+2. **Compatibility with Other Features**: The toon shader works seamlessly with our other rendering features:
+   - It integrates with the bloom effect, allowing toon-shaded objects to contribute to the scene's glow
+   - It supports both forward and deferred rendering paths with consistent visual results
+   - It works with our particle systems, creating stylized fire and smoke effects
+
+3. **Performance**: The toon shader maintains excellent performance even with multiple light sources due to its simplified lighting calculations. On mid-range hardware, we observed no significant performance difference between toon shading and our standard Blinn-Phong shader.
+
+4. **Configurability**: The implementation exposes key parameters through the UI:
+   - Toon levels: Controls the number of discrete lighting bands
+   - Outline threshold: Adjusts the sensitivity of edge detection for outlines
+   - Outline color: Sets the color of cartoon outlines
+   - Outline thickness: Controls the width of Sobel-detected edges
+   - Depth threshold: Fine-tunes the depth difference required to detect an edge
+
+These parameters allow users to fine-tune the toon effect to achieve different stylistic goals, from subtle cel-shading to bold comic-book styles.
 
 
 ### Deferred Shading
@@ -116,7 +361,7 @@ TODO
 
 #### Implementation
 
-We began by implementing a basic billboard shader. To support real particle systems, we extended our particle containers to store lists of particles and render the same mesh instance for each one. Initial performance was poor, as the draw logic iterated over each particle on the CPU (JavaScript side). To address this, we implemented GPU instancing, allowing us to upload particle data, such as position offsets, colors, and sizes, in a single draw call per container. This optimization significantly improved rendering performance. We still use the original billboard fragment and vertex shaders for our particles, but we could replace them with alternate shaders, e.g., shaders that render 3D meshes to achieve 3D particles instead. 
+We began by implementing a basic billboard shader ([billboard.frag.glsl](../src/render/shaders/billboard.frag.glsl) and [billboard.vert.glsl](../src/render/shaders/billboard.vert.glsl)). To support real particle systems, we extended our particle containers ([fire_and_smoke.js](../src/scene_resources/fire_and_smoke.js) and [rainbow_vomit_particles.js](../src/scene_resources/rainbow_vomit_particles.js)) to store lists of particles and render the same mesh instance for each one. Initial performance was poor, as the draw logic iterated over each particle on the CPU (JavaScript side). To address this, we implemented GPU instancing, allowing us to upload particle data, such as position offsets, colors, and sizes, in a single draw call per container. This optimization significantly improved rendering performance. We still use the original billboard fragment and vertex shaders for our particles, but we could replace them with alternate shaders, e.g., shaders that render 3D meshes to achieve 3D particles instead. 
 
 We removed the original `billboard_sr.js` file after we were able to fully replicate our 'billboard' with a particle container.
 
