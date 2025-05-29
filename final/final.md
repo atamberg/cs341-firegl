@@ -509,8 +509,53 @@ scene.lights.forEach(light => {
 
 #### Validation
 
-TODO
+Here is a comparison between deferred and non-deferred shading, as well the contents of the G-buffer in the same scene:
 
+<div style="text-align: center;">
+<img src="images/deferred_disabled.png" width="700"/>
+<figcaption>Deferred Shading Disabled (Control)</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_0.png" width="700"/>
+<figcaption>Deferred Shading Enabled</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_disabled_toon.png" width="700"/>
+<figcaption>Deferred Shading Disabled (Toon) (Control)</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_0_toon.png" width="700"/>
+<figcaption>Deferred Shading Enabled (Toon)</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_1.png" width="700"/>
+<figcaption>Camera-space Position Buffer</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_2.png" width="700"/>
+<figcaption>Camera-space Normal Buffer</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_3.png" width="700"/>
+<figcaption>Albedo Colors</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_4.png" width="700"/>
+<figcaption>Specular Scalars</figcaption>
+</div>
+
+Here's a video cycling between deferred and non-deferred shading, demonstrating the performance boost:
+
+<div style="text-align: center;">
+<video src="videos/deferred_shading_performance.mp4" width="700" controls></video>
+</div>
 
 ### Particle Effects
 

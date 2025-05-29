@@ -138,6 +138,7 @@ async function main() {
   // const deferred_scene = new DeferredScene(resource_manager);
 
   const active_scene = models_scene;
+  // Only have ONE of these uncommented! otherwise GUI overlays from different scenes will render at the same time!
   // const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
   
   /*---------------------------------------------------------------
