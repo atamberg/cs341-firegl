@@ -346,13 +346,85 @@ These parameters allow users to fine-tune the toon effect to achieve different s
 
 Our deferred shading pipeline uses a standard G-buffer, storing camera-space position, normal, and albedo (material color) vectors, along with a specular intensity scalar, in three color buffers inside the G-buffer. We found storing camera-space vectors to be simpler for our needs than storing world-space vectors like most tutorials recommend.
 
-We created a `gBuffer` framebuffer in `scene_renderer` with three color textures, and then rendered our `GBufferShaderRenderer` into it with `gBuffer.use(...)` every tick. (This is equivalent to `regl({framebuffer: gBuffer})(...)`.) We also clear the framebuffer each tick too. The G-buffer fragment shader writes to the `gl_FragData[]` array which stores our data in the framebuffer's textures.
+We created a `gBuffer` framebuffer in `scene_renderer` with three color textures, and then rendered our `GBufferShaderRenderer` into it with `gBuffer.use(...)` every tick. (This is equivalent to `regl({framebuffer: gBuffer})(...)`.) We also clear the framebuffer each tick too. The G-buffer fragment shader writes to the `gl_FragData[]` array which stores our data in the framebuffer's textures:
 
-To use the G-buffer we created modifications of our shaders to take the global `gBuffer` framebuffer as an argument in `render()`. We index the `gBuffer.color[]` array to access our geometry data. We use a unified vertex shader `deferred.vert.glsl` to pass buffer data to all the inputs of the deferred fragment shaders.
+```glsl
+// gbuffer.frag.glsl
+...
+gl_FragData[0] = vec4(material_color, material_shininess);
 
-We rewrote the deferred versiosn of the lighting shaders to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We adjusted the non deferred shaders (without changed the original computation) so that we could compare the two more easily.
+gl_FragData[1] = normalize(vNormal);
 
-All lights use the same mesh so in theory we could render them with GPU instancing.
+gl_FragData[2] = vPosition;
+```
+
+```javascript
+// scene_renderer.js
+this.gBuffer = this.regl.framebuffer({ color: [regl.texture({ type: 'float' }), regl.texture({ type: 'float' }), regl.texture({ type: 'float' })]});
+this.gBuffer.resize(window.innerWidth, window.innerHeight);
+...
+...
+this.gBuffer.use(() => {
+    this.regl.clear({
+	color: [0, 0, 0, 255],
+	depth: 1
+    })
+    this.gBuffer_renderer.render(scene_state);
+});
+```
+
+To use the G-buffer we created modifications of our shaders to take the global `gBuffer` framebuffer as an argument in `render()`. We index the `gBuffer.color[]` array to access our geometry data. We use a unified vertex shader `deferred.vert.glsl` to pass buffer data to all the inputs of the deferred fragment shaders:
+
+```glsl
+// deferred.vert.glsl
+...
+void main() {
+    gl_Position = mat_model_view_projection * vec4(vertex_positions, 1);
+    vPosition = gl_Position;
+}
+```
+
+We compute the pixel coordinate `uv` from the position in camera-projection view to be able to extract data from the gBuffer textures:
+
+```glsl
+// deferred/blinn_phong.frag.glsl
+...
+vec2 uv = (vPosition.xy / vPosition.w ) * 0.5 + 0.5;
+vec3 v2f_frag_pos = texture2D(positionBuffer, uv).xyz;
+vec3 v2f_normal = texture2D(normalBuffer, uv).xyz;
+vec3 material_color = texture2D(albedoSpecBuffer, uv).rgb;
+float material_shininess = texture2D(albedoSpecBuffer, uv).a;
+```
+
+We rewrote the deferred version of the lighting shaders to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We modified how ambient lighting and attenutation works, which we also ported to the non-deferred shaders (without changed the original computation) so that we could compare the two implementations more easily.
+
+```javascript
+// blinn_phong_deferred_sr.js
+...
+this.light_sphere = cg_mesh_make_uv_sphere(16);
+...
+render(scene_state, gBuffer) {
+...
+// renders a bunch of light spheres far more efficiently than the non-deferred implementation
+scene.lights.forEach(light => {
+    ...
+    inputs.push({
+	mesh: this.light_sphere,
+	albedoSpec: gBuffer.color[0],
+	normal: gBuffer.color[1],
+	position: gBuffer.color[2],
+
+	mat_model_view_projection: mat_model_view_projection,
+
+	light_color: light.color,
+	light_position: light_position_cam,
+	light_radius: radius,
+    });
+
+    this.pipeline(inputs);
+});
+}
+```
 
 #### Validation
 
