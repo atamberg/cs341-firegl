@@ -15,7 +15,7 @@ import { RainbowVomitParticles } from "../scene_resources/rainbow_vomit_particle
 import { FireAndSmoke } from "../scene_resources/fire_and_smoke.js";
 import { FireSpreadAndBurn } from "../scene_resources/fire_spread.js";
 
-export class TutorialScene extends Scene {
+export class PineScene extends Scene {
 
   /**
    * A scene to be completed, used for the introductory tutorial

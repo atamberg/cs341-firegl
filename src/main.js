@@ -17,7 +17,7 @@ import { ResourceManager } from "./scene_resources/resource_manager.js"
 import { ProceduralTextureGenerator } from "./render/procedural_texture_generator.js";
 
 // Scenes
-import { TutorialScene } from "./scenes/tutorial_scene.js";
+import { PineScene } from "./scenes/pine_scene.js";
 import { MixedForestScene } from "./scenes/mixed_forest_scene.js";
 import { ModelsScene } from "./scenes/models_scene.js";
 import { DeferredScene } from "./scenes/deferred_scene.js";
@@ -130,15 +130,16 @@ async function main() {
 
   // Instantiate scenes. Multiple different scenes can be set up here: 
   // which one is rendered depends on the value of the active_scene variable.
-  
+
+  // Only have ONE of these uncommented! otherwise GUI overlays from different scenes will render at the same time!
+
   // const demo_scene = new DemoScene(resource_manager, procedural_texture_generator);
-  // const tutorial_scene = new TutorialScene(resource_manager);
+  // const pine_scene = new PineScene(resource_manager);
   // const mixed_forest_scene = new MixedForestScene(resource_manager);
   const models_scene = new ModelsScene(resource_manager, procedural_texture_generator);
   // const deferred_scene = new DeferredScene(resource_manager);
 
   const active_scene = models_scene;
-  // Only have ONE of these uncommented! otherwise GUI overlays from different scenes will render at the same time!
   // const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
   
   /*---------------------------------------------------------------
