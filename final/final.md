@@ -684,7 +684,7 @@ TODO TODO TODO TODO
 
 #### Validation
 
-We can see fire particles working in the [videos above](#top) and [here](#validation).
+We can see fire particles working in the [overview video](#top) and [here](#validation).
 
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
   <figure>
@@ -705,7 +705,7 @@ We can see fire particles working in the [videos above](#top) and [here](#valida
   </figure>
 </div>
 
-Although GPU instancing hasn't eliminated lag entirely, especially since the `evolve()` runs entirely on the cpu, we can see that without gpu instancing there is significantly more lag coming from rendering each particle individually.
+Although GPU instancing hasn't eliminated lag entirely, (especially since `evolve()` runs entirely on the cpu,) we can see that without gpu instancing there is significantly more lag coming from rendering each particle individually.
 TODO
 
 
