@@ -1,5 +1,5 @@
 ---
-title: Final Project Report CS-341 2025
+title: FireGL - Fire Simulation in WebGL Final Report CS-341 2025
 ---
 
 # FireGL - Fire Simulation in WebGL
@@ -423,7 +423,7 @@ To implement this feature, we primarily followed [this Regl deferred shading exa
 
 ##### Creating the G-buffer
 
-We created a `gBuffer` framebuffer in `scene_renderer` with three color textures, and then rendered our `GBufferShaderRenderer` into it with `gBuffer.use(...)` every tick. (This is equivalent to `regl({framebuffer: gBuffer})(...)`.) We also clear the framebuffer each tick too. The G-buffer fragment shader writes to the `gl_FragData[]` array which stores our data in the framebuffer's textures:
+We created a `gBuffer` framebuffer in `scene_renderer` with three color textures, and then, every tick, rendered our `GBufferShaderRenderer` into it with `gBuffer.use(...)`. (This is equivalent to `regl({framebuffer: gBuffer})(...)`.) We also clear the framebuffer each tick too. The G-buffer fragment shader writes to the `gl_FragData[]` array which stores our data in the framebuffer's textures:
 
 ```glsl
 // gbuffer.frag.glsl
@@ -516,7 +516,7 @@ TODO
 
 #### Implementation
 
-We needed a particle system and shader in order to make our fires a reality. We followed [this tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/), adapting it to the provided framework. Later, when implementing GPU instancing, we found this [Regl GPU Instancing Example](https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js) very helpful.
+In order to make our fires a reality, we implemented a particle system. We followed [this tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/), adapting it to the provided framework. Later, when implementing GPU instancing, we found this [Regl GPU Instancing Example](https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js) very helpful.
 
 ##### Billboards
 
@@ -525,8 +525,10 @@ First, we implemented a basic billboard shader. The vertex shader takes x and y 
 ```glsl
 // billboard.vert.glsl
 ...
-vec3 cameraRight_worldspace = vec3(mat_view[0][0], mat_view[1][0], mat_view[2][0]);
-vec3 cameraUp_worldspace = vec3(mat_view[0][1], mat_view[1][1], mat_view[2][1]);
+vec3 cameraRight_worldspace =
+    vec3(mat_view[0][0], mat_view[1][0], mat_view[2][0]);
+vec3 cameraUp_worldspace =
+    vec3(mat_view[0][1], mat_view[1][1], mat_view[2][1]);
 
 vec3 center_offset = vertex_offset;
 
@@ -544,11 +546,12 @@ The fragment shader colors the mesh either with a uniform color or with a textur
 // billboard.frag.glsl
 ...
 vec3 material_color = vColor;
-
-// check wether the color to display is a base color or comes from a texture
+...
 if (is_textured){
-vec4 frag_color_from_texture = texture2D(material_texture, v2f_uv);
-material_color = frag_color_from_texture.xyz + (1. -frag_color_from_texture.w) * vColor;
+    vec4 frag_color_from_texture = texture2D(material_texture, v2f_uv);
+    // place color in transparent parts of texture
+    material_color = frag_color_from_texture.xyz
+	+ (1. -frag_color_from_texture.w) * vColor;
 }
 
 gl_FragColor = vec4(material_color, 1.); // output: RGBA in 0..1 range
@@ -556,10 +559,90 @@ gl_FragColor = vec4(material_color, 1.); // output: RGBA in 0..1 range
 
 ##### Particle Containers
 
+Following the same tutorial, we created a particle container class (`particle_container.js`) to manage the creation of thousands of particles at a specific place. Each particle container behaves as a mesh object but also has a list of particles to draw the mesh for each:
 
-To support real particle systems, we extended our particle containers ([fire_and_smoke.js](../src/scene_resources/fire_and_smoke.js) and [rainbow_vomit_particles.js](../src/scene_resources/rainbow_vomit_particles.js)) to store lists of particles and render the same mesh instance for each one. Initial performance was poor, as the draw logic iterated over each particle on the CPU (JavaScript side). To address this, we implemented GPU instancing, allowing us to upload particle data, such as position offsets, colors, and sizes, in a single draw call per container. This optimization significantly improved rendering performance. We still use the original billboard fragment and vertex shaders for our particles, but we could replace them with alternate shaders, e.g., shaders that render 3D meshes to achieve 3D particles instead. 
+```javascript
+// particle_container.js
+export class ParticleContainer {
+    constructor(translation, scale, mesh_reference) {
+        this.translation = translation;
+        this.scale = scale;
+        this.mesh_reference = mesh_reference;
+        this.material = MATERIALS.particle_green;
+        this.color = this.material.color;
+        this.particle_list = [];
+        this.last_used_particle = 0;
+        this.particle_count = 0;
+        this.max_particles = 100000;
+    }
 
-We removed the original `billboard_sr.js` file after we were able to fully replicate our 'billboard' with a particle container.
+    find_unused_particle() {
+	... //(taken from the tutorial)
+    }
+
+    // To be overrided in subclass
+    evolve(dt) { }
+}
+```
+
+Some of these fields are likely unnecessary or weren't fully used in our project (e.g., `last_used_particle`, since `find_unused_particle` also returns the index of the last used particle).
+
+To prevent a mesh from being rendered at the container's base position we excluded particles from all of the depth-related shaders (e.g., `pre_processing_sr.js`, `map_mixer.js`) as well as from the lighting shaders (e.g., `no_blinn_phong` material propery) which is recommended for billboards but not strictly necessary for other types of particle meshes.
+
+##### GPU Instancing
+
+If we just try to render a mesh iteratively over all the particles of a container, things get really slow as a result of the number of calls on the CPU (JavaScript side). The correct way to render the particles is with GPU instancing, allowing us to upload particle data, such as position offsets, colors, and sizes, in a single draw call per container. All we need to do is enable the `ANGLE_instanced_arrays` extension in `main.js`. This optimization significantly improved rendering performance:
+
+```javascript
+// particles_sr.js
+render(scene_state) {
+    ...
+    for (const obj of scene.objects) {
+	...
+	// using gpu instancing to push particle data into buffer
+	inputs.push({
+	    mesh: this.resource_manager.get_mesh(obj.mesh_reference),
+	    particle_offsets: {
+		buffer: obj.particle_list.map(p => p.offset),
+		divisor: 1,
+	    },
+	    particle_colors: {
+		buffer: obj.particle_list.map(p => p.color),
+		divisor: 1,
+	    },
+	    particle_scale: {
+		buffer: obj.particle_list.map(p => p.scale_multiplier),
+		divisor: 1,
+	    },
+	    ...
+            particle_count: obj.particle_count,
+	    ...
+	})
+    }
+
+    this.pipeline(inputs)
+}
+
+attributes(regl) {
+    const attr = super.attributes(regl);
+    attr.vertex_offset = regl.prop('particle_offsets');
+    attr.vertex_color = regl.prop('particle_colors');
+    attr.vertex_scale = regl.prop('particle_scale');
+    return attr;
+}
+...
+
+init_pipeline() {
+    const regl = this.regl;
+
+    return regl({
+	...
+	instances: regl.prop('particle_count') // enable gpu instancing
+    });
+}
+```
+
+Each particle has an offset from the base particle container position, a color if the container's mesh doesn't have a texture, and a scale multipler to change size relative to the original size of the mesh.
 
 #### Validation
 
