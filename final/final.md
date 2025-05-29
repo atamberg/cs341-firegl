@@ -555,6 +555,18 @@ Here's a video cycling between deferred and non-deferred shading, demonstrating 
 
 <div style="text-align: center;">
 <video src="videos/deferred_shading_performance.mp4" width="700" controls></video>
+<figcaption>Recorded using OBS on a AMD Ryzen 9 5900X and Nvidia RTX 3090 with 4x CPU throttling (Chromium)</figcaption>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px; text-align: center;">
+  <figure>
+    <img src="images/perf_deferred.png" width="700"/>
+    <figcaption>Performance Graph with Deferred Shading (~1s interval)</figcaption>
+  </figure>
+  <figure>
+    <img src="images/perf_not_deferred.png" width="700"/>
+    <figcaption>Performance Graph without Deferred Shading (~1s interval)</figcaption>
+  </figure>
 </div>
 
 ### Particle Effects
