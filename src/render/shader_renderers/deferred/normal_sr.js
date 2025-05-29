@@ -7,7 +7,7 @@ export class NormalDeferredShaderRenderer extends ShaderRenderer {
             regl,
             resource_manager,
             `deferred/deferred.vert.glsl`,
-            `deferred/buffer_to_screen.frag.glsl`
+            `deferred/deferred_buffer.frag.glsl`
         );
     }
 
