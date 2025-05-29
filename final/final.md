@@ -66,13 +66,13 @@ TODO
 </table>
 
 
-### Mesh 
+### Mesh and Scene Design
 
 #### Implementation
 
 ##### Scene Design
 
-We created several scenes to test our features. Each scene uses a component-based design that separates rendering, behavior, and user interaction.
+We created several scenes to test our features.
 
 **Dynamic Lighting System**
 
@@ -98,7 +98,7 @@ In `deferred_scene.js`, we added dynamic lights that move in orbital patterns:
 
 **Procedural Object Placement**
 
-Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_scene.js`) places trees randomly while avoiding overlaps:
+Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_scene.js`) places trees randomly, avoiding collisions:
 
 - **Collision Avoidance**: We check distances between trees to prevent them from overlapping:
   ```javascript
@@ -109,17 +109,17 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
   });
   ```
 
-- **Random Properties**: Trees get different scales and types for more variety:
+- **Random Properties**: Trees get different sizes and types for more variety:
   ```javascript
   const scale = 0.5 + Math.random() * 0.8;
   const treeType = Math.random() > 0.7 ? 'TreeType2.obj' : 'TreeType1.obj';
   ```
 
-- **Spatial Optimization**: We use a grid-based approach to reduce the computational complexity of collision checks from O(n²) to O(n log n), allowing us to place hundreds of objects efficiently.
+- **Spatial Optimization**: We use a grid to reduce the computational complexity of collision checks from O(n²) to O(n log n), allowing us to place hundreds of trees efficiently.
 
 **Fire Spread System**
 
-The mixed forest scene `mixed_forest_scene.js` includes a fire system (`fire_spread.js`) that shows off our particles and lighting:
+`mixed_forest_scene.js` and `pine_scene.js` includes a fire system (`fire_spread.js`) that shows off our particles and lighting:
 
 - **Object State Management**: Each tree stores multiple states (normal, burning, burned) with associated properties:
   ```javascript
@@ -152,16 +152,7 @@ The mixed forest scene `mixed_forest_scene.js` includes a fire system (`fire_spr
   const groundPlaneIntersection = this.intersectRayWithGroundPlane(ray);
   ```
 
-**Performance Optimization**
-
-To keep the game running smoothly:
-
-- **Object Pooling**: Fire and particle effects use object pooling to minimize garbage collection overhead during runtime.
-- **Visibility Culling**: Objects outside the camera frustum or beyond a certain distance threshold are excluded from rendering.
-- **Level of Detail**: Trees and other complex objects use simplified meshes when viewed from a distance.
-- **Batched Updates**: The fire spread system uses time-based batching to distribute computational load across multiple frames.
-
-**UI Integration**
+**User Interface**
 
 All scenes include:
 
@@ -180,27 +171,13 @@ All scenes include:
   create_hotkey_action("f", () => this.startFireAtCursor(), "Start fire at cursor");
   ```
 
+##### Mesh Design
 
+TODO TODO TODO TODO
 
 #### Validation
 
-We validated our mesh and scene design through several key metrics:
-
-1. **Performance**: Our scenes maintain 60+ FPS with hundreds of objects:
-   - The grid-based collision system efficiently handles large numbers of trees
-   - Object pooling for particles prevents performance spikes
-   - Visibility culling reduces draw calls for distant objects
-
-2. **Visual Quality**: The scenes showcase our features:
-   - Dynamic lights create engaging atmospheres
-   - Procedural object placement creates natural-looking forests
-   - Fire spread system produces realistic-looking fire propagation
-
-3. **Interactivity**: User controls work smoothly:
-   - Fire spreading responds instantly to mouse clicks
-   - Camera movement is fluid
-   - UI controls are responsive and intuitive
-
+##### Scene Design
 <div style="text-align: center;">
 <img src="images/mixed_forest_tree_generation_1.png" width="700" alt="Forest scene with procedural tree placement #1" />
 <figcaption>First example of procedurally placed trees in the forest scene</figcaption>
@@ -219,6 +196,21 @@ We validated our mesh and scene design through several key metrics:
 <img src="images/models_scene.png" width="700" alt="Models scene with all meshes" />
 <figcaption>Dynamic lighting with multiple orbital light sources</figcaption>
 </div>
+
+<div style="text-align: center;">
+<video src="videos/parameter_display.webm" width="350" autoplay loop></video>
+<figcaption>Close-up of Parameter Display Changing</figcaption>
+</div>
+
+<div style="text-align: center;">
+<video src="videos/firespread_closeup.mp4" width="350" autoplay loop></video>
+<figcaption>Close-up of Fire Spread</figcaption>
+</div>
+
+##### Mesh Design
+We used Blender to create the tree models. Here is a comparison between them rendered in our project versus in Blender:
+
+TODO TODO TODO TODO
 
 ### Bloom
 
@@ -289,7 +281,7 @@ These parameters allow users to customize the bloom effect to suit different sce
 |:---:|:---:|
 | <img src="images/bloom_off_night.png" width="450" alt="Night scene without bloom effect" /> | <img src="images/bloom_on_night.png" width="450" alt="Night scene with bloom effect showing enhanced light sources" /> |
 
-### Parameter Variations
+##### Parameter Variations
 
 | Low threshold: More scene elements contribute to the bloom effect | High threshold: Only the brightest elements bloom |
 |:---:|:---:|
