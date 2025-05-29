@@ -260,18 +260,12 @@ Our implementation uses floating-point textures throughout the pipeline to prese
 
 #### Validation
 
-We validated our bloom implementation through both visual assessment and performance testing:
+The bloom effect successfully enhances bright areas like fire particles, light sources, and emissive materials without washing out the scene. The effect is especially noticeable in night scenes, where bright things glow.
 
-1. **Visual Quality**: The bloom effect successfully enhances bright areas like fire particles, light sources, and emissive materials without washing out the scene. The effect is particularly noticeable in night scenes, where light sources create a realistic glow that softly illuminates nearby objects.
-
-2. **Performance**: The effect runs at 60+ FPS even with multiple lights. Our two-pass blur approach is much faster than a single-pass 2D blur.
-
-3. **Configurability**: The implementation exposes key parameters through the UI:
+We can configure the following with sliders:
    - Bloom threshold: Controls which areas of the scene contribute to the bloom effect
    - Bloom intensity: Adjusts the strength of the bloom effect
    - Exposure: Fine-tunes the overall brightness of the final image
-
-These parameters allow users to customize the bloom effect to suit different scenes and lighting conditions.
 
 | Scene without bloom effect (daytime) | Scene with bloom effect enabled (default parameters) |
 |:---:|:---:|
@@ -296,9 +290,9 @@ These parameters allow users to customize the bloom effect to suit different sce
 
 #### Implementation
 
-Our toon shader creates a cartoon look by using stepped lighting instead of smooth gradients. We weren't satisfied with just the toon effect, so we added better edge detection. Here's how it works:
+Our toon shader creates a cartoon look by using stepped lighting instead of smooth gradients. We weren't satisfied with just the toon effect, so we added an outline filter too. Here's how it works:
 
-1. **Quantized Lighting**: The core of our toon shader is the discretization of diffuse and specular lighting components in `toon.frag.glsl`. Rather than using smooth gradients, we quantize these values into a configurable number of discrete bands:
+1. **Discretized Lighting**: The core of our toon shader is the discretization of diffuse and specular lighting components in `toon.frag.glsl`. Rather than using smooth gradients, we quantize these values into a configurable number of discrete bands:
 
 ```glsl
 // Quantize diffuse lighting into discrete bands
@@ -360,30 +354,18 @@ float edge_y = step(depth_threshold, depth_diff_y);
 
 This gives us clean, sharp outlines around objects that really sell the cartoon look. The `SobelOutlineShaderRenderer` adds these outlines as a final step, so it works with both rendering methods.
 
-The complete toon shader implementation is encapsulated in the `ToonShaderRenderer` class, which handles the rendering of objects with toon shading. Objects can opt out of toon shading by including the 'no_toon' property in their material properties.
+The complete toon shader is implemented in `ToonShaderRenderer` class. Objects can opt out of toon shading by including the 'no_toon' property in their material properties.
 
 #### Validation
 
-We tested our toon shader for looks and performance:
-
-1. **Visual Results**: The shader creates a distinct cartoon look that's clearly different from realistic rendering. The stepped lighting makes objects easier to read visually.
-
-2. **Compatibility with Other Features**: The toon shader works seamlessly with our other rendering features:
-{{ ... }}
-   - It supports both forward and deferred rendering paths with consistent visual results
+The toon shader should work seamlessly with our other rendering features
+   - It should work with both forward and deferred rendering paths with consistent visual results
    - It works with our particle systems, creating stylized fire and smoke effects
 
-3. **Performance**: The toon shader runs well even with multiple light sources due to its simplified lighting calculations. On mid-range hardware, we observed no significant performance difference between toon shading and our standard Blinn-Phong shader.
-
-4. **Configurability**: The implementation exposes key parameters through the UI:
+We should be able to control the following parameters:
    - Toon levels: Controls the number of discrete lighting bands
    - Outline threshold: Adjusts the sensitivity of edge detection for outlines
-   - Outline color: Sets the color of cartoon outlines
-   - Outline thickness: Controls the width of Sobel-detected edges
    - Depth threshold: Fine-tunes the depth difference required to detect an edge
-
-These parameters allow users to fine-tune the toon effect to achieve different stylistic goals.
-
 
 | Standard Blinn-Phong shading | Default toon shading parameters |
 |:---:|:---:|
@@ -404,6 +386,8 @@ These parameters allow users to fine-tune the toon effect to achieve different s
 | Toon and bloom together day | Toon and bloom together night |
 |:---:|:---:|
 | <img src="images/toon_and_bloom.png" width="450" alt="Toon and bloom together" /> | <img src="images/toon_and_bloom_night.png" width="450" alt="Toon and bloom together at night" /> |
+
+We can see the sobels outlines working with particles [here](#top) or [here](#overview). Since Particles are not affected by any lighting, toon levels does not change their appearance.
 
 ### Deferred Shading
 
