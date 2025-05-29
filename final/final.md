@@ -401,7 +401,7 @@ These parameters allow users to fine-tune the toon effect to achieve different s
 |:---:|:---:|
 | <img src="images/toon_on_low.png" width="450" alt="Toon shader with low quantization" /> | <img src="images/toon_on_high.png" width="450" alt="Toon shader with high quantization" /> |
 
-| Thin Sobel outlines | Thick Sobel outlines |
+| Low Sobel threshold | High Sobel threshold |
 |:---:|:---:|
 | <img src="images/toon_on_sobel_low.png" width="450" alt="Toon shader with low threshold" /> | <img src="images/toon_on_sobel_high.png" width="450" alt="Toon shader with high threshold" /> |
 
