@@ -6,7 +6,7 @@ title: FireGL - Fire Simulation in WebGL Final Report CS-341 2025
 
 <div style="display:flex; justify-content: space-around; align-items: center;">
 <div>
-<video src="videos/minifire.webm" height="400px" autoplay loop style="vertical-align: middle;"></video>
+<video src="videos/minifire.mp4" height="400px" autoplay loop style="vertical-align: middle;"></video>
 </div>
 </div>
 <figcaption style="text-align: center;">Close-up fire with cycling toon and bloom post-processing effects</figcaption>
