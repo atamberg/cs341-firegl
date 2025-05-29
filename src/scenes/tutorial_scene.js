@@ -134,11 +134,6 @@ export class TutorialScene extends Scene {
       material: MATERIALS.terrain,
     });
 
-    // Initial fire at the center
-    const fire = new FireAndSmoke([0, 0, 0.1], [1.0, 1.0, 1.0], 'billboard');
-    this.objects.push(fire);
-    this.actors["fire"] = fire;
-    this.fire_containers.push(fire);
     
     // Use improved tree generation with more variety and better spacing
     const treeCount = 300; // Significantly more trees

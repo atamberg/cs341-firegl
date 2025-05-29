@@ -18,7 +18,9 @@ TODO
 
 ## Overview
 
-![Our final video showing off most major features](videos/video-group64.mp4){width="700px"}
+<div style="text-align: center;">
+<video src="videos/video-group64.mp4" width="700" controls></video>
+</div>
 
 TODO
 
@@ -74,7 +76,7 @@ We created several scenes to test our features. Each scene uses a component-base
 
 **Dynamic Lighting System**
 
-In [deferred_scene.js](../src/scenes/deferred_scene.js), we added dynamic lights that move in orbital patterns:
+In `deferred_scene.js`, we added dynamic lights that move in orbital patterns:
 
 - **Parametric Animation**: Each light follows orbital paths defined by parametric equations:
   ```javascript
@@ -96,7 +98,7 @@ In [deferred_scene.js](../src/scenes/deferred_scene.js), we added dynamic lights
 
 **Procedural Object Placement**
 
-Our `generateTreePositions()` function (in [mixed_forest_scene.js](../src/scenes/mixed_forest_scene.js) and [models_scene.js](../src/scenes/models_scene.js)) places trees randomly while avoiding overlaps:
+Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_scene.js`) places trees randomly while avoiding overlaps:
 
 - **Collision Avoidance**: We check distances between trees to prevent them from overlapping:
   ```javascript
@@ -117,7 +119,7 @@ Our `generateTreePositions()` function (in [mixed_forest_scene.js](../src/scenes
 
 **Fire Spread System**
 
-The mixed forest scene [mixed_forest_scene.js](../src/scenes/mixed_forest_scene.js) includes a fire system ([fire_spread.js](../src/scene_resources/fire_spread.js)) that shows off our particles and lighting:
+The mixed forest scene `mixed_forest_scene.js` includes a fire system (`fire_spread.js`) that shows off our particles and lighting:
 
 - **Object State Management**: Each tree stores multiple states (normal, burning, burned) with associated properties:
   ```javascript
@@ -182,8 +184,41 @@ All scenes include:
 
 #### Validation
 
-TODO
+We validated our mesh and scene design through several key metrics:
 
+1. **Performance**: Our scenes maintain 60+ FPS with hundreds of objects:
+   - The grid-based collision system efficiently handles large numbers of trees
+   - Object pooling for particles prevents performance spikes
+   - Visibility culling reduces draw calls for distant objects
+
+2. **Visual Quality**: The scenes showcase our features:
+   - Dynamic lights create engaging atmospheres
+   - Procedural object placement creates natural-looking forests
+   - Fire spread system produces realistic-looking fire propagation
+
+3. **Interactivity**: User controls work smoothly:
+   - Fire spreading responds instantly to mouse clicks
+   - Camera movement is fluid
+   - UI controls are responsive and intuitive
+
+<div style="text-align: center;">
+<img src="images/mixed_forest_tree_generation_1.png" width="700" alt="Forest scene with procedural tree placement #1" />
+<figcaption>First example of procedurally placed trees in the forest scene</figcaption>
+</div>
+<div style="text-align: center;">
+<img src="images/mixed_forest_tree_generation_2.png" width="700" alt="Forest scene with procedural tree placement #2" />
+<figcaption>Second example showing different random tree placement</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/deferred_scene.png" width="700" alt="Dynamic lighting in deferred scene" />
+<figcaption>Dynamic lighting with multiple orbital light sources</figcaption>
+</div>
+
+<div style="text-align: center;">
+<img src="images/models_scene.png" width="700" alt="Models scene with all meshes" />
+<figcaption>Dynamic lighting with multiple orbital light sources</figcaption>
+</div>
 
 ### Bloom
 
@@ -191,7 +226,7 @@ TODO
 
 Our bloom implementation follows a multi-stage post-processing pipeline that brightens areas of the scene with a glow effect. The implementation consists of four key stages:
 
-1. **Bright Pass Extraction**: We first extract the bright areas of the scene using a threshold-based filter in [light_extraction.frag.glsl](../src/render/shaders/light_extraction.frag.glsl). This shader calculates the luminance of each pixel using the standard RGB-to-luminance conversion weights (0.2126, 0.7152, 0.0722) and compares it against a configurable threshold. Only pixels exceeding this threshold contribute to the bloom effect, with their intensity scaled by a user-defined multiplier.
+1. **Bright Pass Extraction**: We first extract the bright areas of the scene using a threshold-based filter in `light_extraction.frag.glsl`. This shader calculates the luminance of each pixel using the standard RGB-to-luminance conversion weights (0.2126, 0.7152, 0.0722) and compares it against a configurable threshold. Only pixels exceeding this threshold contribute to the bloom effect, with their intensity scaled by a user-defined multiplier.
 
 ```glsl
 float brightness = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
@@ -213,7 +248,7 @@ const float weight1 = 0.1945946; // First offset weight
 
 The number of blur passes is configurable (default: 5), allowing us to control the bloom radius without increasing the kernel size, which would impact performance.
 
-3. **Bloom Combination**: The final stage combines the original scene with the blurred bright areas using a modified additive blend in [bloom_combine.frag.glsl](../src/render/shaders/bloom_combine.frag.glsl). We implemented a luminance-aware blending formula that prevents color shifting when multiple light sources are present:
+3. **Bloom Combination**: The final stage combines the original scene with the blurred bright areas using a modified additive blend in `bloom_combine.frag.glsl`. We implemented a luminance-aware blending formula that prevents color shifting when multiple light sources are present:
 
 ```glsl
 vec3 blendedColor = original.rgb + bloomColor * (1.0 - originalLuminance * 0.5);
@@ -229,7 +264,7 @@ float luminance = dot(result, vec3(0.2126, 0.7152, 0.0722));
 vec3 saturationAdjusted = mix(vec3(luminance), result, 0.9);
 ```
 
-Our implementation uses floating-point textures throughout the pipeline to preserve high dynamic range information, which is crucial for realistic bloom effects. The entire process is encapsulated in the [BloomShaderRenderer](../src/render/shader_renderers/bloom_sr.js) class, which manages the framebuffers, textures, and shader passes required for the effect.
+Our implementation uses floating-point textures throughout the pipeline to preserve high dynamic range information, which is crucial for realistic bloom effects. The entire process is encapsulated in the `BloomShaderRenderer` class, which manages the framebuffers, textures, and shader passes required for the effect.
 
 #### Validation
 
@@ -246,6 +281,52 @@ We validated our bloom implementation through both visual assessment and perform
 
 These parameters allow users to customize the bloom effect to suit different scenes and lighting conditions.
 
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/bloom_off.png" width="450" alt="Scene without bloom effect" />
+    <figcaption>Scene without bloom effect (daytime)</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/bloom_on_default_params.png" width="450" alt="Scene with bloom effect using default parameters" />
+    <figcaption>Same scene with bloom effect enabled (default parameters)</figcaption>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/bloom_off_night.png" width="450" alt="Night scene without bloom effect" />
+    <figcaption>Night scene without bloom effect</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/bloom_on_night.png" width="450" alt="Night scene with bloom effect" />
+    <figcaption>Night scene with bloom effect, showing enhanced light sources</figcaption>
+  </div>
+</div>
+
+### Parameter Variations
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/bloom_on_low_threshold.png" width="450" alt="Bloom with low threshold" />
+    <figcaption>Low threshold: More scene elements contribute to the bloom effect</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/bloom_on_high_threshold.png" width="450" alt="Bloom with high threshold" />
+    <figcaption>High threshold: Only the brightest elements bloom</figcaption>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/bloom_on_low_intensity.png" width="450" alt="Bloom with low intensity" />
+    <figcaption>Low intensity: Subtle bloom effect</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/bloom_on_high_intensity.png" width="450" alt="Bloom with high intensity" />
+    <figcaption>High intensity: Strong bloom effect</figcaption>
+  </div>
+</div>
+
 
 ### Toon Shaders
 
@@ -253,7 +334,7 @@ These parameters allow users to customize the bloom effect to suit different sce
 
 Our toon shader creates a cartoon look by using stepped lighting instead of smooth gradients. We weren't satisfied with just the toon effect, so we added better edge detection. Here's how it works:
 
-1. **Quantized Lighting**: The core of our toon shader is the discretization of diffuse and specular lighting components in [toon.frag.glsl](../../render/shaders/toon.frag.glsl). Rather than using smooth gradients, we quantize these values into a configurable number of discrete bands:
+1. **Quantized Lighting**: The core of our toon shader is the discretization of diffuse and specular lighting components in `toon.frag.glsl`. Rather than using smooth gradients, we quantize these values into a configurable number of discrete bands:
 
 ```glsl
 // Quantize diffuse lighting into discrete bands
@@ -293,9 +374,9 @@ blend() {
 }
 ```
 
-4. **Deferred Rendering**: We created a deferred version of the toon shader ([toon_deferred_sr.js](../src/render/shader_renderers/deferred/toon_deferred_sr.js)) that works with our deferred pipeline. It gets lighting info from the G-buffer and applies the same toon effect.
+4. **Deferred Rendering**: We created a deferred version of the toon shader (`toon_deferred_sr.js`) that works with our deferred pipeline. It gets lighting info from the G-buffer and applies the same toon effect.
 
-5. **Sobel Edge Detection**: While our initial toon shader implementation provided the characteristic banded lighting, we found that it didn't create sufficiently defined outlines for a true cartoon look. To address this, we implemented a post-processing Sobel filter in [sobel_outline.frag.glsl](../src/render/shaders/sobel_outline.frag.glsl) that detects and emphasizes object silhouettes based on depth discontinuities:
+5. **Sobel Edge Detection**: While our initial toon shader implementation provided the characteristic banded lighting, we found that it didn't create sufficiently defined outlines for a true cartoon look. To address this, we implemented a post-processing Sobel filter in `sobel_outline.frag.glsl` that detects and emphasizes object silhouettes based on depth discontinuities:
 
 ```glsl
 // Sample neighboring pixels for depth
@@ -313,9 +394,9 @@ float edge_x = step(depth_threshold, depth_diff_x);
 float edge_y = step(depth_threshold, depth_diff_y);
 ```
 
-This gives us clean, sharp outlines around objects that really sell the cartoon look. The [SobelOutlineShaderRenderer](../src/render/shader_renderers/sobel_outline_sr.js) adds these outlines as a final step, so it works with both rendering methods.
+This gives us clean, sharp outlines around objects that really sell the cartoon look. The `SobelOutlineShaderRenderer` adds these outlines as a final step, so it works with both rendering methods.
 
-The complete toon shader implementation is encapsulated in the [ToonShaderRenderer](../src/render/shader_renderers/toon_sr.js) class, which handles the rendering of objects with toon shading. Objects can opt out of toon shading by including the 'no_toon' property in their material properties.
+The complete toon shader implementation is encapsulated in the `ToonShaderRenderer` class, which handles the rendering of objects with toon shading. Objects can opt out of toon shading by including the 'no_toon' property in their material properties.
 
 #### Validation
 
@@ -324,7 +405,7 @@ We tested our toon shader for looks and performance:
 1. **Visual Results**: The shader creates a distinct cartoon look that's clearly different from realistic rendering. The stepped lighting makes objects easier to read visually.
 
 2. **Compatibility with Other Features**: The toon shader works seamlessly with our other rendering features:
-   - It integrates with the bloom effect, allowing toon-shaded objects to contribute to the scene's glow
+{{ ... }}
    - It supports both forward and deferred rendering paths with consistent visual results
    - It works with our particle systems, creating stylized fire and smoke effects
 
@@ -337,8 +418,63 @@ We tested our toon shader for looks and performance:
    - Outline thickness: Controls the width of Sobel-detected edges
    - Depth threshold: Fine-tunes the depth difference required to detect an edge
 
-These parameters allow users to fine-tune the toon effect to achieve different stylistic goals, from subtle cel-shading to bold comic-book styles.
+These parameters allow users to fine-tune the toon effect to achieve different stylistic goals.
 
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/toon_off.png" width="450" alt="Standard scene with no toon shading" />
+    <figcaption>Standard Blinn-Phong shading</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/toon_on_default.png" width="450" alt="Scene with default toon shading" />
+    <figcaption>Default toon shading parameters</figcaption>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/toon_on_low.png" width="450" alt="Toon shader with low quantization" />
+    <figcaption>Low number of light bands</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/toon_on_high.png" width="450" alt="Toon shader with high quantization" />
+    <figcaption>High number of light bands</figcaption>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/toon_on_sobel_low.png" width="450" alt="Toon shader with low threshold" />
+    <figcaption>Thin Sobel outlines</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/toon_on_sobel_high.png" width="450" alt="Toon shader with high threshold" />
+    <figcaption>Thick Sobel outlines</figcaption>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/toon_off_deferred.png" width="450" alt="Deferred rendering with standard shading" />
+    <figcaption>Deferred rendering with standard shading</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/toon_on_default_deferred.png" width="450" alt="Deferred rendering with toon shading" />
+    <figcaption>Deferred rendering with toon shading</figcaption>
+  </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <img src="images/toon_and_bloom.png" width="450" alt="Toon and bloom together" />
+    <figcaption>Toon and bloom together</figcaption>
+  </div>
+  <div style="text-align: center;">
+    <img src="images/toon_and_bloom_night.png" width="450" alt="Toon and bloom together at night" />
+    <figcaption>Toon and bloom together at night</figcaption>
+  </div>
+</div>
 
 ### Deferred Shading
 
@@ -605,3 +741,8 @@ TODO
 - [Regl Deferred Shading Example](https://github.com/regl-project/regl/blob/main/example/deferred_shading.js)
 - [Deferred Shading Tutorial](https://learnopengl.com/Advanced-Lighting/Deferred-Shading)
 - [Billboards and Particles Tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/)
+- [Bloom Tutorial](https://learnopengl.com/Advanced-Lighting/Bloom)
+- [Toon Shading Tutorial](https://www.youtube.com/watch?v=h15kTY3aWaY)
+- [Toon Shading Wiki](https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Toon_Shading)
+- [Toon and Sobel Inspiration](https://www.shadertoy.com/view/4dVGRW)
+- [Sobel Outline](https://www.vertexfragment.com/ramblings/unity-postprocessing-sobel-outline/#sobel-outlines-as-a-post-processing-effect)

@@ -18,6 +18,10 @@ import { ProceduralTextureGenerator } from "./render/procedural_texture_generato
 
 // Scenes
 import { TutorialScene } from "./scenes/tutorial_scene.js";
+import { MixedForestScene } from "./scenes/mixed_forest_scene.js";
+import { ModelsScene } from "./scenes/models_scene.js";
+import { DeferredScene } from "./scenes/deferred_scene.js";
+
 import { DemoScene } from "./scenes/demo_scene.js";
 // import { distance } from "../lib/gl-matrix_3.3.0/esm/vec3.js";
 
@@ -120,10 +124,14 @@ async function main() {
 
   // Instantiate scenes. Multiple different scenes can be set up here: 
   // which one is rendered depends on the value of the active_scene variable.
+  
   // const demo_scene = new DemoScene(resource_manager, procedural_texture_generator);
-  const tutorial_scene = new TutorialScene(resource_manager);
+  // const tutorial_scene = new TutorialScene(resource_manager);
+  // const mixed_forest_scene = new MixedForestScene(resource_manager);
+  const models_scene = new ModelsScene(resource_manager, procedural_texture_generator);
+  // const deferred_scene = new DeferredScene(resource_manager);
 
-  const active_scene = tutorial_scene;
+  const active_scene = models_scene;
   // const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
   
   /*---------------------------------------------------------------
