@@ -281,51 +281,23 @@ We validated our bloom implementation through both visual assessment and perform
 
 These parameters allow users to customize the bloom effect to suit different scenes and lighting conditions.
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/bloom_off.png" width="450" alt="Scene without bloom effect" />
-    <figcaption>Scene without bloom effect (daytime)</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/bloom_on_default_params.png" width="450" alt="Scene with bloom effect using default parameters" />
-    <figcaption>Same scene with bloom effect enabled (default parameters)</figcaption>
-  </div>
-</div>
+| Scene without bloom effect (daytime) | Scene with bloom effect enabled (default parameters) |
+|:---:|:---:|
+| <img src="images/bloom_off.png" width="450" alt="Scene without bloom effect" /> | <img src="images/bloom_on_default_params.png" width="450" alt="Scene with bloom effect using default parameters" /> |
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/bloom_off_night.png" width="450" alt="Night scene without bloom effect" />
-    <figcaption>Night scene without bloom effect</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/bloom_on_night.png" width="450" alt="Night scene with bloom effect" />
-    <figcaption>Night scene with bloom effect, showing enhanced light sources</figcaption>
-  </div>
-</div>
+| Night scene without bloom effect | Night scene with bloom effect |
+|:---:|:---:|
+| <img src="images/bloom_off_night.png" width="450" alt="Night scene without bloom effect" /> | <img src="images/bloom_on_night.png" width="450" alt="Night scene with bloom effect showing enhanced light sources" /> |
 
 ### Parameter Variations
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/bloom_on_low_threshold.png" width="450" alt="Bloom with low threshold" />
-    <figcaption>Low threshold: More scene elements contribute to the bloom effect</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/bloom_on_high_threshold.png" width="450" alt="Bloom with high threshold" />
-    <figcaption>High threshold: Only the brightest elements bloom</figcaption>
-  </div>
-</div>
+| Low threshold: More scene elements contribute to the bloom effect | High threshold: Only the brightest elements bloom |
+|:---:|:---:|
+| <img src="images/bloom_on_low_threshold.png" width="450" alt="Bloom with low threshold" /> | <img src="images/bloom_on_high_threshold.png" width="450" alt="Bloom with high threshold" /> |
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/bloom_on_low_intensity.png" width="450" alt="Bloom with low intensity" />
-    <figcaption>Low intensity: Subtle bloom effect</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/bloom_on_high_intensity.png" width="450" alt="Bloom with high intensity" />
-    <figcaption>High intensity: Strong bloom effect</figcaption>
-  </div>
-</div>
+| Low intensity: Subtle bloom effect | High intensity: Strong bloom effect |
+|:---:|:---:|
+| <img src="images/bloom_on_low_intensity.png" width="450" alt="Bloom with low intensity" /> | <img src="images/bloom_on_high_intensity.png" width="450" alt="Bloom with high intensity" /> |
 
 
 ### Toon Shaders
@@ -421,60 +393,25 @@ We tested our toon shader for looks and performance:
 These parameters allow users to fine-tune the toon effect to achieve different stylistic goals.
 
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/toon_off.png" width="450" alt="Standard scene with no toon shading" />
-    <figcaption>Standard Blinn-Phong shading</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/toon_on_default.png" width="450" alt="Scene with default toon shading" />
-    <figcaption>Default toon shading parameters</figcaption>
-  </div>
-</div>
+| Standard Blinn-Phong shading | Default toon shading parameters |
+|:---:|:---:|
+| <img src="images/toon_off.png" width="450" alt="Standard scene with no toon shading" /> | <img src="images/toon_on_default.png" width="450" alt="Scene with default toon shading" /> |
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/toon_on_low.png" width="450" alt="Toon shader with low quantization" />
-    <figcaption>Low number of light bands</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/toon_on_high.png" width="450" alt="Toon shader with high quantization" />
-    <figcaption>High number of light bands</figcaption>
-  </div>
-</div>
+| Low number of light bands | High number of light bands |
+|:---:|:---:|
+| <img src="images/toon_on_low.png" width="450" alt="Toon shader with low quantization" /> | <img src="images/toon_on_high.png" width="450" alt="Toon shader with high quantization" /> |
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/toon_on_sobel_low.png" width="450" alt="Toon shader with low threshold" />
-    <figcaption>Thin Sobel outlines</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/toon_on_sobel_high.png" width="450" alt="Toon shader with high threshold" />
-    <figcaption>Thick Sobel outlines</figcaption>
-  </div>
-</div>
+| Thin Sobel outlines | Thick Sobel outlines |
+|:---:|:---:|
+| <img src="images/toon_on_sobel_low.png" width="450" alt="Toon shader with low threshold" /> | <img src="images/toon_on_sobel_high.png" width="450" alt="Toon shader with high threshold" /> |
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/toon_off_deferred.png" width="450" alt="Deferred rendering with standard shading" />
-    <figcaption>Deferred rendering with standard shading</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/toon_on_default_deferred.png" width="450" alt="Deferred rendering with toon shading" />
-    <figcaption>Deferred rendering with toon shading</figcaption>
-  </div>
-</div>
+| Deferred rendering with standard shading | Deferred rendering with toon shading |
+|:---:|:---:|
+| <img src="images/toon_off_deferred.png" width="450" alt="Deferred rendering with standard shading" /> | <img src="images/toon_on_default_deferred.png" width="450" alt="Deferred rendering with toon shading" /> |
 
-<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <img src="images/toon_and_bloom.png" width="450" alt="Toon and bloom together" />
-    <figcaption>Toon and bloom together</figcaption>
-  </div>
-  <div style="text-align: center;">
-    <img src="images/toon_and_bloom_night.png" width="450" alt="Toon and bloom together at night" />
-    <figcaption>Toon and bloom together at night</figcaption>
-  </div>
-</div>
+| Toon and bloom together day | Toon and bloom together night |
+|:---:|:---:|
+| <img src="images/toon_and_bloom.png" width="450" alt="Toon and bloom together" /> | <img src="images/toon_and_bloom_night.png" width="450" alt="Toon and bloom together at night" /> |
 
 ### Deferred Shading
 
@@ -685,10 +622,10 @@ TODO
 			<td style="background-color: #f0f0f0;">1</td>
 			<td>0</td>
 			<td>11</td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td>4</td>
+			<td>11</td>
+			<td>12</td>
+			<td>36</td>
 		</tr>
 		<tr>
 			<td>Anthony Tamberg</td>

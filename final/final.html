@@ -26,6 +26,72 @@
     <![endif]-->
     <style type="text/css">code{white-space: pre;}</style>
     <style type="text/css">.sidebar ul{padding-left: 10px;}</style>
+    <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    </style>
     <link rel="stylesheet" href="css/cg_report.css" />
   </head>
 
@@ -38,19 +104,25 @@
             <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
           </ul>-->
           <ul>
-          <li><a href="#project-title" id="toc-project-title">Project
-          Title</a>
+          <li><a href="#firegl---fire-simulation-in-webgl"
+          id="toc-firegl---fire-simulation-in-webgl">FireGL - Fire
+          Simulation in WebGL</a>
           <ul>
           <li><a href="#abstract" id="toc-abstract">Abstract</a></li>
           <li><a href="#overview" id="toc-overview">Overview</a></li>
           <li><a href="#feature-validation"
           id="toc-feature-validation">Feature validation</a>
           <ul>
-          <li><a href="#feature-1" id="toc-feature-1">Feature 1</a></li>
-          <li><a href="#feature-2" id="toc-feature-2">Feature 2</a></li>
-          <li><a href="#feature-3" id="toc-feature-3">Feature 3</a></li>
-          <li><a href="#feature-4" id="toc-feature-4">Feature 4</a></li>
-          <li><a href="#feature-5" id="toc-feature-5">Feature 5</a></li>
+          <li><a href="#mesh" id="toc-mesh">Mesh</a></li>
+          <li><a href="#bloom" id="toc-bloom">Bloom</a></li>
+          <li><a href="#parameter-variations"
+          id="toc-parameter-variations">Parameter Variations</a></li>
+          <li><a href="#toon-shaders" id="toc-toon-shaders">Toon
+          Shaders</a></li>
+          <li><a href="#deferred-shading"
+          id="toc-deferred-shading">Deferred Shading</a></li>
+          <li><a href="#particle-effects"
+          id="toc-particle-effects">Particle Effects</a></li>
           </ul></li>
           <li><a href="#discussion" id="toc-discussion">Discussion</a>
           <ul>
@@ -70,31 +142,25 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         
-<h1 id="project-title">Project Title</h1>
+<h1 id="firegl---fire-simulation-in-webgl">FireGL - Fire Simulation in
+WebGL</h1>
+<div
+style="display:flex; justify-content: space-around; align-items: center;">
 <div>
-<video src="videos/demo_teaser.mp4" height="300px" autoplay loop>
+<video src="videos/minifire.webm" height="400px" autoplay loop style="vertical-align: middle;">
 </video>
 </div>
+</div>
 <figcaption style="text-align: center;">
-A short teaser video, gif, or image showing an overview of the final
-result.
+Close-up fire with cycling toon and bloom post-processing effects
 </figcaption>
 <h2 id="abstract">Abstract</h2>
 <p>TODO</p>
 <h2 id="overview">Overview</h2>
-<div
-style="display: flex; justify-content: space-around; align-items: center;">
-<div>
-<p><img src="images/demo_detail.png" height="210px" style="vertical-align: middle;"></p>
-</div>
-<div>
-<video src="videos/demo_detail.mp4" height="210px" autoplay loop style="vertical-align: middle;">
+<div style="text-align: center;">
+<video src="videos/video-group64.mp4" width="700" controls>
 </video>
 </div>
-</div>
-<figcaption style="text-align: center;">
-Some more visuals focusing on interesting details of your scene.
-</figcaption>
 <p>TODO</p>
 <h2 id="feature-validation">Feature validation</h2>
 <table>
@@ -117,7 +183,7 @@ Status
 <tbody>
 <tr>
 <td>
-Feature 1
+Mesh and Scene Design
 </td>
 <td>
 5
@@ -128,29 +194,18 @@ Completed
 </tr>
 <tr>
 <td>
-Feature 2
+Bloom
 </td>
 <td>
 5
 </td>
-<td style="background-color: #cce5ff;">
-Missing
+<td style="background-color: #d4edda;">
+Completed
 </td>
 </tr>
 <tr>
 <td>
-Feature 3
-</td>
-<td>
-10
-</td>
-<td style="background-color: #e8ebca;">
-Partially Completed
-</td>
-</tr>
-<tr>
-<td>
-Feature 4
+Toon Shaders
 </td>
 <td>
 10
@@ -161,10 +216,21 @@ Completed
 </tr>
 <tr>
 <td>
-Feature 5
+Deferred Shading
 </td>
 <td>
-20
+15
+</td>
+<td style="background-color: #d4edda;">
+Completed
+</td>
+</tr>
+<tr>
+<td>
+Particle Effects
+</td>
+<td>
+15
 </td>
 <td style="background-color: #d4edda;">
 Completed
@@ -172,38 +238,749 @@ Completed
 </tr>
 </tbody>
 </table>
-<h3 id="feature-1">Feature 1</h3>
+<h3 id="mesh">Mesh</h3>
 <h4 id="implementation">Implementation</h4>
-<p>TODO</p>
+<h5 id="scene-design">Scene Design</h5>
+<p>We created several scenes to test our features. Each scene uses a
+component-based design that separates rendering, behavior, and user
+interaction.</p>
+<p><strong>Dynamic Lighting System</strong></p>
+<p>In <code>deferred_scene.js</code>, we added dynamic lights that move
+in orbital patterns:</p>
+<ul>
+<li><p><strong>Parametric Animation</strong>: Each light follows orbital
+paths defined by parametric equations:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(angle) <span class="op">*</span> radius<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">1</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(angle) <span class="op">*</span> radius<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">2</span>] <span class="op">=</span> height <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(angle <span class="op">*</span> <span class="dv">2</span>) <span class="op">*</span> amplitude<span class="op">;</span></span></code></pre></div></li>
+<li><p><strong>Phase Offsets</strong>: Each light starts at a different
+position in its orbit to avoid synchronized movement:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> phase <span class="op">=</span> i <span class="op">*</span> (<span class="bu">Math</span><span class="op">.</span><span class="cn">PI</span> <span class="op">*</span> <span class="dv">2</span>) <span class="op">/</span> lightCount<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>angle <span class="op">=</span> (t <span class="op">*</span> speed) <span class="op">+</span> phase<span class="op">;</span></span></code></pre></div></li>
+<li><p><strong>Random Variations</strong>: Lights have different orbit
+sizes, heights, and speeds to make the scene more interesting:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> radius <span class="op">=</span> baseRadius <span class="op">+</span> (<span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> radiusVariation<span class="op">;</span></span></code></pre></div></li>
+</ul>
+<p><strong>Procedural Object Placement</strong></p>
+<p>Our <code>generateTreePositions()</code> function (in
+<code>mixed_forest_scene.js</code> and <code>models_scene.js</code>)
+places trees randomly while avoiding overlaps:</p>
+<ul>
+<li><p><strong>Collision Avoidance</strong>: We check distances between
+trees to prevent them from overlapping:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> tooClose <span class="op">=</span> positions<span class="op">.</span><span class="fu">some</span>(p <span class="kw">=&gt;</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dx <span class="op">=</span> p<span class="op">.</span><span class="at">x</span> <span class="op">-</span> x<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dy <span class="op">=</span> p<span class="op">.</span><span class="at">y</span> <span class="op">-</span> y<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (dx <span class="op">*</span> dx <span class="op">+</span> dy <span class="op">*</span> dy) <span class="op">&lt;</span> (minDistance <span class="op">*</span> minDistance)<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></li>
+<li><p><strong>Random Properties</strong>: Trees get different scales
+and types for more variety:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> scale <span class="op">=</span> <span class="fl">0.5</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="fl">0.8</span><span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> treeType <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">&gt;</span> <span class="fl">0.7</span> <span class="op">?</span> <span class="st">&#39;TreeType2.obj&#39;</span> <span class="op">:</span> <span class="st">&#39;TreeType1.obj&#39;</span><span class="op">;</span></span></code></pre></div></li>
+<li><p><strong>Spatial Optimization</strong>: We use a grid-based
+approach to reduce the computational complexity of collision checks from
+O(n²) to O(n log n), allowing us to place hundreds of objects
+efficiently.</p></li>
+</ul>
+<p><strong>Fire Spread System</strong></p>
+<p>The mixed forest scene <code>mixed_forest_scene.js</code> includes a
+fire system (<code>fire_spread.js</code>) that shows off our particles
+and lighting:</p>
+<ul>
+<li><p><strong>Object State Management</strong>: Each tree stores
+multiple states (normal, burning, burned) with associated
+properties:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>original_scale<span class="op">:</span> [scale<span class="op">,</span> scale<span class="op">,</span> scale]<span class="op">,</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>burned_scale<span class="op">:</span> [scale <span class="op">*</span> <span class="fl">2.5</span><span class="op">,</span> scale <span class="op">*</span> <span class="fl">2.5</span><span class="op">,</span> scale <span class="op">*</span> <span class="fl">2.5</span>]<span class="op">,</span></span></code></pre></div></li>
+<li><p><strong>Proximity-Based Propagation</strong>: Fire spreads
+naturally between nearby objects based on configurable parameters:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> distance <span class="op">=</span> <span class="fu">dist</span>(firePosition<span class="op">,</span> obj<span class="op">.</span><span class="at">translation</span>)<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(distance <span class="op">&lt;=</span> burnZone){</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="fu">createTreeFire</span>(obj)<span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+<li><p><strong>Burning Animation</strong>: Trees change appearance when
+burning, swapping models and changing scale:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(time <span class="op">&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span> <span class="op">-</span> <span class="op">.</span><span class="dv">5</span> <span class="op">&amp;&amp;</span> time <span class="op">&lt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span>) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span><span class="at">material</span> <span class="op">=</span> MATERIALS<span class="op">.</span><span class="at">burntTree</span><span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span><span class="at">mesh_reference</span> <span class="op">=</span> tree<span class="op">.</span><span class="at">mesh_reference</span> <span class="op">==</span> <span class="st">&#39;TreeType1.obj&#39;</span> <span class="op">?</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;DeadTreeType1.obj&#39;</span><span class="op">:</span> <span class="st">&#39;DeadTreeType2.obj&#39;</span><span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    vec3<span class="op">.</span><span class="fu">scale</span>(tree<span class="op">.</span><span class="at">scale</span><span class="op">,</span> tree<span class="op">.</span><span class="at">burned_scale</span><span class="op">,</span> <span class="fl">0.75</span> <span class="op">+</span> <span class="fl">0.25</span> <span class="op">*</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        (time <span class="op">-</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span> <span class="op">+</span> <span class="fl">0.5</span>) <span class="op">/</span> <span class="op">.</span><span class="dv">5</span>)<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+<li><p><strong>User Interaction</strong>: We implemented a ray-casting
+system that converts screen coordinates to world positions, allowing
+users to start fires with mouse clicks:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> ray <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">camera</span><span class="op">.</span><span class="fu">screenPointToRay</span>(normalizedX<span class="op">,</span> normalizedY)<span class="op">;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> groundPlaneIntersection <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="fu">intersectRayWithGroundPlane</span>(ray)<span class="op">;</span></span></code></pre></div></li>
+</ul>
+<p><strong>Performance Optimization</strong></p>
+<p>To keep the game running smoothly:</p>
+<ul>
+<li><strong>Object Pooling</strong>: Fire and particle effects use
+object pooling to minimize garbage collection overhead during
+runtime.</li>
+<li><strong>Visibility Culling</strong>: Objects outside the camera
+frustum or beyond a certain distance threshold are excluded from
+rendering.</li>
+<li><strong>Level of Detail</strong>: Trees and other complex objects
+use simplified meshes when viewed from a distance.</li>
+<li><strong>Batched Updates</strong>: The fire spread system uses
+time-based batching to distribute computational load across multiple
+frames.</li>
+</ul>
+<p><strong>UI Integration</strong></p>
+<p>All scenes include:</p>
+<ul>
+<li><p><strong>Parameter Display</strong>: A floating status box shows
+the current state of boolean parameters:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">updateStatusBox</span>() {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> params <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="fu">getParamState</span>()<span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">statusBox</span><span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">entries</span>(params)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">map</span>(([key<span class="op">,</span> value]) <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>key<span class="sc">}</span><span class="vs">: </span><span class="sc">${</span>value<span class="sc">}</span><span class="vs">`</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">join</span>(<span class="st">&#39;&lt;br&gt;&#39;</span>)<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+<li><p><strong>Keyboard Controls</strong>: Press keys to trigger actions
+like starting fires:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">create_hotkey_action</span>(<span class="st">&quot;f&quot;</span><span class="op">,</span> () <span class="kw">=&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="fu">startFireAtCursor</span>()<span class="op">,</span> <span class="st">&quot;Start fire at cursor&quot;</span>)<span class="op">;</span></span></code></pre></div></li>
+</ul>
 <h4 id="validation">Validation</h4>
-<p>TODO</p>
-<h3 id="feature-2">Feature 2</h3>
+<p>We validated our mesh and scene design through several key
+metrics:</p>
+<ol type="1">
+<li><strong>Performance</strong>: Our scenes maintain 60+ FPS with
+hundreds of objects:
+<ul>
+<li>The grid-based collision system efficiently handles large numbers of
+trees</li>
+<li>Object pooling for particles prevents performance spikes</li>
+<li>Visibility culling reduces draw calls for distant objects</li>
+</ul></li>
+<li><strong>Visual Quality</strong>: The scenes showcase our features:
+<ul>
+<li>Dynamic lights create engaging atmospheres</li>
+<li>Procedural object placement creates natural-looking forests</li>
+<li>Fire spread system produces realistic-looking fire propagation</li>
+</ul></li>
+<li><strong>Interactivity</strong>: User controls work smoothly:
+<ul>
+<li>Fire spreading responds instantly to mouse clicks</li>
+<li>Camera movement is fluid</li>
+<li>UI controls are responsive and intuitive</li>
+</ul></li>
+</ol>
+<div style="text-align: center;">
+<img src="images/mixed_forest_tree_generation_1.png" width="700" alt="Forest scene with procedural tree placement #1" />
+<figcaption>
+First example of procedurally placed trees in the forest scene
+</figcaption>
+</div>
+<div style="text-align: center;">
+<img src="images/mixed_forest_tree_generation_2.png" width="700" alt="Forest scene with procedural tree placement #2" />
+<figcaption>
+Second example showing different random tree placement
+</figcaption>
+</div>
+<div style="text-align: center;">
+<img src="images/deferred_scene.png" width="700" alt="Dynamic lighting in deferred scene" />
+<figcaption>
+Dynamic lighting with multiple orbital light sources
+</figcaption>
+</div>
+<div style="text-align: center;">
+<img src="images/models_scene.png" width="700" alt="Models scene with all meshes" />
+<figcaption>
+Dynamic lighting with multiple orbital light sources
+</figcaption>
+</div>
+<h3 id="bloom">Bloom</h3>
 <h4 id="implementation-1">Implementation</h4>
-<p>TODO</p>
+<p>Our bloom implementation follows a multi-stage post-processing
+pipeline that brightens areas of the scene with a glow effect. The
+implementation consists of four key stages:</p>
+<ol type="1">
+<li><strong>Bright Pass Extraction</strong>: We first extract the bright
+areas of the scene using a threshold-based filter in
+<code>light_extraction.frag.glsl</code>. This shader calculates the
+luminance of each pixel using the standard RGB-to-luminance conversion
+weights (0.2126, 0.7152, 0.0722) and compares it against a configurable
+threshold. Only pixels exceeding this threshold contribute to the bloom
+effect, with their intensity scaled by a user-defined multiplier.</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> brightness <span class="op">=</span> <span class="bu">dot</span><span class="op">(</span>color<span class="op">.</span><span class="fu">rgb</span><span class="op">,</span> <span class="dt">vec3</span><span class="op">(</span><span class="fl">0.2126</span><span class="op">,</span> <span class="fl">0.7152</span><span class="op">,</span> <span class="fl">0.0722</span><span class="op">));</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> <span class="op">(</span>brightness <span class="op">&gt;</span> u_threshold<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">gl_FragColor</span> <span class="op">=</span> <span class="dt">vec4</span><span class="op">(</span>color<span class="op">.</span><span class="fu">rgb</span> <span class="op">*</span> u_intensity<span class="op">,</span> <span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="va">gl_FragColor</span> <span class="op">=</span> <span class="dt">vec4</span><span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<ol start="2" type="1">
+<li><strong>Gaussian Blur</strong>: We apply a two-pass separable
+Gaussian blur to the extracted bright areas using ping-pong rendering
+between two framebuffers. This approach significantly improves
+performance compared to a single-pass 2D blur by separating the
+horizontal and vertical blur components. Our Gaussian kernel uses
+pre-calculated weights for a 9-tap filter (4 samples on each side plus
+the center pixel) to achieve a smooth blur effect while maintaining
+performance.</li>
+</ol>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Pre-calculated Gaussian weights for optimal performance</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">float</span> weight0 <span class="op">=</span> <span class="fl">0.227027</span><span class="op">;</span> <span class="co">// Center weight</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">float</span> weight1 <span class="op">=</span> <span class="fl">0.1945946</span><span class="op">;</span> <span class="co">// First offset weight</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">// ... weights for other samples</span></span></code></pre></div>
+<p>The number of blur passes is configurable (default: 5), allowing us
+to control the bloom radius without increasing the kernel size, which
+would impact performance.</p>
+<ol start="3" type="1">
+<li><strong>Bloom Combination</strong>: The final stage combines the
+original scene with the blurred bright areas using a modified additive
+blend in <code>bloom_combine.frag.glsl</code>. We implemented a
+luminance-aware blending formula that prevents color shifting when
+multiple light sources are present:</li>
+</ol>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> blendedColor <span class="op">=</span> original<span class="op">.</span><span class="fu">rgb</span> <span class="op">+</span> bloomColor <span class="op">*</span> <span class="op">(</span><span class="fl">1.0</span> <span class="op">-</span> originalLuminance <span class="op">*</span> <span class="fl">0.5</span><span class="op">);</span></span></code></pre></div>
+<p>This approach reduces the bloom contribution in already bright areas,
+preventing over-saturation.</p>
+<ol start="4" type="1">
+<li><strong>Tone Adjustment</strong>: We have exposure control and soft
+saturation adjustment to the final image to ensure the bloom effect
+enhances the scene without creating unrealistic results:</li>
+</ol>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> result <span class="op">=</span> blendedColor <span class="op">*</span> u_exposure<span class="op">;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> luminance <span class="op">=</span> <span class="bu">dot</span><span class="op">(</span>result<span class="op">,</span> <span class="dt">vec3</span><span class="op">(</span><span class="fl">0.2126</span><span class="op">,</span> <span class="fl">0.7152</span><span class="op">,</span> <span class="fl">0.0722</span><span class="op">));</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> saturationAdjusted <span class="op">=</span> <span class="bu">mix</span><span class="op">(</span><span class="dt">vec3</span><span class="op">(</span>luminance<span class="op">),</span> result<span class="op">,</span> <span class="fl">0.9</span><span class="op">);</span></span></code></pre></div>
+<p>Our implementation uses floating-point textures throughout the
+pipeline to preserve high dynamic range information, which is crucial
+for realistic bloom effects. The entire process is encapsulated in the
+<code>BloomShaderRenderer</code> class, which manages the framebuffers,
+textures, and shader passes required for the effect.</p>
 <h4 id="validation-1">Validation</h4>
-<p>TODO</p>
-<h3 id="feature-3">Feature 3</h3>
+<p>We validated our bloom implementation through both visual assessment
+and performance testing:</p>
+<ol type="1">
+<li><p><strong>Visual Quality</strong>: The bloom effect successfully
+enhances bright areas like fire particles, light sources, and emissive
+materials without washing out the scene. The effect is particularly
+noticeable in night scenes, where light sources create a realistic glow
+that softly illuminates nearby objects.</p></li>
+<li><p><strong>Performance</strong>: The effect runs at 60+ FPS even
+with multiple lights. Our two-pass blur approach is much faster than a
+single-pass 2D blur.</p></li>
+<li><p><strong>Configurability</strong>: The implementation exposes key
+parameters through the UI:</p>
+<ul>
+<li>Bloom threshold: Controls which areas of the scene contribute to the
+bloom effect</li>
+<li>Bloom intensity: Adjusts the strength of the bloom effect</li>
+<li>Exposure: Fine-tunes the overall brightness of the final image</li>
+</ul></li>
+</ol>
+<p>These parameters allow users to customize the bloom effect to suit
+different scenes and lighting conditions.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Scene without bloom effect
+(daytime)</th>
+<th style="text-align: center;">Scene with bloom effect enabled (default
+parameters)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/bloom_off.png" width="450" alt="Scene without bloom effect" /></td>
+<td
+style="text-align: center;"><img src="images/bloom_on_default_params.png" width="450" alt="Scene with bloom effect using default parameters" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Night scene without bloom effect</th>
+<th style="text-align: center;">Night scene with bloom effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/bloom_off_night.png" width="450" alt="Night scene without bloom effect" /></td>
+<td
+style="text-align: center;"><img src="images/bloom_on_night.png" width="450" alt="Night scene with bloom effect showing enhanced light sources" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="parameter-variations">Parameter Variations</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Low threshold: More scene elements
+contribute to the bloom effect</th>
+<th style="text-align: center;">High threshold: Only the brightest
+elements bloom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/bloom_on_low_threshold.png" width="450" alt="Bloom with low threshold" /></td>
+<td
+style="text-align: center;"><img src="images/bloom_on_high_threshold.png" width="450" alt="Bloom with high threshold" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Low intensity: Subtle bloom effect</th>
+<th style="text-align: center;">High intensity: Strong bloom effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/bloom_on_low_intensity.png" width="450" alt="Bloom with low intensity" /></td>
+<td
+style="text-align: center;"><img src="images/bloom_on_high_intensity.png" width="450" alt="Bloom with high intensity" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="toon-shaders">Toon Shaders</h3>
 <h4 id="implementation-2">Implementation</h4>
-<p>TODO</p>
+<p>Our toon shader creates a cartoon look by using stepped lighting
+instead of smooth gradients. We weren’t satisfied with just the toon
+effect, so we added better edge detection. Here’s how it works:</p>
+<ol type="1">
+<li><strong>Quantized Lighting</strong>: The core of our toon shader is
+the discretization of diffuse and specular lighting components in
+<code>toon.frag.glsl</code>. Rather than using smooth gradients, we
+quantize these values into a configurable number of discrete bands:</li>
+</ol>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Quantize diffuse lighting into discrete bands</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> diffuse_floor <span class="op">=</span> <span class="bu">floor</span><span class="op">(</span>diffuse <span class="op">*</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">))</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">);</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> diffuse_ceil <span class="op">=</span> diffuse_floor <span class="op">+</span> <span class="op">(</span><span class="fl">1.</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">));</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>diffuse <span class="op">=</span> diffuse_floor <span class="op">+</span> <span class="op">(</span>diffuse_ceil <span class="op">-</span> diffuse_floor<span class="op">)</span> <span class="op">/</span> <span class="fl">2.</span><span class="op">;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Similarly quantize specular highlights</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> specular_floor <span class="op">=</span> <span class="bu">floor</span><span class="op">(</span>specular <span class="op">*</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">))</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">);</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> specular_ceil <span class="op">=</span> specular_floor <span class="op">+</span> <span class="op">(</span><span class="fl">1.</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">));</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>specular <span class="op">=</span> specular_floor <span class="op">+</span> <span class="op">(</span>specular_ceil <span class="op">-</span> specular_floor<span class="op">)</span> <span class="op">/</span> <span class="fl">2.</span><span class="op">;</span></span></code></pre></div>
+<p>This approach creates the characteristic “stepped” appearance of toon
+shading, where lighting changes occur in distinct jumps rather than
+smooth transitions. The number of bands (<code>toon_levels</code>) is
+configurable through the UI, allowing users to adjust the stylization
+level from subtle (many bands) to extreme (few bands).</p>
+<ol start="2" type="1">
+<li><strong>Light Attenuation</strong>: We implemented a distance-based
+attenuation model that maintains the stylized look while providing
+realistic light falloff:</li>
+</ol>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> light_distance <span class="op">=</span> <span class="bu">length</span><span class="op">(</span>light_position <span class="op">-</span> v2f_frag_pos<span class="op">);</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> attenuation <span class="op">=</span> <span class="bu">max</span><span class="op">(</span><span class="fl">0.</span><span class="op">,</span> <span class="fl">1.0</span> <span class="op">-</span> light_distance <span class="op">/</span> light_radius<span class="op">);</span></span></code></pre></div>
+<p>This linear attenuation model is simpler than physically-based
+attenuation but better suits the nature of toon shading.</p>
+<ol start="3" type="1">
+<li><strong>Light Combining</strong>: We add up the contributions from
+multiple lights while keeping the cartoon look:</li>
+</ol>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">blend</span>() {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Use additive blending to accumulate light contributions</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">enable</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">func</span><span class="op">:</span> {</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">src</span><span class="op">:</span> <span class="st">&#39;one&#39;</span><span class="op">,</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">dst</span><span class="op">:</span> <span class="st">&#39;one&#39;</span><span class="op">,</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        }<span class="op">,</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ol start="4" type="1">
+<li><p><strong>Deferred Rendering</strong>: We created a deferred
+version of the toon shader (<code>toon_deferred_sr.js</code>) that works
+with our deferred pipeline. It gets lighting info from the G-buffer and
+applies the same toon effect.</p></li>
+<li><p><strong>Sobel Edge Detection</strong>: While our initial toon
+shader implementation provided the characteristic banded lighting, we
+found that it didn’t create sufficiently defined outlines for a true
+cartoon look. To address this, we implemented a post-processing Sobel
+filter in <code>sobel_outline.frag.glsl</code> that detects and
+emphasizes object silhouettes based on depth discontinuities:</p></li>
+</ol>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Sample neighboring pixels for depth</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_right <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span>texel<span class="op">.</span><span class="fu">x</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_left <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(-</span>texel<span class="op">.</span><span class="fu">x</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_up <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> texel<span class="op">.</span><span class="fu">y</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_down <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> <span class="op">-</span>texel<span class="op">.</span><span class="fu">y</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Calculate depth differences</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_diff_x <span class="op">=</span> <span class="bu">abs</span><span class="op">(</span>depth_right <span class="op">-</span> depth_left<span class="op">);</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_diff_y <span class="op">=</span> <span class="bu">abs</span><span class="op">(</span>depth_up <span class="op">-</span> depth_down<span class="op">);</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Calculate edge strength based on depth changes</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> edge_x <span class="op">=</span> <span class="bu">step</span><span class="op">(</span>depth_threshold<span class="op">,</span> depth_diff_x<span class="op">);</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> edge_y <span class="op">=</span> <span class="bu">step</span><span class="op">(</span>depth_threshold<span class="op">,</span> depth_diff_y<span class="op">);</span></span></code></pre></div>
+<p>This gives us clean, sharp outlines around objects that really sell
+the cartoon look. The <code>SobelOutlineShaderRenderer</code> adds these
+outlines as a final step, so it works with both rendering methods.</p>
+<p>The complete toon shader implementation is encapsulated in the
+<code>ToonShaderRenderer</code> class, which handles the rendering of
+objects with toon shading. Objects can opt out of toon shading by
+including the ‘no_toon’ property in their material properties.</p>
 <h4 id="validation-2">Validation</h4>
-<p>TODO</p>
-<h3 id="feature-4">Feature 4</h3>
+<p>We tested our toon shader for looks and performance:</p>
+<ol type="1">
+<li><p><strong>Visual Results</strong>: The shader creates a distinct
+cartoon look that’s clearly different from realistic rendering. The
+stepped lighting makes objects easier to read visually.</p></li>
+<li><p><strong>Compatibility with Other Features</strong>: The toon
+shader works seamlessly with our other rendering features: {{ … }}</p>
+<ul>
+<li>It supports both forward and deferred rendering paths with
+consistent visual results</li>
+<li>It works with our particle systems, creating stylized fire and smoke
+effects</li>
+</ul></li>
+<li><p><strong>Performance</strong>: The toon shader runs well even with
+multiple light sources due to its simplified lighting calculations. On
+mid-range hardware, we observed no significant performance difference
+between toon shading and our standard Blinn-Phong shader.</p></li>
+<li><p><strong>Configurability</strong>: The implementation exposes key
+parameters through the UI:</p>
+<ul>
+<li>Toon levels: Controls the number of discrete lighting bands</li>
+<li>Outline threshold: Adjusts the sensitivity of edge detection for
+outlines</li>
+<li>Outline color: Sets the color of cartoon outlines</li>
+<li>Outline thickness: Controls the width of Sobel-detected edges</li>
+<li>Depth threshold: Fine-tunes the depth difference required to detect
+an edge</li>
+</ul></li>
+</ol>
+<p>These parameters allow users to fine-tune the toon effect to achieve
+different stylistic goals.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Standard Blinn-Phong shading</th>
+<th style="text-align: center;">Default toon shading parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/toon_off.png" width="450" alt="Standard scene with no toon shading" /></td>
+<td
+style="text-align: center;"><img src="images/toon_on_default.png" width="450" alt="Scene with default toon shading" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Low number of light bands</th>
+<th style="text-align: center;">High number of light bands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/toon_on_low.png" width="450" alt="Toon shader with low quantization" /></td>
+<td
+style="text-align: center;"><img src="images/toon_on_high.png" width="450" alt="Toon shader with high quantization" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Thin Sobel outlines</th>
+<th style="text-align: center;">Thick Sobel outlines</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/toon_on_sobel_low.png" width="450" alt="Toon shader with low threshold" /></td>
+<td
+style="text-align: center;"><img src="images/toon_on_sobel_high.png" width="450" alt="Toon shader with high threshold" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Deferred rendering with standard
+shading</th>
+<th style="text-align: center;">Deferred rendering with toon
+shading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/toon_off_deferred.png" width="450" alt="Deferred rendering with standard shading" /></td>
+<td
+style="text-align: center;"><img src="images/toon_on_default_deferred.png" width="450" alt="Deferred rendering with toon shading" /></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: center;">Toon and bloom together day</th>
+<th style="text-align: center;">Toon and bloom together night</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: center;"><img src="images/toon_and_bloom.png" width="450" alt="Toon and bloom together" /></td>
+<td
+style="text-align: center;"><img src="images/toon_and_bloom_night.png" width="450" alt="Toon and bloom together at night" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="deferred-shading">Deferred Shading</h3>
 <h4 id="implementation-3">Implementation</h4>
-<p>TODO</p>
+<p>Our deferred shading pipeline uses a standard G-buffer, storing
+camera-space position, normal, and albedo (material color) vectors,
+along with a specular intensity scalar, in three color buffers inside
+the G-buffer. We found storing camera-space vectors to be simpler for
+our needs than storing world-space vectors like most tutorials
+recommend. We then access the G-buffer while rendering all of our
+deferred shaders.</p>
+<p>To implement this feature, we primarily followed <a
+href="https://github.com/regl-project/regl/blob/main/example/deferred_shading.js">this
+Regl deferred shading example</a>, as well as the <a
+href="https://learnopengl.com/Advanced-Lighting/Deferred-Shading">LearnOpenGL
+Deferred Shading</a> guide.</p>
+<h5 id="creating-the-g-buffer">Creating the G-buffer</h5>
+<p>We created a <code>gBuffer</code> framebuffer in
+<code>scene_renderer</code> with three color textures, and then rendered
+our <code>GBufferShaderRenderer</code> into it with
+<code>gBuffer.use(...)</code> every tick. (This is equivalent to
+<code>regl({framebuffer: gBuffer})(...)</code>.) We also clear the
+framebuffer each tick too. The G-buffer fragment shader writes to the
+<code>gl_FragData[]</code> array which stores our data in the
+framebuffer’s textures:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">// gbuffer.frag.glsl</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="va">gl_FragData</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> <span class="dt">vec4</span><span class="op">(</span>material_color<span class="op">,</span> material_shininess<span class="op">);</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="va">gl_FragData</span><span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="bu">normalize</span><span class="op">(</span>vNormal<span class="op">);</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="va">gl_FragData</span><span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> vPosition<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">// scene_renderer.js</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span> <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">regl</span><span class="op">.</span><span class="fu">framebuffer</span>({ <span class="dt">color</span><span class="op">:</span> [regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })<span class="op">,</span> regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })<span class="op">,</span> regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })]})<span class="op">;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span><span class="op">.</span><span class="fu">resize</span>(<span class="bu">window</span><span class="op">.</span><span class="at">innerWidth</span><span class="op">,</span> <span class="bu">window</span><span class="op">.</span><span class="at">innerHeight</span>)<span class="op">;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span><span class="op">.</span><span class="fu">use</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">regl</span><span class="op">.</span><span class="fu">clear</span>({</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">255</span>]<span class="op">,</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">depth</span><span class="op">:</span> <span class="dv">1</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">gBuffer_renderer</span><span class="op">.</span><span class="fu">render</span>(scene_state)<span class="op">;</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h5 id="using-the-g-buffer">Using the G-buffer</h5>
+<p>To use the G-buffer we created modifications of our shaders to take
+the global <code>gBuffer</code> framebuffer as an argument in
+<code>render()</code>. We index the <code>gBuffer.color[]</code> array
+to access our geometry data. We use a unified vertex shader
+<code>deferred.vert.glsl</code> to pass buffer data to all the inputs of
+the deferred fragment shaders:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">// deferred.vert.glsl</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="fu">main</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">gl_Position</span> <span class="op">=</span> mat_model_view_projection <span class="op">*</span> <span class="dt">vec4</span><span class="op">(</span>vertex_positions<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    vPosition <span class="op">=</span> <span class="bu">gl_Position</span><span class="op">;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We compute the pixel coordinate <code>uv</code> from the position in
+camera-projection view to be able to extract data from the gBuffer
+textures:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// deferred/blinn_phong.frag.glsl</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="dt">vec2</span> uv <span class="op">=</span> <span class="op">(</span>vPosition<span class="op">.</span><span class="fu">xy</span> <span class="op">/</span> vPosition<span class="op">.</span><span class="fu">w</span> <span class="op">)</span> <span class="op">*</span> <span class="fl">0.5</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">;</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> v2f_frag_pos <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>positionBuffer<span class="op">,</span> uv<span class="op">).</span><span class="fu">xyz</span><span class="op">;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> v2f_normal <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>normalBuffer<span class="op">,</span> uv<span class="op">).</span><span class="fu">xyz</span><span class="op">;</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> material_color <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>albedoSpecBuffer<span class="op">,</span> uv<span class="op">).</span><span class="fu">rgb</span><span class="op">;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> material_shininess <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>albedoSpecBuffer<span class="op">,</span> uv<span class="op">).</span><span class="fu">a</span><span class="op">;</span></span></code></pre></div>
+<h5 id="light-volumes">Light Volumes</h5>
+<p>We rewrote the deferred version of the lighting shaders to use light
+volumes. Instead of iterating over lights per object, each light is
+represented as a sphere mesh, and shading is computed per fragment
+within the light volume using additive blending and front-face culling.
+We modified how ambient lighting and attenutation works, which we also
+ported to the non-deferred shaders (without changed the original
+computation) so that we could compare the two implementations more
+easily.</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">// blinn_phong_deferred_sr.js</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">light_sphere</span> <span class="op">=</span> <span class="fu">cg_mesh_make_uv_sphere</span>(<span class="dv">16</span>)<span class="op">;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">render</span>(scene_state<span class="op">,</span> gBuffer) {</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">// renders a bunch of light spheres far more efficiently than the non-deferred implementation</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>scene<span class="op">.</span><span class="at">lights</span><span class="op">.</span><span class="fu">forEach</span>(light <span class="kw">=&gt;</span> {</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">.</span><span class="fu">push</span>({</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">mesh</span><span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">light_sphere</span><span class="op">,</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">albedoSpec</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">0</span>]<span class="op">,</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">normal</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">1</span>]<span class="op">,</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">position</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">2</span>]<span class="op">,</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">mat_model_view_projection</span><span class="op">:</span> mat_model_view_projection<span class="op">,</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_color</span><span class="op">:</span> light<span class="op">.</span><span class="at">color</span><span class="op">,</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_position</span><span class="op">:</span> light_position_cam<span class="op">,</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_radius</span><span class="op">:</span> radius<span class="op">,</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="fu">pipeline</span>(inputs)<span class="op">;</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <h4 id="validation-3">Validation</h4>
 <p>TODO</p>
-<h3 id="feature-5">Feature 5</h3>
+<h3 id="particle-effects">Particle Effects</h3>
 <h4 id="implementation-4">Implementation</h4>
-<p>TODO</p>
+<p>We needed a particle system and shader in order to make our fires a
+reality. We followed <a
+href="https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/">this
+tutorial</a>, adapting it to the provided framework. Later, when
+implementing GPU instancing, we found this <a
+href="https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js">Regl
+GPU Instancing Example</a> very helpful.</p>
+<h5 id="billboards">Billboards</h5>
+<p>First, we implemented a basic billboard shader. The vertex shader
+takes x and y coordinates the model-world vertices of the billboard mesh
+(a square plane) and maps them along the <code>cameraRight</code> and
+<code>cameraUp</code> vectors in world-space (along with some modifiable
+scale values), thereby forcing the top of the mesh to always face the
+camera:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">// billboard.vert.glsl</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> cameraRight_worldspace <span class="op">=</span> <span class="dt">vec3</span><span class="op">(</span>mat_view<span class="op">[</span><span class="dv">0</span><span class="op">][</span><span class="dv">0</span><span class="op">],</span> mat_view<span class="op">[</span><span class="dv">1</span><span class="op">][</span><span class="dv">0</span><span class="op">],</span> mat_view<span class="op">[</span><span class="dv">2</span><span class="op">][</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> cameraUp_worldspace <span class="op">=</span> <span class="dt">vec3</span><span class="op">(</span>mat_view<span class="op">[</span><span class="dv">0</span><span class="op">][</span><span class="dv">1</span><span class="op">],</span> mat_view<span class="op">[</span><span class="dv">1</span><span class="op">][</span><span class="dv">1</span><span class="op">],</span> mat_view<span class="op">[</span><span class="dv">2</span><span class="op">][</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> center_offset <span class="op">=</span> vertex_offset<span class="op">;</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> vertexPosition_worldspace <span class="op">=</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    center_offset</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">+</span> cameraRight_worldspace <span class="op">*</span> vertex_positions<span class="op">.</span><span class="fu">x</span> <span class="op">*</span> vertex_scale<span class="op">.</span><span class="fu">x</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> cameraUp_worldspace <span class="op">*</span> vertex_positions<span class="op">.</span><span class="fu">y</span> <span class="op">*</span> vertex_scale<span class="op">.</span><span class="fu">y</span><span class="op">;</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="bu">gl_Position</span> <span class="op">=</span> mat_mvp <span class="op">*</span> <span class="dt">vec4</span><span class="op">(</span>vertexPosition_worldspace<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span></code></pre></div>
+<p>The fragment shader colors the mesh either with a uniform color or
+with a texture:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">// billboard.frag.glsl</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> material_color <span class="op">=</span> vColor<span class="op">;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co">// check wether the color to display is a base color or comes from a texture</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="kw">if</span> <span class="op">(</span>is_textured<span class="op">){</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="dt">vec4</span> frag_color_from_texture <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>material_texture<span class="op">,</span> v2f_uv<span class="op">);</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>material_color <span class="op">=</span> frag_color_from_texture<span class="op">.</span><span class="fu">xyz</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1.</span> <span class="op">-</span>frag_color_from_texture<span class="op">.</span><span class="fu">w</span><span class="op">)</span> <span class="op">*</span> vColor<span class="op">;</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="va">gl_FragColor</span> <span class="op">=</span> <span class="dt">vec4</span><span class="op">(</span>material_color<span class="op">,</span> <span class="fl">1.</span><span class="op">);</span> <span class="co">// output: RGBA in 0..1 range</span></span></code></pre></div>
+<h5 id="particle-containers">Particle Containers</h5>
+<p>To support real particle systems, we extended our particle containers
+(<a
+href="../src/scene_resources/fire_and_smoke.js">fire_and_smoke.js</a>
+and <a
+href="../src/scene_resources/rainbow_vomit_particles.js">rainbow_vomit_particles.js</a>)
+to store lists of particles and render the same mesh instance for each
+one. Initial performance was poor, as the draw logic iterated over each
+particle on the CPU (JavaScript side). To address this, we implemented
+GPU instancing, allowing us to upload particle data, such as position
+offsets, colors, and sizes, in a single draw call per container. This
+optimization significantly improved rendering performance. We still use
+the original billboard fragment and vertex shaders for our particles,
+but we could replace them with alternate shaders, e.g., shaders that
+render 3D meshes to achieve 3D particles instead.</p>
+<p>We removed the original <code>billboard_sr.js</code> file after we
+were able to fully replicate our ‘billboard’ with a particle
+container.</p>
 <h4 id="validation-4">Validation</h4>
 <p>TODO</p>
 <h2 id="discussion">Discussion</h2>
 <h3 id="additional-components">Additional Components</h3>
-<p>TODO</p>
+<ul>
+<li>Overlay for skybox for a toggleable night mode</li>
+<li>Natural fire spread</li>
+<li>Manual fire spread (F key)</li>
+<li></li>
+</ul>
 <h3 id="failed-experiments">Failed Experiments</h3>
-<p>TODO</p>
+<ul>
+<li>Shadows</li>
+</ul>
 <h3 id="challenges">Challenges</h3>
-<p>TODO</p>
+<ul>
+<li>Deferred Shading</li>
+<li>Particles</li>
+<li>Fire spread</li>
+</ul>
 <h2 id="contributions">Contributions</h2>
 <table>
 <caption>
@@ -243,15 +1020,19 @@ Total
 <tbody>
 <tr>
 <td>
-Name 1
+Leopold Popper
 </td>
 <td>
+1
 </td>
 <td style="background-color: #f0f0f0;">
+2
 </td>
 <td>
+0
 </td>
 <td>
+10
 </td>
 <td>
 </td>
@@ -264,44 +1045,60 @@ Name 1
 </tr>
 <tr>
 <td>
-Name 2
+Ali Gorgani
 </td>
 <td>
+1
 </td>
 <td style="background-color: #f0f0f0;">
+1
 </td>
 <td>
+0
 </td>
 <td>
+11
 </td>
 <td>
+4
 </td>
 <td>
+11
 </td>
 <td>
+12
 </td>
 <td>
+36
 </td>
 </tr>
 <tr>
 <td>
-Name 3
+Anthony Tamberg
 </td>
 <td>
+1
 </td>
 <td style="background-color: #f0f0f0;">
+0
 </td>
 <td>
+0
 </td>
 <td>
+9
 </td>
 <td>
+6
 </td>
 <td>
+14
 </td>
 <td>
+10
 </td>
 <td>
+40
 </td>
 </tr>
 </tbody>
@@ -323,7 +1120,7 @@ Contribution
 <tbody>
 <tr>
 <td>
-Name 1
+Leopold Popper
 </td>
 <td>
 1/3
@@ -331,7 +1128,7 @@ Name 1
 </tr>
 <tr>
 <td>
-Name 2
+Ali Gorgani
 </td>
 <td>
 1/3
@@ -339,7 +1136,7 @@ Name 2
 </tr>
 <tr>
 <td>
-Name 3
+Anthony Tamberg
 </td>
 <td>
 1/3
@@ -350,7 +1147,34 @@ Name 3
 <h4 id="comments">Comments</h4>
 <p>TODO</p>
 <h2 id="references">References</h2>
-<p>TODO</p>
+<ul>
+<li><a href="https://github.com/regl-project/regl/blob/main/API.md">Regl
+API</a></li>
+<li><a
+href="https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js">Regl
+GPU Instancing Example</a></li>
+<li><a
+href="https://github.com/regl-project/regl/blob/main/example/deferred_shading.js">Regl
+Deferred Shading Example</a></li>
+<li><a
+href="https://learnopengl.com/Advanced-Lighting/Deferred-Shading">Deferred
+Shading Tutorial</a></li>
+<li><a
+href="https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/">Billboards
+and Particles Tutorial</a></li>
+<li><a href="https://learnopengl.com/Advanced-Lighting/Bloom">Bloom
+Tutorial</a></li>
+<li><a href="https://www.youtube.com/watch?v=h15kTY3aWaY">Toon Shading
+Tutorial</a></li>
+<li><a
+href="https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Toon_Shading">Toon
+Shading Wiki</a></li>
+<li><a href="https://www.shadertoy.com/view/4dVGRW">Toon and Sobel
+Inspiration</a></li>
+<li><a
+href="https://www.vertexfragment.com/ramblings/unity-postprocessing-sobel-outline/#sobel-outlines-as-a-post-processing-effect">Sobel
+Outline</a></li>
+</ul>
         </div>
       </div>
     </div>
