@@ -39,6 +39,10 @@ export class SpecularDeferredShaderRenderer extends ShaderRenderer {
         this.pipeline(inputs);
     }
 
+    exclude_object(obj) {
+        return ['particles'].some(p => obj.material.properties.includes(p));
+    }
+
     uniforms(regl) {
         return {
             buffer: regl.prop('albedoSpecBuffer'),

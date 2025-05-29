@@ -281,11 +281,22 @@ export class SceneRenderer {
         // render shadow buffer
         // this.shadows.render(scene_state);
 
-
-        //this.normal_deferred.render(scene_state, this.gBuffer);
-        //this.position_deferred.render(scene_state, this.gBuffer);
-        //this.albedo_deferred.render(scene_state, this.gBuffer);
-        //this.specular_deferred.render(scene_state, this.gBuffer);
+        if (scene.ui_params.deferred_shading) {
+            switch(scene.ui_params.deferred_shading_buffer) {
+                case 1:
+                    this.position_deferred.render(scene_state, this.gBuffer);
+                    break;
+                case 2:
+                    this.normal_deferred.render(scene_state, this.gBuffer);
+                    break;
+                case 3:
+                    this.albedo_deferred.render(scene_state, this.gBuffer);
+                    break;
+                case 4:
+                    this.specular_deferred.render(scene_state, this.gBuffer);
+                    break;
+            }
+        }
 
         // Visualize cubemap
         // this.mirror.env_capture.visualize();

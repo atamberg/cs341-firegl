@@ -40,6 +40,7 @@ export class TutorialScene extends Scene {
       outline_smoothness: 0.5,
       night_mode: false,
       deferred_shading: true,
+      deferred_shading_buffer: 0,
     };
     
     // Create status box for boolean parameters

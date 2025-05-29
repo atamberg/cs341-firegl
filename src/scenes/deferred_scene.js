@@ -39,6 +39,7 @@ export class DeferredScene extends Scene {
       outline_smoothness: 0.5,
       night_mode: false,
       deferred_shading: true,
+      deferred_shading_buffer: 0,
     };
     
     // Fixed light parameters

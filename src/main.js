@@ -89,6 +89,12 @@ async function main() {
     create_hotkey_action("Toggle Deferred Shading", "d", () => {
       active_scene.ui_params.deferred_shading = !active_scene.ui_params.deferred_shading;
     });
+
+    create_hotkey_action("Cycle Deferred Shading Buffers", "s", () => {
+      if (active_scene.ui_params.deferred_shading) {
+        active_scene.ui_params.deferred_shading_buffer = (active_scene.ui_params.deferred_shading_buffer + 1) % 5
+      }
+    });
   }
 
   /*---------------------------------------------------------------
