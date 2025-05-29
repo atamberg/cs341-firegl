@@ -126,39 +126,44 @@ export class TutorialScene extends Scene {
 
 
     
-    // Add ground
+    // Add ground - enlarged scale for more space
     this.objects.push({
-      translation: [0, 0, 0.25],
-      scale: [0.6, 0.6, 0.6],
+      translation: [0, 0, 0.4],
+      scale: [1.5, 1.5, 1.5], // Enlarged scale to accommodate more trees
       mesh_reference: 'terrain.obj',
       material: MATERIALS.terrain,
     });
 
+    // Initial fire at the center
     const fire = new FireAndSmoke([0, 0, 0.1], [1.0, 1.0, 1.0], 'billboard');
     this.objects.push(fire);
     this.actors["fire"] = fire;
+    this.fire_containers.push(fire);
     
-    /*
-    this.objects.push({
-      translation: [0.5,0.5,0.1],
-      scale: [1.0,1.0,1.0],
-      mesh_reference: 'TreeType1.obj',
-      material: MATERIALS.treeType1,
-    });*/
+    // Use improved tree generation with more variety and better spacing
+    const treeCount = 300; // Significantly more trees
+    const maxOffset = 40; // Larger area for tree distribution
+    const minTreeDistance = 2.5; // Increased minimum distance between trees
     
+    // Generate positions for trees
+    const treePositions = generateTreePositions(treeCount, maxOffset, minTreeDistance);
     
-    //generate positions, can tweak values
-    const treePositions = generateTreePositions(400, 16, 1);
-
-    //add trees
+    // Add trees with variety in type and scale
     treePositions.forEach(tree => {
+      // Randomly choose tree type for more variety
+      const treeType = Math.random() > 0.7 ? 'TreeType2.obj' : 'TreeType1.obj';
+      const treeMaterial = treeType === 'TreeType1.obj' ? MATERIALS.treeType1 : MATERIALS.treeType2;
+      
+      // Use a larger scale range for more variety
+      const scale = 0.5 + Math.random() * 0.8;
+      
       this.objects.push({
         translation: [tree.x, tree.y, tree.z],
-        scale: [tree.scale, tree.scale, tree.scale],
-        original_scale: [tree.scale, tree.scale, tree.scale],
-        burned_scale: [tree.scale * 2.5, tree.scale * 2.5, tree.scale * 2.5],
-        mesh_reference: 'TreeType1.obj',
-        material: MATERIALS.treeType1,
+        scale: [scale, scale, scale],
+        original_scale: [scale, scale, scale],
+        burned_scale: [scale * 2.5, scale * 2.5, scale * 2.5],
+        mesh_reference: treeType,
+        material: treeMaterial,
       });
     });
   }
