@@ -346,9 +346,13 @@ These parameters allow users to fine-tune the toon effect to achieve different s
 
 #### Implementation
 
-Our deferred shading pipeline uses a standard G-buffer, storing camera-space position, normal, and albedo (material color) vectors, along with a specular intensity scalar, in three color buffers inside the G-buffer. We found storing camera-space vectors to be simpler for our needs than storing world-space vectors like most tutorials recommend. We use a unified vertex shader [deferred.vert.glsl](../src/render/shaders/deferred/deferred.vert.glsl) to pass buffer data to all the inputs of the deferred fragment shaders.
+Our deferred shading pipeline uses a standard G-buffer, storing camera-space position, normal, and albedo (material color) vectors, along with a specular intensity scalar, in three color buffers inside the G-buffer. We found storing camera-space vectors to be simpler for our needs than storing world-space vectors like most tutorials recommend.
 
-We rewrote the lighting shaders (deferred versions only) to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We adjusted the non deferred shaders (without changed the original computation) so that we could compare the two more easily.
+We created a `gBuffer` framebuffer in `scene_renderer` with three color textures, and then rendered our `GBufferShaderRenderer` into it with `gBuffer.use(...)` every tick. (This is equivalent to `regl({framebuffer: gBuffer})(...)`.) We also clear the framebuffer each tick too. The G-buffer fragment shader writes to the `gl_FragData[]` array which stores our data in the framebuffer's textures.
+
+To use the G-buffer we created modifications of our shaders to take the global `gBuffer` framebuffer as an argument in `render()`. We index the `gBuffer.color[]` array to access our geometry data. We use a unified vertex shader `deferred.vert.glsl` to pass buffer data to all the inputs of the deferred fragment shaders.
+
+We rewrote the deferred versiosn of the lighting shaders to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We adjusted the non deferred shaders (without changed the original computation) so that we could compare the two more easily.
 
 All lights use the same mesh so in theory we could render them with GPU instancing.
 
