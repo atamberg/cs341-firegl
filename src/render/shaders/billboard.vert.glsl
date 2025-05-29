@@ -26,9 +26,8 @@ void main() {
 		+ cameraRight_worldspace * vertex_positions.x * vertex_scale.x
 		- cameraUp_worldspace * vertex_positions.y * vertex_scale.y;
 
-	vec4 finalPos = mat_mvp * vec4(vertexPosition_worldspace, 1);
+	gl_Position = mat_mvp * vec4(vertexPosition_worldspace, 1);
 
 	vColor = vertex_color;
 	v2f_uv = vertex_tex_coords;
-	gl_Position = finalPos;
 }

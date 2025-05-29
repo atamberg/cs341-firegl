@@ -443,7 +443,48 @@ TODO
 
 #### Implementation
 
-We began by implementing a basic billboard shader ([billboard.frag.glsl](../src/render/shaders/billboard.frag.glsl) and [billboard.vert.glsl](../src/render/shaders/billboard.vert.glsl)). To support real particle systems, we extended our particle containers ([fire_and_smoke.js](../src/scene_resources/fire_and_smoke.js) and [rainbow_vomit_particles.js](../src/scene_resources/rainbow_vomit_particles.js)) to store lists of particles and render the same mesh instance for each one. Initial performance was poor, as the draw logic iterated over each particle on the CPU (JavaScript side). To address this, we implemented GPU instancing, allowing us to upload particle data, such as position offsets, colors, and sizes, in a single draw call per container. This optimization significantly improved rendering performance. We still use the original billboard fragment and vertex shaders for our particles, but we could replace them with alternate shaders, e.g., shaders that render 3D meshes to achieve 3D particles instead. 
+We needed a particle system and shader in order to make our fires a reality. We followed [this tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/), adapting it to the provided framework. Later, when implementing GPU instancing, we found this [Regl GPU Instancing Example](https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3b4615118/example/instance-mesh.js) very helpful.
+
+##### Billboards
+
+First, we implemented a basic billboard shader. The vertex shader takes x and y coordinates the model-world vertices of the billboard mesh (a square plane) and maps them along the `cameraRight` and `cameraUp` vectors in world-space (along with some modifiable scale values), thereby forcing the top of the mesh to always face the camera:
+
+```glsl
+// billboard.vert.glsl
+...
+vec3 cameraRight_worldspace = vec3(mat_view[0][0], mat_view[1][0], mat_view[2][0]);
+vec3 cameraUp_worldspace = vec3(mat_view[0][1], mat_view[1][1], mat_view[2][1]);
+
+vec3 center_offset = vertex_offset;
+
+vec3 vertexPosition_worldspace =
+	center_offset
+	+ cameraRight_worldspace * vertex_positions.x * vertex_scale.x
+	- cameraUp_worldspace * vertex_positions.y * vertex_scale.y;
+
+gl_Position = mat_mvp * vec4(vertexPosition_worldspace, 1);
+```
+
+The fragment shader colors the mesh either with a uniform color or with a texture:
+
+```glsl
+// billboard.frag.glsl
+...
+vec3 material_color = vColor;
+
+// check wether the color to display is a base color or comes from a texture
+if (is_textured){
+vec4 frag_color_from_texture = texture2D(material_texture, v2f_uv);
+material_color = frag_color_from_texture.xyz + (1. -frag_color_from_texture.w) * vColor;
+}
+
+gl_FragColor = vec4(material_color, 1.); // output: RGBA in 0..1 range
+```
+
+##### Particle Containers
+
+
+To support real particle systems, we extended our particle containers ([fire_and_smoke.js](../src/scene_resources/fire_and_smoke.js) and [rainbow_vomit_particles.js](../src/scene_resources/rainbow_vomit_particles.js)) to store lists of particles and render the same mesh instance for each one. Initial performance was poor, as the draw logic iterated over each particle on the CPU (JavaScript side). To address this, we implemented GPU instancing, allowing us to upload particle data, such as position offsets, colors, and sizes, in a single draw call per container. This optimization significantly improved rendering performance. We still use the original billboard fragment and vertex shaders for our particles, but we could replace them with alternate shaders, e.g., shaders that render 3D meshes to achieve 3D particles instead. 
 
 We removed the original `billboard_sr.js` file after we were able to fully replicate our 'billboard' with a particle container.
 
