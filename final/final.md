@@ -173,7 +173,17 @@ All scenes include:
 
 ##### Mesh Design
 
-TODO TODO TODO TODO
+We designed the following meshes in Blender for our project: two types of trees, each with a corresponding dead version, as well as a terrain.
+
+For the first tree type, we created a simple pine tree by starting with a cylinder. We gradually reduced its diameter toward the top to give it the appearance of a trunk. We then used cones to represent the foliage.
+The dead version of this tree was designed similarly, but we added extra branches to give the impression that they were “inside” the cones.
+
+For the second tree type, we included more branches and used icospheres to represent the leaves, which created a visually nice effect.
+Its dead version followed a similar structure, with additional branches.
+
+The terrain is modeled as a thick rectangle. We added a displacement modifier with a “cloud” texture to give it a natural, uneven surface resembling real terrain.
+
+Finally, we baked the tree materials into texture images, allowing us to preserve their colors in the project.
 
 #### Validation
 
@@ -208,9 +218,9 @@ TODO TODO TODO TODO
 </div>
 
 ##### Mesh Design
-We used Blender to create the tree models. Here is a comparison between them rendered in our project versus in Blender:
+Here is a comparison between our meshes rendered in our project versus in Blender:
 
-TODO TODO TODO TODO
+
 
 ### Bloom
 
@@ -720,6 +730,8 @@ TODO
 - Deferred Shading
 - Particles
 - Fire spread
+#### Texture baking
+Texture baking was particularly hard at the beginning, many tutorials were telling use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
 
 
 ## Contributions
