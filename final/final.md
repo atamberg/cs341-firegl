@@ -531,24 +531,23 @@ Here is a comparison between deferred and non-deferred shading, as well the cont
 <figcaption>Deferred Shading Enabled (Toon)</figcaption>
 </div>
 
-<div style="text-align: center;">
-<img src="images/deferred_1.png" width="700"/>
-<figcaption>Camera-space Position Buffer</figcaption>
-</div>
-
-<div style="text-align: center;">
-<img src="images/deferred_2.png" width="700"/>
-<figcaption>Camera-space Normal Buffer</figcaption>
-</div>
-
-<div style="text-align: center;">
-<img src="images/deferred_3.png" width="700"/>
-<figcaption>Albedo Colors</figcaption>
-</div>
-
-<div style="text-align: center;">
-<img src="images/deferred_4.png" width="700"/>
-<figcaption>Specular Scalars</figcaption>
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
+  <figure>
+    <img src="images/deferred_1.png" width="100%"/>
+    <figcaption>Camera-space Position Buffer</figcaption>
+  </figure>
+  <figure>
+    <img src="images/deferred_2.png" width="100%"/>
+    <figcaption>Camera-space Normal Buffer</figcaption>
+  </figure>
+  <figure>
+    <img src="images/deferred_3.png" width="100%"/>
+    <figcaption>Albedo Colors</figcaption>
+  </figure>
+  <figure>
+    <img src="images/deferred_4.png" width="100%"/>
+    <figcaption>Specular Scalars</figcaption>
+  </figure>
 </div>
 
 Here's a video cycling between deferred and non-deferred shading, demonstrating the performance boost:
@@ -700,6 +699,10 @@ init_pipeline() {
 ```
 
 Each particle has an offset from the base particle container position, a color if the container's mesh doesn't have a texture, and a scale multipler to change size relative to the original size of the mesh.
+
+##### Fire Particles
+
+
 
 #### Validation
 
