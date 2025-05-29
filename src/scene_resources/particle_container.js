@@ -1,6 +1,6 @@
 import * as MATERIALS from "../render/materials.js";
 
-// Particle container superclass, inspired by https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
+// Particle container superclass, ported to javascript from https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
 export class ParticleContainer {
     constructor(translation, scale, mesh_reference) {
         this.translation = translation;

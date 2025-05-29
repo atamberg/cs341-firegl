@@ -17,6 +17,7 @@ void main()
     // check wether the color to display is a base color or comes from a texture
     if (is_textured){
         vec4 frag_color_from_texture = texture2D(material_texture, v2f_uv);
+        // place color in transparent parts of texture
         material_color = frag_color_from_texture.xyz + (1. -frag_color_from_texture.w) * vColor;
     }
 
