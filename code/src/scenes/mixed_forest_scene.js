@@ -71,9 +71,9 @@ export class MixedForestScene extends Scene {
     
     // Keep track of the original light for night mode
     this.originalLight = {
-      position: [0.0, 10.0, 5.5],
+      position: [0.0, 100.0, 50],
       color: [1.0, 1.0, 1.0],
-      radius: 200,
+      radius: 400,
     };
 
     this.fireSpreadSystem = new FireSpreadAndBurn(this);
@@ -125,7 +125,9 @@ export class MixedForestScene extends Scene {
 
     this.resource_manager.add_procedural_mesh("billboard", cg_mesh_make_plane());
 
-
+    const fire_listener = new FireAndSmoke([0, 0, 0.1], [1.0, 1.0, 1.0], 'billboard');
+    this.objects.push(fire_listener);
+    this.actors["fire_listener"] = fire_listener;
     
     // Add ground - enlarged scale for more space
     this.objects.push({
@@ -168,7 +170,7 @@ export class MixedForestScene extends Scene {
   initialize_actor_actions() {
     // Define the evolve function for each actor
     for (const name in this.actors) {
-      if (name.includes("fire")) {
+      if (name.includes("fire_listener")) {
         console.log(name);
         const fire = this.actors[name];
         fire.evolve = (dt) => {
