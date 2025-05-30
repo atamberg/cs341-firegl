@@ -135,11 +135,11 @@ async function main() {
 
   // const demo_scene = new DemoScene(resource_manager, procedural_texture_generator);
   // const pine_scene = new PineScene(resource_manager);
-  // const mixed_forest_scene = new MixedForestScene(resource_manager);
-  const models_scene = new ModelsScene(resource_manager, procedural_texture_generator);
+  const mixed_forest_scene = new MixedForestScene(resource_manager);
+  // const models_scene = new ModelsScene(resource_manager, procedural_texture_generator);
   // const deferred_scene = new DeferredScene(resource_manager);
 
-  const active_scene = models_scene;
+  const active_scene = mixed_forest_scene;
   // const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
   
   /*---------------------------------------------------------------

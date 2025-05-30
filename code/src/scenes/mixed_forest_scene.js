@@ -71,9 +71,9 @@ export class MixedForestScene extends Scene {
     
     // Keep track of the original light for night mode
     this.originalLight = {
-      position: [0.0, 100.0, 50],
+      position: [0.0, 25.0, 50],
       color: [1.0, 1.0, 1.0],
-      radius: 400,
+      radius: 300,
     };
 
     this.fireSpreadSystem = new FireSpreadAndBurn(this);
