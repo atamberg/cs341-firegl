@@ -127,8 +127,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <ul>
           <li><a href="#additional-components"
           id="toc-additional-components">Additional Components</a></li>
-          <li><a href="#failed-experiments"
-          id="toc-failed-experiments">Failed Experiments</a></li>
+          <li><a href="#failed-experiments-missing-features"
+          id="toc-failed-experiments-missing-features">Failed
+          Experiments / Missing Features</a></li>
           <li><a href="#challenges"
           id="toc-challenges">Challenges</a></li>
           </ul></li>
@@ -143,24 +144,65 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         
 <h1 id="firegl---fire-simulation-in-webgl">FireGL - Fire Simulation in
 WebGL</h1>
-<div
-style="display:flex; justify-content: space-around; align-items: center;">
-<div>
-<video src="videos/minifire.webm" height="400px" autoplay loop style="vertical-align: middle;">
-</video>
-</div>
-</div>
-<figcaption style="text-align: center;">
-Close-up fire with cycling toon and bloom post-processing effects
-</figcaption>
 <h2 id="abstract">Abstract</h2>
-<p>TODO</p>
+<p>This project simulates dynamic, stylized fire in a 3D forest scene
+using WebGL. It combines deferred shading, toon lighting, and bloom
+post-processing to produce visually distinct effects while maintaining
+performance. Procedural scene generation and fire propagation systems
+allow trees to ignite and spread fire based on proximity and time, with
+visual transitions between normal, burning, and burned states. A
+GPU-instanced particle system renders thousands of animated fire and
+smoke particles efficiently. Users can interact with the simulation by
+triggering fires. We validate our results through side-by-side visual
+comparisons and limited performance tests.</p>
 <h2 id="overview">Overview</h2>
+<p>We set out to create a stylized interactive forest fire simulation.
+Rather than focusing on physical realism, we aimed to model the essence
+of fire, with glowing particles, exaggerated lighting effects, and
+cartoon-inspired shading. The core idea was to use deferred shading to
+efficiently handle hundreds of dynamic light sources, particles to
+simulate fire behavior, bloom to create a glowing effect, and toon
+shading for visual flair, all running on custom-designed scenes.</p>
+<p>Scenes are populated with procedurally placed trees of varying types,
+scales, and positions to create dense, organic-looking forests. Users
+can initiate fires by pressing a key, triggering a system that spreads
+flames from tree to tree based on distance and timing. Each tree
+transitions through multiple states: normal, burning, and burned. These
+transitions are accompanied a mesh swap, cartoony animation, and color
+shifts.</p>
+<p>To model the fire itself, we implemented a custom particle system
+with support for GPU instancing, allowing thousands of particles to be
+animated each frame with minimal CPU overhead. These particles change
+size, velocity, and color over their lifetimes, transitioning smoothly
+between fire and smoke. Combined with bloom post-processing, bright
+areas such as fire particles and light sources glow vividly, especially
+in nighttime scenes. The final esthetic is further enhanced by toon
+shading with edge outlines. The toon, thickly-outlined appearance one
+can achieve is similar to that of the game <em>Lethal Company</em>.</p>
 <div style="text-align: center;">
-<video src="videos/video-group64.mp4" width="700" controls>
-</video>
+<video src="videos/video-group64.mp4" width="700" controls></video>
+<figcaption>
+Our final video submission: Fire spreading, lighting effects, and
+stylized visuals
+</figcaption>
 </div>
-<p>TODO</p>
+<div
+style="display: flex; justify-content: center; gap: 20px; text-align: center;">
+<figure>
+<video src="videos/minifire.mp4" height="300px" autoplay loop muted>
+</video>
+<figcaption>
+Close-up fire with cycling toon and bloom effects
+</figcaption>
+</figure>
+<figure>
+<video src="videos/firespread_closeup.mp4" height="300px" autoplay loop muted>
+</video>
+<figcaption>
+Fire propagation system in action
+</figcaption>
+</figure>
+</div>
 <h2 id="feature-validation">Feature validation</h2>
 <table>
 <caption>
@@ -248,18 +290,22 @@ in orbital patterns:</p>
 <li><p><strong>Parametric Animation</strong>: Each light follows orbital
 paths defined by parametric equations:</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(angle) <span class="op">*</span> radius<span class="op">;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">1</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(angle) <span class="op">*</span> radius<span class="op">;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">2</span>] <span class="op">=</span> height <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(angle <span class="op">*</span> <span class="dv">2</span>) <span class="op">*</span> amplitude<span class="op">;</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// deferred_scene.js</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(angle) <span class="op">*</span> radius<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">1</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(angle) <span class="op">*</span> radius<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>light<span class="op">.</span><span class="at">position</span>[<span class="dv">2</span>] <span class="op">=</span> height <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(angle <span class="op">*</span> <span class="dv">2</span>) <span class="op">*</span> amplitude<span class="op">;</span></span></code></pre></div></li>
 <li><p><strong>Phase Offsets</strong>: Each light starts at a different
 position in its orbit to avoid synchronized movement:</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> phase <span class="op">=</span> i <span class="op">*</span> (<span class="bu">Math</span><span class="op">.</span><span class="cn">PI</span> <span class="op">*</span> <span class="dv">2</span>) <span class="op">/</span> lightCount<span class="op">;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>angle <span class="op">=</span> (t <span class="op">*</span> speed) <span class="op">+</span> phase<span class="op">;</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// deferred_scene.js</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> phase <span class="op">=</span> i <span class="op">*</span> (<span class="bu">Math</span><span class="op">.</span><span class="cn">PI</span> <span class="op">*</span> <span class="dv">2</span>) <span class="op">/</span> lightCount<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>angle <span class="op">=</span> (t <span class="op">*</span> speed) <span class="op">+</span> phase<span class="op">;</span></span></code></pre></div></li>
 <li><p><strong>Random Variations</strong>: Lights have different orbit
 sizes, heights, and speeds to make the scene more interesting:</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> radius <span class="op">=</span> baseRadius <span class="op">+</span> (<span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> radiusVariation<span class="op">;</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// deferred_scene.js</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> radius</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> baseRadius <span class="op">+</span> (<span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> radiusVariation<span class="op">;</span></span></code></pre></div></li>
 </ul>
 <p><strong>Procedural Object Placement</strong></p>
 <p>Our <code>generateTreePositions()</code> function (in
@@ -269,16 +315,19 @@ places trees randomly, avoiding collisions:</p>
 <li><p><strong>Collision Avoidance</strong>: We check distances between
 trees to prevent them from overlapping:</p>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> tooClose <span class="op">=</span> positions<span class="op">.</span><span class="fu">some</span>(p <span class="kw">=&gt;</span> {</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dx <span class="op">=</span> p<span class="op">.</span><span class="at">x</span> <span class="op">-</span> x<span class="op">;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dy <span class="op">=</span> p<span class="op">.</span><span class="at">y</span> <span class="op">-</span> y<span class="op">;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (dx <span class="op">*</span> dx <span class="op">+</span> dy <span class="op">*</span> dy) <span class="op">&lt;</span> (minDistance <span class="op">*</span> minDistance)<span class="op">;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// mixed_forest_scene.js</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> tooClose <span class="op">=</span> positions<span class="op">.</span><span class="fu">some</span>(p <span class="kw">=&gt;</span> {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dx <span class="op">=</span> p<span class="op">.</span><span class="at">x</span> <span class="op">-</span> x<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dy <span class="op">=</span> p<span class="op">.</span><span class="at">y</span> <span class="op">-</span> y<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (dx <span class="op">*</span> dx <span class="op">+</span> dy <span class="op">*</span> dy) <span class="op">&lt;</span> (minDistance <span class="op">*</span> minDistance)<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></li>
 <li><p><strong>Random Properties</strong>: Trees get different sizes and
 types for more variety:</p>
 <div class="sourceCode" id="cb5"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> scale <span class="op">=</span> <span class="fl">0.5</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="fl">0.8</span><span class="op">;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> treeType <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">&gt;</span> <span class="fl">0.7</span> <span class="op">?</span> <span class="st">&#39;TreeType2.obj&#39;</span> <span class="op">:</span> <span class="st">&#39;TreeType1.obj&#39;</span><span class="op">;</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// mixed_forest_scene.js</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> scale <span class="op">=</span> <span class="fl">0.5</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="fl">0.8</span><span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> treeType</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">&gt;</span> <span class="fl">0.7</span> <span class="op">?</span> <span class="st">&#39;TreeType2.obj&#39;</span> <span class="op">:</span> <span class="st">&#39;TreeType1.obj&#39;</span><span class="op">;</span></span></code></pre></div></li>
 <li><p><strong>Spatial Optimization</strong>: We use a grid to reduce
 the computational complexity of collision checks from O(n²) to O(n log
 n), allowing us to place hundreds of trees efficiently.</p></li>
@@ -292,35 +341,39 @@ particles (<em>explained later</em>) and lighting:</p>
 multiple states (normal, burning, burned) with associated
 properties:</p>
 <div class="sourceCode" id="cb6"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>original_scale<span class="op">:</span> [scale<span class="op">,</span> scale<span class="op">,</span> scale]<span class="op">,</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>burned_scale<span class="op">:</span> [scale <span class="op">*</span> <span class="fl">2.5</span><span class="op">,</span> scale <span class="op">*</span> <span class="fl">2.5</span><span class="op">,</span> scale <span class="op">*</span> <span class="fl">2.5</span>]<span class="op">,</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// fire_spread.js</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>original_scale<span class="op">:</span> [scale<span class="op">,</span> scale<span class="op">,</span> scale]<span class="op">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>burned_scale<span class="op">:</span> [scale <span class="op">*</span> <span class="fl">2.5</span><span class="op">,</span> scale <span class="op">*</span> <span class="fl">2.5</span><span class="op">,</span> scale <span class="op">*</span> <span class="fl">2.5</span>]<span class="op">,</span></span></code></pre></div></li>
 <li><p><strong>Parametric fire growth</strong><br />
 Every <code>fireSpreadInterval</code> seconds we enlarge both particle
 radius and light radius, clamping growth to keep it stable:</p>
 <div class="sourceCode" id="cb7"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">min</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">+</span> <span class="fl">0.3</span><span class="op">,</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">maxFireSpread</span>)<span class="op">;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">&lt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">maxFireSpread</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    fire<span class="op">.</span><span class="at">particles_per_frame</span> <span class="op">*=</span> <span class="fl">1.2</span><span class="op">;</span> </span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// fire_spread.js</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">min</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">+</span> <span class="fl">0.3</span><span class="op">,</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">maxFireSpread</span>)<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">&lt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">maxFireSpread</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    fire<span class="op">.</span><span class="at">particles_per_frame</span> <span class="op">*=</span> <span class="fl">1.2</span><span class="op">;</span> </span></code></pre></div></li>
 <li><p><strong>Proximity-Based Propagation</strong>: A tree ignites when
 its center falls inside a fire’s <code>burnZone</code> (flame radius ×
 multiplier):</p>
 <div class="sourceCode" id="cb8"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> burnZone <span class="op">=</span> fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">*</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnRadius</span><span class="op">;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">dist</span>(firePosition<span class="op">,</span> obj<span class="op">.</span><span class="at">translation</span>) <span class="op">&lt;=</span> burnZone){</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="fu">createTreeFire</span>(obj)<span class="op">;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">// fire_spread.js</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> burnZone <span class="op">=</span> fire<span class="op">.</span><span class="at">emission_radius</span> <span class="op">*</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnRadius</span><span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">dist</span>(firePosition<span class="op">,</span> obj<span class="op">.</span><span class="at">translation</span>) <span class="op">&lt;=</span> burnZone){</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="fu">createTreeFire</span>(obj)<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
 <li><p><strong>Burning Animation</strong>: Trees change appearance when
 burning, swapping meshes and changing scale:</p>
 <div class="sourceCode" id="cb9"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(time <span class="op">&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span> <span class="op">-</span> <span class="op">.</span><span class="dv">5</span> <span class="op">&amp;&amp;</span> time <span class="op">&lt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span>) {</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span><span class="at">material</span> <span class="op">=</span> MATERIALS<span class="op">.</span><span class="at">burntTree</span><span class="op">;</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span><span class="at">images</span><span class="op">/</span>mesh_reference <span class="op">=</span> tree<span class="op">.</span><span class="at">images</span><span class="op">/</span>mesh_reference <span class="op">==</span> <span class="st">&#39;TreeType1.obj&#39;</span> <span class="op">?</span> </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;DeadTreeType1.obj&#39;</span><span class="op">:</span> <span class="st">&#39;DeadTreeType2.obj&#39;</span><span class="op">;</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    vec3<span class="op">.</span><span class="fu">scale</span>(tree<span class="op">.</span><span class="at">scale</span><span class="op">,</span> tree<span class="op">.</span><span class="at">burned_scale</span><span class="op">,</span> <span class="fl">0.75</span> <span class="op">+</span> <span class="fl">0.25</span> <span class="op">*</span> </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        (time <span class="op">-</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span> <span class="op">+</span> <span class="fl">0.5</span>) <span class="op">/</span> <span class="op">.</span><span class="dv">5</span>)<span class="op">;</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">// fire_spread.js</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(time <span class="op">&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span> <span class="op">-</span> <span class="op">.</span><span class="dv">5</span> <span class="op">&amp;&amp;</span> time <span class="op">&lt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span>) {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span><span class="at">material</span> <span class="op">=</span> MATERIALS<span class="op">.</span><span class="at">burntTree</span><span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    tree<span class="op">.</span><span class="at">mesh_reference</span> <span class="op">=</span> tree<span class="op">.</span><span class="at">mesh_reference</span> <span class="op">==</span> <span class="st">&#39;TreeType1.obj&#39;</span> <span class="op">?</span> </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;DeadTreeType1.obj&#39;</span><span class="op">:</span> <span class="st">&#39;DeadTreeType2.obj&#39;</span><span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    vec3<span class="op">.</span><span class="fu">scale</span>(tree<span class="op">.</span><span class="at">scale</span><span class="op">,</span> tree<span class="op">.</span><span class="at">burned_scale</span><span class="op">,</span> <span class="fl">0.75</span> <span class="op">+</span> <span class="fl">0.25</span> <span class="op">*</span> </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        (time <span class="op">-</span> <span class="kw">this</span><span class="op">.</span><span class="at">burnDuration</span> <span class="op">+</span> <span class="fl">0.5</span>) <span class="op">/</span> <span class="op">.</span><span class="dv">5</span>)<span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
 <li><p><strong>User Interaction</strong>: We implemented a ray-casting
 system that converts screen coordinates to world positions, allowing
 users to start fires with pressing a key on the keyboard.</p></li>
@@ -331,16 +384,19 @@ users to start fires with pressing a key on the keyboard.</p></li>
 <li><p><strong>Parameter Display</strong>: A floating status box shows
 the current state of boolean parameters:</p>
 <div class="sourceCode" id="cb10"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">updateStatusBox</span>() {</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> params <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="fu">getParamState</span>()<span class="op">;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">statusBox</span><span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">entries</span>(params)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">map</span>(([key<span class="op">,</span> value]) <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>key<span class="sc">}</span><span class="vs">: </span><span class="sc">${</span>value<span class="sc">}</span><span class="vs">`</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">join</span>(<span class="st">&#39;&lt;br&gt;&#39;</span>)<span class="op">;</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">// scene.js</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">updateStatusBox</span>() {</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> params <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="fu">getParamState</span>()<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">statusBox</span><span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">entries</span>(params)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">map</span>(([key<span class="op">,</span> value]) <span class="kw">=&gt;</span> <span class="vs">`</span><span class="sc">${</span>key<span class="sc">}</span><span class="vs">: </span><span class="sc">${</span>value<span class="sc">}</span><span class="vs">`</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span><span class="fu">join</span>(<span class="st">&#39;&lt;br&gt;&#39;</span>)<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
 <li><p><strong>Keyboard Controls</strong>: Press keys to trigger actions
 like starting fires:</p>
 <div class="sourceCode" id="cb11"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">create_hotkey_action</span>(<span class="st">&quot;f&quot;</span><span class="op">,</span> () <span class="kw">=&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="fu">startFireAtCursor</span>()<span class="op">,</span> <span class="st">&quot;Start fire at cursor&quot;</span>)<span class="op">;</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// mixed_forest_scene.js</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">create_hotkey_action</span>(<span class="st">&quot;f&quot;</span><span class="op">,</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    () <span class="kw">=&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="fu">startFireAtCursor</span>()<span class="op">,</span> <span class="st">&quot;Start fire at cursor&quot;</span>)<span class="op">;</span></span></code></pre></div></li>
 </ul>
 <h5 id="mesh-design">Mesh Design</h5>
 <p>We designed the following meshes in Blender for our project: two
@@ -356,9 +412,9 @@ cones.</p>
 icospheres to represent the leaves, which created a visually nice
 effect. Its dead version followed a similar structure, with additional
 branches.</p>
-<p>The terrain is modeled as a thick rectangle. We added a displacement
-modifier with a “cloud” texture to give it a natural, uneven surface
-resembling real terrain.</p>
+<p>Starting with a thick rectangle, we added a displacement modifier
+with a “cloud” texture to create a natural, uneven surface resembling
+real terrain.</p>
 <p>Finally, we baked the tree materials into texture images, allowing us
 to preserve their colors in the project.</p>
 <h4 id="validation">Validation</h4>
@@ -387,19 +443,22 @@ Dynamic lighting with multiple orbital light sources
 Dynamic lighting with multiple orbital light sources
 </figcaption>
 </div>
-<div style="text-align: center;">
+<div
+style="display: flex; justify-content: center; gap: 20px; text-align: center;">
+<figure>
 <video src="videos/parameter_display.webm" width="350" autoplay loop>
 </video>
 <figcaption>
 Close-up of Parameter Display Changing
 </figcaption>
-</div>
-<div style="text-align: center;">
+</figure>
+<figure>
 <video src="videos/firespread_closeup.mp4" width="350" autoplay loop>
 </video>
 <figcaption>
 Close-up of Fire Spread
 </figcaption>
+</figure>
 </div>
 <h5 id="mesh-design-1">Mesh Design</h5>
 Here is a comparison between our meshes rendered in Blender versus in
@@ -486,7 +545,8 @@ luminance-aware blending formula that prevents color shifting when
 multiple light sources are present:</li>
 </ol>
 <div class="sourceCode" id="cb14"><pre
-class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> blendedColor <span class="op">=</span> original<span class="op">.</span><span class="fu">rgb</span> <span class="op">+</span> bloomColor <span class="op">*</span> <span class="op">(</span><span class="fl">1.0</span> <span class="op">-</span> originalLuminance <span class="op">*</span> <span class="fl">0.5</span><span class="op">);</span></span></code></pre></div>
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">vec3</span> blendedColor</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> original<span class="op">.</span><span class="fu">rgb</span> <span class="op">+</span> bloomColor <span class="op">*</span> <span class="op">(</span><span class="fl">1.0</span> <span class="op">-</span> originalLuminance <span class="op">*</span> <span class="fl">0.5</span><span class="op">);</span></span></code></pre></div>
 <p>This approach reduces the bloom contribution in already bright areas,
 preventing over-saturation.</p>
 <ol start="4" type="1">
@@ -504,28 +564,14 @@ for realistic bloom effects. The entire process is encapsulated in the
 <code>BloomShaderRenderer</code> class, which manages the framebuffers,
 textures, and shader passes required for the effect.</p>
 <h4 id="validation-1">Validation</h4>
-<p>We validated our bloom implementation through both visual assessment
-and performance testing:</p>
-<ol type="1">
-<li><p><strong>Visual Quality</strong>: The bloom effect successfully
-enhances bright areas like fire particles, light sources, and emissive
-materials without washing out the scene. The effect is particularly
-noticeable in night scenes, where light sources create a realistic glow
-that softly illuminates nearby objects.</p></li>
-<li><p><strong>Performance</strong>: The effect runs at 60+ FPS even
-with multiple lights. Our two-pass blur approach is much faster than a
-single-pass 2D blur.</p></li>
-<li><p><strong>Configurability</strong>: The implementation exposes key
-parameters through the UI:</p>
-<ul>
-<li>Bloom threshold: Controls which areas of the scene contribute to the
-bloom effect</li>
-<li>Bloom intensity: Adjusts the strength of the bloom effect</li>
-<li>Exposure: Fine-tunes the overall brightness of the final image</li>
-</ul></li>
-</ol>
-<p>These parameters allow users to customize the bloom effect to suit
-different scenes and lighting conditions.</p>
+<p>The bloom effect successfully enhances bright areas like fire
+particles, light sources, and emissive materials without washing out the
+scene. The effect is especially noticeable in night scenes, where bright
+things glow.</p>
+<p>We can configure the following with sliders: - Bloom threshold:
+Controls which areas of the scene contribute to the bloom effect - Bloom
+intensity: Adjusts the strength of the bloom effect - Exposure:
+Fine-tunes the overall brightness of the final image</p>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -615,23 +661,26 @@ style="text-align: center;"><img src="images/bloom_on_high_intensity.png" width=
 <h4 id="implementation-2">Implementation</h4>
 <p>Our toon shader creates a cartoon look by using stepped lighting
 instead of smooth gradients. We weren’t satisfied with just the toon
-effect, so we added better edge detection. Here’s how it works:</p>
+effect, so we added an outline filter too. Here’s how it works:</p>
 <ol type="1">
-<li><strong>Quantized Lighting</strong>: The core of our toon shader is
-the discretization of diffuse and specular lighting components in
+<li><strong>Discretized Lighting</strong>: The core of our toon shader
+is the discretization of diffuse and specular lighting components in
 <code>toon.frag.glsl</code>. Rather than using smooth gradients, we
 quantize these values into a configurable number of discrete bands:</li>
 </ol>
 <div class="sourceCode" id="cb16"><pre
 class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Quantize diffuse lighting into discrete bands</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> diffuse_floor <span class="op">=</span> <span class="bu">floor</span><span class="op">(</span>diffuse <span class="op">*</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">))</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">);</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> diffuse_ceil <span class="op">=</span> diffuse_floor <span class="op">+</span> <span class="op">(</span><span class="fl">1.</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">));</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>diffuse <span class="op">=</span> diffuse_floor <span class="op">+</span> <span class="op">(</span>diffuse_ceil <span class="op">-</span> diffuse_floor<span class="op">)</span> <span class="op">/</span> <span class="fl">2.</span><span class="op">;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Similarly quantize specular highlights</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> specular_floor <span class="op">=</span> <span class="bu">floor</span><span class="op">(</span>specular <span class="op">*</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">))</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">);</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> specular_ceil <span class="op">=</span> specular_floor <span class="op">+</span> <span class="op">(</span><span class="fl">1.</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">));</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>specular <span class="op">=</span> specular_floor <span class="op">+</span> <span class="op">(</span>specular_ceil <span class="op">-</span> specular_floor<span class="op">)</span> <span class="op">/</span> <span class="fl">2.</span><span class="op">;</span></span></code></pre></div>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> diffuse_floor</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="bu">floor</span><span class="op">(</span>diffuse <span class="op">*</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">))</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">);</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> diffuse_ceil</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> diffuse_floor <span class="op">+</span> <span class="op">(</span><span class="fl">1.</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">));</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>diffuse <span class="op">=</span> diffuse_floor <span class="op">+</span> <span class="op">(</span>diffuse_ceil <span class="op">-</span> diffuse_floor<span class="op">)</span> <span class="op">/</span> <span class="fl">2.</span><span class="op">;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">// Similarly quantize specular highlights</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> specular_floor</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="bu">floor</span><span class="op">(</span>specular <span class="op">*</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">))</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">);</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> specular_ceil <span class="op">=</span> specular_floor <span class="op">+</span> <span class="op">(</span><span class="fl">1.</span> <span class="op">/</span> <span class="dt">float</span><span class="op">(</span>toon_levels<span class="op">));</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>specular <span class="op">=</span> specular_floor <span class="op">+</span> <span class="op">(</span>specular_ceil <span class="op">-</span> specular_floor<span class="op">)</span> <span class="op">/</span> <span class="fl">2.</span><span class="op">;</span></span></code></pre></div>
 <p>This approach creates the characteristic “stepped” appearance of toon
 shading, where lighting changes occur in distinct jumps rather than
 smooth transitions. The number of bands (<code>toon_levels</code>) is
@@ -652,16 +701,17 @@ attenuation but better suits the nature of toon shading.</p>
 multiple lights while keeping the cartoon look:</li>
 </ol>
 <div class="sourceCode" id="cb18"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">blend</span>() {</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Use additive blending to accumulate light contributions</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">enable</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">func</span><span class="op">:</span> {</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">src</span><span class="op">:</span> <span class="st">&#39;one&#39;</span><span class="op">,</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">dst</span><span class="op">:</span> <span class="st">&#39;one&#39;</span><span class="op">,</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        }<span class="op">,</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">// toon_sr.js</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">blend</span>() {</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Use additive blending to accumulate light contributions</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">enable</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">func</span><span class="op">:</span> {</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">src</span><span class="op">:</span> <span class="st">&#39;one&#39;</span><span class="op">,</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">dst</span><span class="op">:</span> <span class="st">&#39;one&#39;</span><span class="op">,</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        }<span class="op">,</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <ol start="4" type="1">
 <li><p><strong>Deferred Rendering</strong>: We created a deferred
 version of the toon shader (<code>toon_deferred_sr.js</code>) that works
@@ -676,57 +726,39 @@ emphasizes object silhouettes based on depth discontinuities:</p></li>
 </ol>
 <div class="sourceCode" id="cb19"><pre
 class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Sample neighboring pixels for depth</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_right <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span>texel<span class="op">.</span><span class="fu">x</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_left <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(-</span>texel<span class="op">.</span><span class="fu">x</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_up <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> texel<span class="op">.</span><span class="fu">y</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_down <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> <span class="op">-</span>texel<span class="op">.</span><span class="fu">y</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Calculate depth differences</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_diff_x <span class="op">=</span> <span class="bu">abs</span><span class="op">(</span>depth_right <span class="op">-</span> depth_left<span class="op">);</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_diff_y <span class="op">=</span> <span class="bu">abs</span><span class="op">(</span>depth_up <span class="op">-</span> depth_down<span class="op">);</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_right</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span>texel<span class="op">.</span><span class="fu">x</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_left</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(-</span>texel<span class="op">.</span><span class="fu">x</span><span class="op">,</span> <span class="fl">0.0</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_up</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> texel<span class="op">.</span><span class="fu">y</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_down</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="dt">texture2D</span><span class="op">(</span>depth_texture<span class="op">,</span> v2f_uv <span class="op">+</span> <span class="dt">vec2</span><span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> <span class="op">-</span>texel<span class="op">.</span><span class="fu">y</span><span class="op">)).</span><span class="fu">r</span><span class="op">;</span></span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Calculate edge strength based on depth changes</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> edge_x <span class="op">=</span> <span class="bu">step</span><span class="op">(</span>depth_threshold<span class="op">,</span> depth_diff_x<span class="op">);</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> edge_y <span class="op">=</span> <span class="bu">step</span><span class="op">(</span>depth_threshold<span class="op">,</span> depth_diff_y<span class="op">);</span></span></code></pre></div>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Calculate depth differences</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_diff_x <span class="op">=</span> <span class="bu">abs</span><span class="op">(</span>depth_right <span class="op">-</span> depth_left<span class="op">);</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> depth_diff_y <span class="op">=</span> <span class="bu">abs</span><span class="op">(</span>depth_up <span class="op">-</span> depth_down<span class="op">);</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">// Calculate edge strength based on depth changes</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> edge_x <span class="op">=</span> <span class="bu">step</span><span class="op">(</span>depth_threshold<span class="op">,</span> depth_diff_x<span class="op">);</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="dt">float</span> edge_y <span class="op">=</span> <span class="bu">step</span><span class="op">(</span>depth_threshold<span class="op">,</span> depth_diff_y<span class="op">);</span></span></code></pre></div>
 <p>This gives us clean, sharp outlines around objects that really sell
 the cartoon look. The <code>SobelOutlineShaderRenderer</code> adds these
 outlines as a final step, so it works with both rendering methods.</p>
-<p>The complete toon shader implementation is encapsulated in the
-<code>ToonShaderRenderer</code> class, which handles the rendering of
-objects with toon shading. Objects can opt out of toon shading by
-including the ‘no_toon’ property in their material properties.</p>
+<p>The complete toon shader is implemented in
+<code>ToonShaderRenderer</code> class. Objects can opt out of toon
+shading by including the ‘no_toon’ property in their material
+properties.</p>
 <h4 id="validation-2">Validation</h4>
-<p>We tested our toon shader for looks and performance:</p>
-<ol type="1">
-<li><p><strong>Visual Results</strong>: The shader creates a distinct
-cartoon look that’s clearly different from realistic rendering. The
-stepped lighting makes objects easier to read visually.</p></li>
-<li><p><strong>Compatibility with Other Features</strong>: The toon
-shader works seamlessly with our other rendering features: {{ … }}</p>
-<ul>
-<li>It supports both forward and deferred rendering paths with
-consistent visual results</li>
-<li>It works with our particle systems, creating stylized fire and smoke
-effects</li>
-</ul></li>
-<li><p><strong>Performance</strong>: The toon shader runs well even with
-multiple light sources due to its simplified lighting calculations. On
-mid-range hardware, we observed no significant performance difference
-between toon shading and our standard Blinn-Phong shader.</p></li>
-<li><p><strong>Configurability</strong>: The implementation exposes key
-parameters through the UI:</p>
-<ul>
-<li>Toon levels: Controls the number of discrete lighting bands</li>
-<li>Outline threshold: Adjusts the sensitivity of edge detection for
-outlines</li>
-<li>Outline color: Sets the color of cartoon outlines</li>
-<li>Outline thickness: Controls the width of Sobel-detected edges</li>
-<li>Depth threshold: Fine-tunes the depth difference required to detect
-an edge</li>
-</ul></li>
-</ol>
-<p>These parameters allow users to fine-tune the toon effect to achieve
-different stylistic goals.</p>
+<p>The toon shader should work seamlessly with our other rendering
+features - It should work with both forward and deferred rendering paths
+with consistent visual results - It works with our particle systems,
+creating stylized fire and smoke effects</p>
+<p>We should be able to control the following parameters: - Toon levels:
+Controls the number of discrete lighting bands - Outline threshold:
+Adjusts the sensitivity of edge detection for outlines - Depth
+threshold: Fine-tunes the depth difference required to detect an
+edge</p>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -829,6 +861,9 @@ style="text-align: center;"><img src="images/toon_and_bloom_night.png" width="45
 </tr>
 </tbody>
 </table>
+<p>We can see the sobels outlines with particles <a
+href="#overview">here</a>. Since particles are not affected by any
+lighting, toon levels do not change their appearance.</p>
 <h3 id="deferred-shading">Deferred Shading</h3>
 <h4 id="implementation-3">Implementation</h4>
 <p>Our deferred shading pipeline uses a standard G-buffer, storing
@@ -862,17 +897,23 @@ class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb20-1"><a href=
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="va">gl_FragData</span><span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> vPosition<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre
 class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">// scene_renderer.js</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span> <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">regl</span><span class="op">.</span><span class="fu">framebuffer</span>({ <span class="dt">color</span><span class="op">:</span> [regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })<span class="op">,</span> regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })<span class="op">,</span> regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })]})<span class="op">;</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span><span class="op">.</span><span class="fu">resize</span>(<span class="bu">window</span><span class="op">.</span><span class="at">innerWidth</span><span class="op">,</span> <span class="bu">window</span><span class="op">.</span><span class="at">innerHeight</span>)<span class="op">;</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span><span class="op">.</span><span class="fu">use</span>(() <span class="kw">=&gt;</span> {</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">regl</span><span class="op">.</span><span class="fu">clear</span>({</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">255</span>]<span class="op">,</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">depth</span><span class="op">:</span> <span class="dv">1</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">gBuffer_renderer</span><span class="op">.</span><span class="fu">render</span>(scene_state)<span class="op">;</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span> <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">regl</span><span class="op">.</span><span class="fu">framebuffer</span>({</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> [</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })<span class="op">,</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })<span class="op">,</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    regl<span class="op">.</span><span class="fu">texture</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;float&#39;</span> })</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span><span class="op">.</span><span class="fu">resize</span>(<span class="bu">window</span><span class="op">.</span><span class="at">innerWidth</span><span class="op">,</span> <span class="bu">window</span><span class="op">.</span><span class="at">innerHeight</span>)<span class="op">;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">gBuffer</span><span class="op">.</span><span class="fu">use</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">regl</span><span class="op">.</span><span class="fu">clear</span>({</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">color</span><span class="op">:</span> [<span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">255</span>]<span class="op">,</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">depth</span><span class="op">:</span> <span class="dv">1</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">gBuffer_renderer</span><span class="op">.</span><span class="fu">render</span>(scene_state)<span class="op">;</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
 <h5 id="using-the-g-buffer">Using the G-buffer</h5>
 <p>To use the G-buffer we created modifications of our shaders to take
 the global <code>gBuffer</code> framebuffer as an argument in
@@ -904,35 +945,36 @@ volumes. Instead of iterating over lights per object, each light is
 represented as a sphere mesh, and shading is computed per fragment
 within the light volume using additive blending and front-face culling.
 We modified how ambient lighting and attenutation works, which we also
-ported to the non-deferred shaders (without changed the original
+ported to the non-deferred shaders (without changing the original
 computation) so that we could compare the two implementations more
 easily.</p>
 <div class="sourceCode" id="cb24"><pre
 class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">// blinn_phong_deferred_sr.js</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">light_sphere</span> <span class="op">=</span> cg_images<span class="op">/</span><span class="fu">mesh_make_uv_sphere</span>(<span class="dv">16</span>)<span class="op">;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">this</span><span class="op">.</span><span class="at">light_sphere</span> <span class="op">=</span> <span class="fu">mesh_make_uv_sphere</span>(<span class="dv">16</span>)<span class="op">;</span></span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">render</span>(scene_state<span class="op">,</span> gBuffer) {</span>
 <span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">// renders a bunch of light spheres far more efficiently than the non-deferred implementation</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>scene<span class="op">.</span><span class="at">lights</span><span class="op">.</span><span class="fu">forEach</span>(light <span class="kw">=&gt;</span> {</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">.</span><span class="fu">push</span>({</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">mesh</span><span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">light_sphere</span><span class="op">,</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">albedoSpec</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">0</span>]<span class="op">,</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">normal</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">1</span>]<span class="op">,</span></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">position</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">2</span>]<span class="op">,</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">mat_model_view_projection</span><span class="op">:</span> mat_model_view_projection<span class="op">,</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_color</span><span class="op">:</span> light<span class="op">.</span><span class="at">color</span><span class="op">,</span></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_position</span><span class="op">:</span> light_position_cam<span class="op">,</span></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_radius</span><span class="op">:</span> radius<span class="op">,</span></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="fu">pipeline</span>(inputs)<span class="op">;</span></span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">// renders a bunch of light spheres far more</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">// efficiently than the non-deferred implementation</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>scene<span class="op">.</span><span class="at">lights</span><span class="op">.</span><span class="fu">forEach</span>(light <span class="kw">=&gt;</span> {</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">.</span><span class="fu">push</span>({</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">mesh</span><span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">light_sphere</span><span class="op">,</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">albedoSpec</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">0</span>]<span class="op">,</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">normal</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">1</span>]<span class="op">,</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">position</span><span class="op">:</span> gBuffer<span class="op">.</span><span class="at">color</span>[<span class="dv">2</span>]<span class="op">,</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">mat_model_view_projection</span><span class="op">:</span> mat_model_view_projection<span class="op">,</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_color</span><span class="op">:</span> light<span class="op">.</span><span class="at">color</span><span class="op">,</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_position</span><span class="op">:</span> light_position_cam<span class="op">,</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">light_radius</span><span class="op">:</span> radius<span class="op">,</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="fu">pipeline</span>(inputs)<span class="op">;</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <h4 id="validation-3">Validation</h4>
 <p>Here is a comparison between deferred and non-deferred shading, as
 well the contents of the G-buffer in the same scene:</p>
@@ -1012,6 +1054,8 @@ Performance Graph without Deferred Shading (~1s interval)
 </figcaption>
 </figure>
 </div>
+<p>Over a ~1 second interval there are significantly more frames being
+drawn using deferred shading and light volumes.</p>
 <h3 id="particle-effects">Particle Effects</h3>
 <h4 id="implementation-4">Implementation</h4>
 <p>In order to make our fires a reality, we implemented a particle
@@ -1068,10 +1112,10 @@ each:</p>
 <div class="sourceCode" id="cb27"><pre
 class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">// particle_container.js</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">class</span> ParticleContainer {</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">constructor</span>(translation<span class="op">,</span> scale<span class="op">,</span> images<span class="op">/</span>mesh_reference) {</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">constructor</span>(translation<span class="op">,</span> scale<span class="op">,</span> mesh_reference) {</span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">translation</span> <span class="op">=</span> translation<span class="op">;</span></span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">scale</span> <span class="op">=</span> scale<span class="op">;</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">images</span><span class="op">/</span>mesh_reference <span class="op">=</span> images<span class="op">/</span>mesh_reference<span class="op">;</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">mesh_reference</span> <span class="op">=</span> mesh_reference<span class="op">;</span></span>
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">material</span> <span class="op">=</span> MATERIALS<span class="op">.</span><span class="at">particle_green</span><span class="op">;</span></span>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">color</span> <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">material</span><span class="op">.</span><span class="at">color</span><span class="op">;</span></span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">particle_list</span> <span class="op">=</span> []<span class="op">;</span></span>
@@ -1114,7 +1158,7 @@ class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb28
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// using gpu instancing to push particle data into buffer</span></span>
 <span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    inputs<span class="op">.</span><span class="fu">push</span>({</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">mesh</span><span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">resource_manager</span><span class="op">.</span><span class="fu">get_mesh</span>(obj<span class="op">.</span><span class="at">images</span><span class="op">/</span>mesh_reference)<span class="op">,</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">mesh</span><span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">resource_manager</span><span class="op">.</span><span class="fu">get_mesh</span>(obj<span class="op">.</span><span class="at">mesh_reference</span>)<span class="op">,</span></span>
 <span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">particle_offsets</span><span class="op">:</span> {</span>
 <span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">buffer</span><span class="op">:</span> obj<span class="op">.</span><span class="at">particle_list</span><span class="op">.</span><span class="fu">map</span>(p <span class="kw">=&gt;</span> p<span class="op">.</span><span class="at">offset</span>)<span class="op">,</span></span>
 <span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>        <span class="dt">divisor</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span></span>
@@ -1174,17 +1218,23 @@ Each particle is born inside a disk of radius
 <code>emission_radius</code> and given randomized velocity and offset
 from its center:</p>
 <div class="sourceCode" id="cb30"><pre
-class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">offset</span>[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(random_angle) <span class="op">*</span> <span class="kw">this</span><span class="op">.</span><span class="at">emission_radius</span> <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>()<span class="op">;</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">offset</span>[<span class="dv">1</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(random_angle) <span class="op">*</span> <span class="kw">this</span><span class="op">.</span><span class="at">emission_radius</span> <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>()<span class="op">;</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">0</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(random_angle) <span class="op">*</span> (<span class="fl">0.1</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="fl">0.2</span>) <span class="op">;</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">1</span>] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(random_angle) <span class="op">*</span> (<span class="fl">0.1</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="fl">0.2</span>) <span class="op">;</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">2</span>] <span class="op">=</span> upward_speed<span class="op">;</span></span></code></pre></div></li>
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">// particle_system.js</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">offset</span>[<span class="dv">0</span>]</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(random_angle) <span class="op">*</span> <span class="kw">this</span><span class="op">.</span><span class="at">emission_radius</span> <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>()<span class="op">;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">offset</span>[<span class="dv">1</span>]</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(random_angle) <span class="op">*</span> <span class="kw">this</span><span class="op">.</span><span class="at">emission_radius</span> <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>()<span class="op">;</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">0</span>]</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(random_angle) <span class="op">*</span> (<span class="fl">0.1</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="fl">0.2</span>)<span class="op">;</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">1</span>]</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(random_angle) <span class="op">*</span> (<span class="fl">0.1</span> <span class="op">+</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="fl">0.2</span>)<span class="op">;</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">2</span>] <span class="op">=</span> upward_speed<span class="op">;</span></span></code></pre></div></li>
 <li><p><strong>Fire-to-smoke transition</strong><br />
-<code>smoke_chance</code> (5 %) decides whether a particle may become
-smoke after it rises above <code>fire_height</code>:</p>
+The <code>smoke_chance</code> parameter decides whether a particle may
+become smoke after it rises above <code>fire_height</code>:</p>
 <div class="sourceCode" id="cb31"><pre
 class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>particle<span class="op">.</span><span class="at">becomes_smoke</span>  <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">&lt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">smoke_chance</span><span class="op">;</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> isSmoke <span class="op">=</span> particle<span class="op">.</span><span class="at">becomes_smoke</span> <span class="op">&amp;&amp;</span> (particle<span class="op">.</span><span class="at">offset</span>[<span class="dv">2</span>] <span class="op">&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_height</span>)<span class="op">;</span></span></code></pre></div></li>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> isSmoke <span class="op">=</span> particle<span class="op">.</span><span class="at">becomes_smoke</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;&amp;</span> (particle<span class="op">.</span><span class="at">offset</span>[<span class="dv">2</span>] <span class="op">&gt;</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_height</span>)<span class="op">;</span></span></code></pre></div></li>
 <li><p><strong>Lifespan</strong><br />
 A particle dies when:</p>
 <ol type="1">
@@ -1196,14 +1246,13 @@ A particle dies when:</p>
 <code>smoke_height</code>.</li>
 </ol></li>
 <li><p><strong>Realistic effects</strong><br />
-Fire particles have a zig-zag and buoyancy effect making the fire look
-more realistic</p>
+Fire particles move in a zig-zag motion and with buoyancy:</p>
 <div class="sourceCode" id="cb32"><pre
 class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">//simple zigzag motion</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="op">!</span>isSmoke){</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> random_angle <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>() <span class="op">*</span> <span class="bu">Math</span><span class="op">.</span><span class="cn">PI</span> <span class="op">*</span> <span class="dv">2</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">0</span>] <span class="op">+=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(random_angle) <span class="op">*</span> <span class="fl">0.025</span><span class="op">;</span>  </span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">1</span>] <span class="op">+=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(random_angle) <span class="op">*</span> <span class="fl">0.025</span><span class="op">;</span> </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">0</span>] <span class="op">+=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">cos</span>(random_angle) <span class="op">*</span> <span class="fl">0.025</span><span class="op">;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">1</span>] <span class="op">+=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">sin</span>(random_angle) <span class="op">*</span> <span class="fl">0.025</span><span class="op">;</span></span>
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>}<span class="cf">else</span>{</span>
 <span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    particle<span class="op">.</span><span class="at">velocity</span>[<span class="dv">2</span>] <span class="op">*=</span> <span class="fl">0.985</span><span class="op">;</span></span>
 <span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>}</span>
@@ -1225,34 +1274,110 @@ class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb33
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(heightRatio <span class="op">&lt;</span> <span class="fl">0.4</span>){</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">//bottom yellow</span></span>
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> t <span class="op">=</span> heightRatio <span class="op">/</span> <span class="fl">0.4</span><span class="op">;</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lerp</span>(particle<span class="op">.</span><span class="at">color</span><span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">0</span>]<span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">1</span>]<span class="op">,</span> t)<span class="op">;</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>}<span class="cf">else</span>{</span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">//orange to red</span></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> t <span class="op">=</span> (heightRatio <span class="op">-</span> <span class="fl">0.4</span>) <span class="op">/</span> <span class="fl">0.6</span><span class="op">;</span></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lerp</span>(particle<span class="op">.</span><span class="at">color</span><span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">1</span>]<span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">2</span>]<span class="op">,</span> t)<span class="op">;</span></span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lerp</span>(particle<span class="op">.</span><span class="at">color</span><span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">0</span>]<span class="op">,</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">1</span>]<span class="op">,</span> t)<span class="op">;</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>}<span class="cf">else</span>{</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">//orange to red</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> t <span class="op">=</span> (heightRatio <span class="op">-</span> <span class="fl">0.4</span>) <span class="op">/</span> <span class="fl">0.6</span><span class="op">;</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lerp</span>(particle<span class="op">.</span><span class="at">color</span><span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">1</span>]<span class="op">,</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="at">fire_colors</span>[<span class="dv">2</span>]<span class="op">,</span> t)<span class="op">;</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
 </ul>
 <h4 id="validation-4">Validation</h4>
-<p>TODO</p>
+<p>We can see fire particles in action in the <a
+href="#overview">overview videos</a>.</p>
+<div
+style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
+<figure>
+<video src="videos/fire_closeup.mp4" width="350" autoplay loop>
+</video>
+<figcaption>
+a Fire Particle Container
+</figcaption>
+</figure>
+<figure>
+<video src="videos/billboard.mp4" width="350" autoplay loop>
+</video>
+<figcaption>
+Billboard with a texture
+</figcaption>
+</figure>
+<figure>
+<video src="videos/vomit_cropped.mp4" width="350" autoplay loop>
+</video>
+<figcaption>
+Non-GPU Instanced Rainbow Vomit (video from milestone)
+</figcaption>
+</figure>
+<figure>
+<video src="videos/vomit_gpu.mp4" width="350" autoplay loop>
+</video>
+<figcaption>
+GPU Instanced Rainbow Vomit
+</figcaption>
+</figure>
+</div>
+<p>Although GPU instancing hasn’t eliminated lag entirely,
+(<code>evolve()</code> still runs entirely on the cpu,) we see that
+without gpu instancing particle rendering is significantly slower.</p>
+<div
+style="display: flex; justify-content: space-between; max-width: 800px; margin: auto; gap: 20px; text-align: center; align-items: flex-start;">
+<figure>
+<video src="videos/particle_color.mp4" width="226" autoplay loop muted playsinline>
+</video>
+<figcaption>
+Color Changing Particle with a Semi-Transparent Texture
+</figcaption>
+</figure>
+<figure>
+<video src="videos/particle_offset.mp4" width="226" autoplay loop muted playsinline>
+</video>
+<figcaption>
+Changing offset relative to container origin (stationary particle)
+</figcaption>
+</figure>
+<figure>
+<video src="videos/particle_scale.mp4" width="226" autoplay loop muted playsinline>
+</video>
+<figcaption>
+Changing size over time
+</figcaption>
+</figure>
+</div>
 <h2 id="discussion">Discussion</h2>
 <h3 id="additional-components">Additional Components</h3>
 <ul>
 <li>Overlay for skybox for a toggleable night mode</li>
-<li>Natural fire spread</li>
-<li>Manual fire spread (F key)</li>
-<li></li>
 </ul>
-<h3 id="failed-experiments">Failed Experiments</h3>
+<h3 id="failed-experiments-missing-features">Failed Experiments /
+Missing Features</h3>
 <ul>
-<li><strong>Shadows</strong></li>
+<li><p><strong>Shadows</strong>: We disabled shadows due to performance
+issues and visual conflicts with particles, toon outlines, and bloom.
+Fire spread dynamically updates the number of light sources in a scene,
+meaning that to update the shadows performantly we’d need an optimized
+dynamic shadow system. We couldn’t afford to spend time on that before
+completing our other features. A basic unoptimized version of deferred
+shadows exists in the codebase</p></li>
+<li><p><strong>Directional Lighting</strong>: We removed the ambient
+component of the in our lighting shaders because it interfered with the
+light volume system during blending. As a band-aid fix we used a faraway
+point-light with a high light radius to reintroduce ‘ambient’ lighting.
+Of course, this is not ideal for implementing a sun-like light since the
+light rays aren’t parallel. Also, if we try to put the light source too
+far away, the light volume is culled by the render distance limit. We
+could’ve implemented a second type of light source that casts parallel
+light rays onto the scene similar to what is in the <a
+href="https://github.com/regl-project/regl/blob/main/example/deferred_shading.js">Regl
+Deferred Shading Example</a></p></li>
 </ul>
 <h3 id="challenges">Challenges</h3>
 <ul>
 <li><strong>Deferred Shading</strong></li>
 <li><strong>Particles</strong></li>
-<li><strong>Fire spread</strong>: Fire spread was quite tedious as we
-had to figure out the perfect parameters to pass in order to get a nice
-fire spread effect while keeping it stable.</li>
+<li><strong>Fire spread</strong>: Tuning fire spread was tedious. We had
+to figure out the right parameters in order to get a nice effect while
+maintaining stability.</li>
 <li><strong>Texture baking</strong>: Texture baking was particularly
 hard at the beginning, many tutorials were telling use the different
 unwrap options in Blender, but each time we did that it made a mess. At
@@ -1378,10 +1503,10 @@ Anthony Tamberg
 14
 </td>
 <td>
-10
+12
 </td>
 <td>
-40
+42
 </td>
 </tr>
 </tbody>

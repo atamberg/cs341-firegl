@@ -6,15 +6,15 @@ title: FireGL - Fire Simulation in WebGL Final Report CS-341 2025
 
 ## Abstract
 
-This project simulates dynamic, stylized fire in a 3D forest scene using WebGL. It combines deferred shading, toon lighting, and bloom post-processing to produce visually distinct effects while maintaining performance. Procedural scene generation and fire propagation systems allow trees to ignite and spread fire based on proximity and time, with visual transitions between normal, burning, and burned states. A GPU-instanced particle system renders thousands of animated fire and smoke particles efficiently. Users can interact with the simulation by triggering fires. We validate our results through side-by-side visual comparisons and limited performance tests.
+This project simulates dynamic, stylized fire in a 3D forest scene using WebGL. It combines deferred shading, toon lighting, and bloom post-processing to produce visually distinct effects while maintaining performance. Procedural scene generation and fire propagation systems allow trees to ignite and spread fire based on proximity and time, with visual transitions between normal, burning, and burned states. A GPU-instanced particle system efficiently renders thousands of animated fire and smoke particles efficiently. Users can interact with the simulation by triggering fires. We validate our results through side-by-side visual comparisons and limited performance tests.
 
 ## Overview
 
 We set out to create a stylized interactive forest fire simulation. Rather than focusing on physical realism, we aimed to model the essence of fire, with glowing particles, exaggerated lighting effects, and cartoon-inspired shading. The core idea was to use deferred shading to efficiently handle hundreds of dynamic light sources, particles to simulate fire behavior, bloom to create a glowing effect, and toon shading for visual flair, all running on custom-designed scenes.
 
-Scenes are populated with procedurally placed trees of varying types, scales, and positions to create dense, organic-looking forests. Users can initiate fires by pressing a key, triggering a system that spreads flames from tree to tree based on distance and timing. Each tree transitions through multiple states: normal, burning, and burned. These transitions are accompanied a mesh swap, cartoony animation, and color shifts.
+Scenes are populated with procedurally placed trees of varying types, scales, and positions to create dense, organic-looking forests. Users can initiate fires by pressing a key, triggering a system that spreads flames from tree to tree based on distance and timing. Each tree transitions through multiple states: normal, burning, and burned. These transitions are accompanied by a mesh swap, cartoony animation, and color shifts.
 
-To model the fire itself, we implemented a custom particle system with support for GPU instancing, allowing thousands of particles to be animated each frame with minimal CPU overhead. These particles change size, velocity, and color over their lifetimes, transitioning smoothly between fire and smoke. Combined with bloom post-processing, bright areas such as fire particles and light sources glow vividly, especially in nighttime scenes. The final esthetic is further enhanced by toon shading with edge outlines. The toon, thickly-outlined appearance one can achieve is similar to that of the game *Lethal Company*.
+To model the fire itself, we implemented a custom particle system with support for GPU instancing, allowing thousands of particles to be animated each frame with minimal CPU overhead. These particles change size, velocity, and color over their lifetimes, transitioning smoothly between fire and smoke. Combined with bloom post-processing, bright areas such as fire particles and light sources glow vividly, especially in nighttime scenes. The final esthetic is further enhanced by toon shading with edge outlines. The toon, thickly-outlined appearance is similar to that of the game *Lethal Company*.
 
 <div style="text-align: center;"> <video src="videos/video-group64.mp4" width="700" controls></video> <figcaption>Our final video submission: Fire spreading, lighting effects, and stylized visuals</figcaption> </div> <div style="display: flex; justify-content: center; gap: 20px; text-align: center;"> <figure> <video src="videos/minifire.mp4" height="300px" autoplay loop muted></video> <figcaption>Close-up fire with cycling toon and bloom effects</figcaption> </figure> <figure> <video src="videos/firespread_closeup.mp4" height="300px" autoplay loop muted></video> <figcaption>Fire propagation system in action</figcaption> </figure> </div>
 
@@ -120,7 +120,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 
 **Fire Spread System**
 
-`mixed_forest_scene.js` and `pine_scene.js` includes a fire system (`fire_spread.js`) that shows off our particles (*explained later*) and lighting:
+`mixed_forest_scene.js` and `pine_scene.js` include a fire system (`fire_spread.js`) that shows off our particles (*explained later*) and lighting:
 
 
 - **Object State Management**: Each tree stores multiple states (normal, burning, burned) with associated properties:
@@ -163,7 +163,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
   }
   ```
 
-- **User Interaction**: We implemented a ray-casting system that converts screen coordinates to world positions, allowing users to start fires with pressing a key on the keyboard.
+- **User Interaction**: We implemented a ray-casting system that converts screen coordinates to world positions, allowing users to start fires by pressing a key on the keyboard.
 
 **User Interface**
 
@@ -625,7 +625,7 @@ In order to make our fires a reality, we implemented a particle system. We follo
 
 ##### Billboards
 
-First, we implemented a basic billboard shader. The vertex shader takes x and y coordinates the model-world vertices of the billboard mesh (a square plane) and maps them along the `cameraRight` and `cameraUp` vectors in world-space (along with some modifiable scale values), thereby forcing the top of the mesh to always face the camera:
+First, we implemented a basic billboard shader. The vertex shader takes x and y coordinates of the model-world vertices of the billboard mesh (a square plane) and maps them along the `cameraRight` and `cameraUp` vectors in world-space (along with some modifiable scale values), thereby forcing the top of the mesh to always face the camera:
 
 ```glsl
 // billboard.vert.glsl
@@ -858,7 +858,7 @@ We can see fire particles in action in the [overview videos](#overview).
   </figure>
 </div>
 
-Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs entirely on the cpu,) we see that without gpu instancing particle rendering is significantly slower.
+Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs entirely on the CPU), we see that without GPU instancing particle rendering is significantly slower.
 
 <div style="display: flex; justify-content: space-between; max-width: 800px; margin: auto; gap: 20px; text-align: center; align-items: flex-start;">
   <figure>
@@ -896,7 +896,7 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 - **Deferred Shading**
 - **Particles**
 - **Fire spread**: Tuning fire spread was tedious. We had to figure out the right parameters in order to get a nice effect while maintaining stability.
-- **Texture baking**: Texture baking was particularly hard at the beginning, many tutorials were telling use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
+- **Texture baking**: Texture baking was particularly hard at the beginning, many tutorials were telling us to use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
 
 
 ## Contributions
