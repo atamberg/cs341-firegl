@@ -87,7 +87,8 @@ In `deferred_scene.js`, we added dynamic lights that move in orbital patterns:
 
 - **Random Variations**: Lights have different orbit sizes, heights, and speeds to make the scene more interesting:
   ```javascript
-  const radius = baseRadius + (Math.random() * 2 - 1) * radiusVariation;
+  const radius
+      = baseRadius + (Math.random() * 2 - 1) * radiusVariation;
   ```
 
 **Procedural Object Placement**
@@ -106,7 +107,8 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 - **Random Properties**: Trees get different sizes and types for more variety:
   ```javascript
   const scale = 0.5 + Math.random() * 0.8;
-  const treeType = Math.random() > 0.7 ? 'TreeType2.obj' : 'TreeType1.obj';
+  const treeType
+      = Math.random() > 0.7 ? 'TreeType2.obj' : 'TreeType1.obj';
   ```
 
 - **Spatial Optimization**: We use a grid to reduce the computational complexity of collision checks from O(n²) to O(n log n), allowing us to place hundreds of trees efficiently.
@@ -170,7 +172,8 @@ All scenes include:
 
 - **Keyboard Controls**: Press keys to trigger actions like starting fires:
   ```javascript
-  create_hotkey_action("f", () => this.startFireAtCursor(), "Start fire at cursor");
+  create_hotkey_action("f",
+      () => this.startFireAtCursor(), "Start fire at cursor");
   ```
 
 ##### Mesh Design
@@ -284,7 +287,8 @@ The number of blur passes is configurable (default: 5), allowing us to control t
 3. **Bloom Combination**: The final stage combines the original scene with the blurred bright areas using a modified additive blend in `bloom_combine.frag.glsl`. We implemented a luminance-aware blending formula that prevents color shifting when multiple light sources are present:
 
 ```glsl
-vec3 blendedColor = original.rgb + bloomColor * (1.0 - originalLuminance * 0.5);
+vec3 blendedColor
+    = original.rgb + bloomColor * (1.0 - originalLuminance * 0.5);
 ```
 
 This approach reduces the bloom contribution in already bright areas, preventing over-saturation.
@@ -337,12 +341,15 @@ Our toon shader creates a cartoon look by using stepped lighting instead of smoo
 
 ```glsl
 // Quantize diffuse lighting into discrete bands
-float diffuse_floor = floor(diffuse * float(toon_levels)) / float(toon_levels);
-float diffuse_ceil = diffuse_floor + (1. / float(toon_levels));
+float diffuse_floor
+    = floor(diffuse * float(toon_levels)) / float(toon_levels);
+float diffuse_ceil
+    = diffuse_floor + (1. / float(toon_levels));
 diffuse = diffuse_floor + (diffuse_ceil - diffuse_floor) / 2.;
 
 // Similarly quantize specular highlights
-float specular_floor = floor(specular * float(toon_levels)) / float(toon_levels);
+float specular_floor
+    = floor(specular * float(toon_levels)) / float(toon_levels);
 float specular_ceil = specular_floor + (1. / float(toon_levels));
 specular = specular_floor + (specular_ceil - specular_floor) / 2.;
 ```
@@ -379,10 +386,14 @@ blend() {
 
 ```glsl
 // Sample neighboring pixels for depth
-float depth_right = texture2D(depth_texture, v2f_uv + vec2(texel.x, 0.0)).r;
-float depth_left = texture2D(depth_texture, v2f_uv + vec2(-texel.x, 0.0)).r;
-float depth_up = texture2D(depth_texture, v2f_uv + vec2(0.0, texel.y)).r;
-float depth_down = texture2D(depth_texture, v2f_uv + vec2(0.0, -texel.y)).r;
+float depth_right
+    = texture2D(depth_texture, v2f_uv + vec2(texel.x, 0.0)).r;
+float depth_left
+    = texture2D(depth_texture, v2f_uv + vec2(-texel.x, 0.0)).r;
+float depth_up
+    = texture2D(depth_texture, v2f_uv + vec2(0.0, texel.y)).r;
+float depth_down
+    = texture2D(depth_texture, v2f_uv + vec2(0.0, -texel.y)).r;
 
 // Calculate depth differences
 float depth_diff_x = abs(depth_right - depth_left);
@@ -454,7 +465,13 @@ gl_FragData[2] = vPosition;
 
 ```javascript
 // scene_renderer.js
-this.gBuffer = this.regl.framebuffer({ color: [regl.texture({ type: 'float' }), regl.texture({ type: 'float' }), regl.texture({ type: 'float' })]});
+this.gBuffer = this.regl.framebuffer({
+    color: [
+	regl.texture({ type: 'float' }),
+	regl.texture({ type: 'float' }),
+	regl.texture({ type: 'float' })
+    ]
+});
 this.gBuffer.resize(window.innerWidth, window.innerHeight);
 ...
 ...
@@ -503,7 +520,8 @@ this.light_sphere = mesh_make_uv_sphere(16);
 ...
 render(scene_state, gBuffer) {
 ...
-// renders a bunch of light spheres far more efficiently than the non-deferred implementation
+// renders a bunch of light spheres far more
+// efficiently than the non-deferred implementation
 scene.lights.forEach(light => {
     ...
     inputs.push({
@@ -736,10 +754,14 @@ Each particle has an offset from the base particle container position, a color i
   Each particle is born inside a disk of radius `emission_radius` and given randomized velocity and offset from its center:
 
   ```javascript
-  particle.offset[0] = Math.cos(random_angle) * this.emission_radius * Math.random();
-  particle.offset[1] = Math.sin(random_angle) * this.emission_radius * Math.random();
-  particle.velocity[0] = Math.cos(random_angle) * (0.1 + Math.random() * 0.2) ;
-  particle.velocity[1] = Math.sin(random_angle) * (0.1 + Math.random() * 0.2) ;
+  particle.offset[0]
+      = Math.cos(random_angle) * this.emission_radius * Math.random();
+  particle.offset[1]
+      = Math.sin(random_angle) * this.emission_radius * Math.random();
+  particle.velocity[0]
+      = Math.cos(random_angle) * (0.1 + Math.random() * 0.2);
+  particle.velocity[1]
+      = Math.sin(random_angle) * (0.1 + Math.random() * 0.2);
   particle.velocity[2] = upward_speed;
   ```
 
@@ -748,7 +770,8 @@ Each particle has an offset from the base particle container position, a color i
 
   ```javascript
   particle.becomes_smoke  = Math.random() < this.smoke_chance;
-  const isSmoke = particle.becomes_smoke && (particle.offset[2] > this.fire_height);
+  const isSmoke = particle.becomes_smoke
+      && (particle.offset[2] > this.fire_height);
   ```
 
 - **Lifespan**  
@@ -764,8 +787,8 @@ Each particle has an offset from the base particle container position, a color i
   //simple zigzag motion
   if(!isSmoke){
       const random_angle = Math.random() * Math.PI * 2
-      particle.velocity[0] += Math.cos(random_angle) * 0.025;  
-      particle.velocity[1] += Math.sin(random_angle) * 0.025; 
+      particle.velocity[0] += Math.cos(random_angle) * 0.025;
+      particle.velocity[1] += Math.sin(random_angle) * 0.025;
   }else{
       particle.velocity[2] *= 0.985;
   }
@@ -788,11 +811,13 @@ Each particle has an offset from the base particle container position, a color i
   if(heightRatio < 0.4){
       //bottom yellow
       const t = heightRatio / 0.4;
-      lerp(particle.color, this.fire_colors[0], this.fire_colors[1], t);
+      lerp(particle.color, this.fire_colors[0],
+          this.fire_colors[1], t);
   }else{
       //orange to red
       const t = (heightRatio - 0.4) / 0.6;
-      lerp(particle.color, this.fire_colors[1], this.fire_colors[2], t);
+      lerp(particle.color, this.fire_colors[1],
+          this.fire_colors[2], t);
   }
   ```
 
