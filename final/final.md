@@ -883,6 +883,9 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 ### Additional Components
 
 - Overlay for skybox for a toggleable night mode
+- We ported toon shaders to work with deferred shading.
+- Although we present it as part of our scene design, the fire spread, generation, and other scene features not strictly about meshes could be considered additional components.
+- We consider sobel outlines to be part of our toon shader implementation, even though the original project instructions lists toon shaders and outlines as separate features
 
 
 ### Failed Experiments / Missing Features
@@ -890,14 +893,15 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 - **Shadows**: We disabled shadows due to performance issues and visual conflicts with particles, toon outlines, and bloom. Fire spread dynamically updates the number of light sources in a scene, meaning that to update the shadows performantly we'd need an optimized dynamic shadow system. We couldn't afford to spend time on that before completing our other features. A basic unoptimized version of deferred shadows exists in the codebase
 
 - **Directional Lighting**: We removed the ambient component of the in our lighting shaders because it interfered with the light volume system during blending. As a band-aid fix we used a faraway point-light with a high light radius to reintroduce 'ambient' lighting. Of course, this is not ideal for implementing a sun-like light since the light rays aren't parallel. Also, if we try to put the light source too far away, the light volume is culled by the render distance limit. We could've implemented a second type of light source that casts parallel light rays onto the scene similar to what is in the [Regl Deferred Shading Example](https://github.com/regl-project/regl/blob/main/example/deferred_shading.js)
-
 ### Challenges
 
-- **Deferred Shading**
-- **Fire particles**: It was hard to make the fire look real. At first, the particles flew straight up and it didn't look nice. We added a little wavy (zig-zag) motion and a gentle upward force (buoyancy effect), then spent some time adjusting the colors until the flames looked believable.
-- **Fire spread**: Tuning fire spread was tedious. We had to figure out the right parameters in order to get a nice effect while maintaining stability.
-- **Texture baking**: Texture baking was particularly hard at the beginning, many tutorials were telling us to use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
+- **Adapting to the Framework**: Understanding how to adapt C++ code into the provided javascript framework was challenging, and made harder by the fact that the framework did not follow the same project layout as other regl projects. The functional javascript code in many examples wasn't always easily adaptable to the object-oriented, de-functionalized framework. We were unsure how much the provided utility functions could accomplish in place of rolling our own.
 
+- **Fire Particles**: It was hard to make the fire look real. At first, the particles flew straight up and it didn't look nice. We added a little wavy (zig-zag) motion and a gentle upward force (buoyancy effect), then spent some time adjusting the colors until the flames looked believable.
+
+- **Fire Spread**: Tuning fire spread was tedious. We had to figure out the right parameters in order to get a nice effect while maintaining stability.
+
+- **Texture Baking**: Texture baking was particularly hard at the beginning, many tutorials were telling us to use the different unwrap options in Blender, but each time it made a mess. In the end, we were able to bake the pine tree texture without any unwrapping and then we just used photoshop for the second tree texture (our models only have two colors).
 
 ## Contributions
 
@@ -980,8 +984,7 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 
 #### Comments
 
-TODO
-
+We had no issues splitting up the workload.
 
 ## References
 
@@ -998,4 +1001,4 @@ TODO
 - [Toon and Sobel Inspiration](https://www.shadertoy.com/view/4dVGRW)
 - [Sobel Outline](https://www.vertexfragment.com/ramblings/unity-postprocessing-sobel-outline/#sobel-outlines-as-a-post-processing-effect)
 
-**Note**: AI was used during this project for finding ressources and giving us ideas for implementing certain aspects of our project. For example, AI gave us the hint to use zig-zag motion and buoyancy effect to make the fire more realistic. (AIs used: OpenAI, ClaudeAI)
+**Note**: We used LLMs to find some resources and give us ideas for implementing the more cosmetic parts of our project. For example, using zig-zagging motions and buoyancy to make more realistic fire. We also used AI for troubleshooting. We did not generate entire chunks of code and paste them into our project. (AIs used: ChatGPT, ClaudeAI.)

@@ -130,8 +130,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <li><a href="#failed-experiments-missing-features"
           id="toc-failed-experiments-missing-features">Failed
           Experiments / Missing Features</a></li>
-          <li><a href="#challenges"
-          id="toc-challenges">Challenges</a></li>
           </ul></li>
           <li><a href="#contributions"
           id="toc-contributions">Contributions</a></li>
@@ -189,14 +187,14 @@ stylized visuals
 <div
 style="display: flex; justify-content: center; gap: 20px; text-align: center;">
 <figure>
-<video src="videos/minifire.mp4" height="300px" autoplay loop muted>
+<video src="videos/minifire.mp4" height="300px" playsinline autoplay loop muted>
 </video>
 <figcaption>
 Close-up fire with cycling toon and bloom effects
 </figcaption>
 </figure>
 <figure>
-<video src="videos/firespread_closeup.mp4" height="300px" autoplay loop muted>
+<video src="videos/firespread_closeup.mp4" height="300px" playsinline autoplay loop muted>
 </video>
 <figcaption>
 Fire propagation system in action
@@ -446,14 +444,14 @@ Dynamic lighting with multiple orbital light sources
 <div
 style="display: flex; justify-content: center; gap: 20px; text-align: center;">
 <figure>
-<video src="videos/parameter_display.webm" width="350" autoplay loop>
+<video src="videos/parameter_display.webm" width="350" playsinline autoplay loop muted>
 </video>
 <figcaption>
 Close-up of Parameter Display Changing
 </figcaption>
 </figure>
 <figure>
-<video src="videos/firespread_closeup.mp4" width="350" autoplay loop>
+<video src="videos/firespread_closeup.mp4" width="350" playsinline autoplay loop muted>
 </video>
 <figcaption>
 Close-up of Fire Spread
@@ -1289,28 +1287,28 @@ href="#overview">overview videos</a>.</p>
 <div
 style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
 <figure>
-<video src="videos/fire_closeup.mp4" width="350" autoplay loop>
+<video src="videos/fire_closeup.mp4" width="350" playsinline autoplay loop muted>
 </video>
 <figcaption>
 a Fire Particle Container
 </figcaption>
 </figure>
 <figure>
-<video src="videos/billboard.mp4" width="350" autoplay loop>
+<video src="videos/billboard.mp4" width="350" playsinline autoplay loop muted>
 </video>
 <figcaption>
 Billboard with a texture
 </figcaption>
 </figure>
 <figure>
-<video src="videos/vomit_cropped.mp4" width="350" autoplay loop>
+<video src="videos/vomit_cropped.mp4" width="350" playsinline autoplay loop muted>
 </video>
 <figcaption>
 Non-GPU Instanced Rainbow Vomit (video from milestone)
 </figcaption>
 </figure>
 <figure>
-<video src="videos/vomit_gpu.mp4" width="350" autoplay loop>
+<video src="videos/vomit_gpu.mp4" width="350" playsinline autoplay loop muted>
 </video>
 <figcaption>
 GPU Instanced Rainbow Vomit
@@ -1348,6 +1346,13 @@ Changing size over time
 <h3 id="additional-components">Additional Components</h3>
 <ul>
 <li>Overlay for skybox for a toggleable night mode</li>
+<li>We ported toon shaders to work with deferred shading.</li>
+<li>Although we present it as part of our scene design, the fire spread,
+generation, and other scene features not strictly about meshes could be
+considered additional components.</li>
+<li>We consider sobel outlines to be part of our toon shader
+implementation, even though the original project instructions lists toon
+shaders and outlines as separate features</li>
 </ul>
 <h3 id="failed-experiments-missing-features">Failed Experiments /
 Missing Features</h3>
@@ -1369,26 +1374,28 @@ far away, the light volume is culled by the render distance limit. We
 could’ve implemented a second type of light source that casts parallel
 light rays onto the scene similar to what is in the <a
 href="https://github.com/regl-project/regl/blob/main/example/deferred_shading.js">Regl
-Deferred Shading Example</a></p></li>
-</ul>
-<h3 id="challenges">Challenges</h3>
-<ul>
-<li><strong>Deferred Shading</strong></li>
-<li><strong>Fire particles</strong>: It was hard to make the fire look
-real. At first, the particles flew straight up and it didn’t look nice.
-We added a little wavy (zig-zag) motion and a gentle upward force
+Deferred Shading Example</a> ### Challenges</p></li>
+<li><p><strong>Adapting to the Framework</strong>: Understanding how to
+adapt C++ code into the provided javascript framework was challenging,
+and made harder by the fact that the framework did not follow the same
+project layout as other regl projects. The functional javascript code in
+many examples wasn’t always easily adaptable to the object-oriented,
+de-functionalized framework. We were unsure how much the provided
+utility functions could accomplish in place of rolling our own.</p></li>
+<li><p><strong>Fire Particles</strong>: It was hard to make the fire
+look real. At first, the particles flew straight up and it didn’t look
+nice. We added a little wavy (zig-zag) motion and a gentle upward force
 (buoyancy effect), then spent some time adjusting the colors until the
-flames looked believable.</li>
-<li><strong>Fire spread</strong>: Tuning fire spread was tedious. We had
-to figure out the right parameters in order to get a nice effect while
-maintaining stability.</li>
-<li><strong>Texture baking</strong>: Texture baking was particularly
+flames looked believable.</p></li>
+<li><p><strong>Fire Spread</strong>: Tuning fire spread was tedious. We
+had to figure out the right parameters in order to get a nice effect
+while maintaining stability.</p></li>
+<li><p><strong>Texture Baking</strong>: Texture baking was particularly
 hard at the beginning, many tutorials were telling us to use the
-different unwrap options in Blender, but each time we did that it made a
-mess. At the end, for the pine tree we were able to bake the texture
-without any unwrapping and then for the second tree type we simply used
-photoshop to create the texture, realising that our meshes only had two
-colors…</li>
+different unwrap options in Blender, but each time it made a mess. In
+the end, we were able to bake the pine tree texture without any
+unwrapping and then we just used photoshop for the second tree texture
+(our models only have two colors).</p></li>
 </ul>
 <h2 id="contributions">Contributions</h2>
 <table>
@@ -1558,7 +1565,7 @@ Anthony Tamberg
 </tbody>
 </table>
 <h4 id="comments">Comments</h4>
-<p>TODO</p>
+<p>We had no issues splitting up the workload.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://github.com/regl-project/regl/blob/main/API.md">Regl
@@ -1593,11 +1600,12 @@ Inspiration</a></li>
 href="https://www.vertexfragment.com/ramblings/unity-postprocessing-sobel-outline/#sobel-outlines-as-a-post-processing-effect">Sobel
 Outline</a></li>
 </ul>
-<p><strong>Note</strong>: AI was used during this project for finding
-ressources and giving us ideas for implementing certain aspects of our
-project. For example, AI gave us the hint to use zig-zag motion and
-buoyancy effect to make the fire more realistic. (AIs used: OpenAI,
-ClaudeAI)</p>
+<p><strong>Note</strong>: We used LLMs to find some resources and give
+us ideas for implementing the more cosmetic parts of our project. For
+example, using zig-zagging motions and buoyancy to make more realistic
+fire. We also used AI for troubleshooting. We did not generate entire
+chunks of code and paste them into our project. (AIs used: ChatGPT,
+ClaudeAI.)</p>
         </div>
       </div>
     </div>
