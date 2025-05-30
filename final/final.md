@@ -434,7 +434,7 @@ We should be able to control the following parameters:
 |:---:|:---:|
 | <img src="images/toon_and_bloom.png" width="450" alt="Toon and bloom together" /> | <img src="images/toon_and_bloom_night.png" width="450" alt="Toon and bloom together at night" /> |
 
-We can see the sobels outlines working with particles [here](#top) or [here](#overview). Since Particles are not affected by any lighting, toon levels does not change their appearance.
+We can see the sobels outlines working with particles [here](#top) or [here](#overview). Since Particles are not affected by any lighting, toon levels do not change their appearance.
 
 ### Deferred Shading
 
@@ -824,8 +824,24 @@ We can see fire particles working in the [overview video](#top) and [here](#vali
   </figure>
 </div>
 
-Although GPU instancing hasn't eliminated lag entirely, (especially since `evolve()` runs entirely on the cpu,) we can see that without gpu instancing there is significantly more lag coming from rendering each particle individually.
-TODO
+Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs entirely on the cpu,) we see that without gpu instancing particle rendering is significantly slower.
+
+<div style="display: flex; justify-content: space-between; max-width: 800px; margin: auto; gap: 20px; text-align: center; align-items: flex-start;">
+  <figure>
+    <video src="videos/particle_color.mp4" width="226" autoplay loop muted playsinline></video>
+    <figcaption>Color Changing Particle with a Semi-Transparent Texture</figcaption>
+  </figure>
+
+  <figure>
+    <video src="videos/particle_offset.mp4" width="226" autoplay loop muted playsinline></video>
+    <figcaption>Changing offset relative to container origin (stationary particle)</figcaption>
+  </figure>
+
+  <figure>
+    <video src="videos/particle_scale.mp4" width="226" autoplay loop muted playsinline></video>
+    <figcaption>Changing size over time</figcaption>
+  </figure>
+</div>
 
 
 ## Discussion
