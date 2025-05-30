@@ -220,7 +220,7 @@ Finally, we baked the tree materials into texture images, allowing us to preserv
 
 <div style="text-align: center;">
 <img src="images/models_scene.png" width="700" alt="Models scene with all meshes" />
-<figcaption>Dynamic lighting with multiple orbital light sources</figcaption>
+<figcaption>Model showcase scene</figcaption>
 </div>
 
 <div style="display: flex; justify-content: center; gap: 20px; text-align: center;">
