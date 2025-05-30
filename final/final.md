@@ -4,13 +4,6 @@ title: FireGL - Fire Simulation in WebGL Final Report CS-341 2025
 
 # FireGL - Fire Simulation in WebGL
 
-<div style="display:flex; justify-content: space-around; align-items: center;">
-<div>
-<video src="videos/minifire.mp4" height="400px" autoplay loop style="vertical-align: middle;"></video>
-</div>
-</div>
-<figcaption style="text-align: center;">Close-up fire with cycling toon and bloom post-processing effects</figcaption>
-
 ## Abstract
 
 This project simulates dynamic, stylized fire in a 3D forest scene using WebGL. It combines deferred shading, toon lighting, and bloom post-processing to produce visually distinct effects while maintaining performance. Procedural scene generation and fire propagation systems allow trees to ignite and spread fire based on proximity and time, with visual transitions between normal, burning, and burned states. A GPU-instanced particle system renders thousands of animated fire and smoke particles efficiently. Users can interact with the simulation by triggering fires. We validate our results through side-by-side visual comparisons and limited performance tests.
@@ -23,7 +16,7 @@ Scenes are populated with procedurally placed trees of varying types, scales, an
 
 To model the fire itself, we implemented a custom particle system with support for GPU instancing, allowing thousands of particles to be animated each frame with minimal CPU overhead. These particles change size, velocity, and color over their lifetimes, transitioning smoothly between fire and smoke. Combined with bloom post-processing, bright areas such as fire particles and light sources glow vividly, especially in nighttime scenes. The final esthetic is further enhanced by toon shading with edge outlines. The toon, thickly-outlined appearance one can achieve is similar to that of the game *Lethal Company*.
 
-<div style="text-align: center;"> <video src="videos/video-group64.mp4" width="700" controls></video> <figcaption>Our final video submission: Fire spreading, lighting effects, and stylized visuals</figcaption> </div> <div style="display: flex; justify-content: center; gap: 20px; text-align: center;"> <figure> <video src="videos/minifire.mp4" height="300px" autoplay loop muted></video> <figcaption>Close-up fire with toon and bloom effects</figcaption> </figure> <figure> <video src="videos/firespread_closeup.mp4" height="300px" autoplay loop muted></video> <figcaption>Fire propagation system in action</figcaption> </figure> </div>
+<div style="text-align: center;"> <video src="videos/video-group64.mp4" width="700" controls></video> <figcaption>Our final video submission: Fire spreading, lighting effects, and stylized visuals</figcaption> </div> <div style="display: flex; justify-content: center; gap: 20px; text-align: center;"> <figure> <video src="videos/minifire.mp4" height="300px" autoplay loop muted></video> <figcaption>Close-up fire with cycling toon and bloom effects</figcaption> </figure> <figure> <video src="videos/firespread_closeup.mp4" height="300px" autoplay loop muted></video> <figcaption>Fire propagation system in action</figcaption> </figure> </div>
 
 
 ## Feature validation
@@ -435,7 +428,7 @@ We should be able to control the following parameters:
 |:---:|:---:|
 | <img src="images/toon_and_bloom.png" width="450" alt="Toon and bloom together" /> | <img src="images/toon_and_bloom_night.png" width="450" alt="Toon and bloom together at night" /> |
 
-We can see the sobels outlines working with particles [here](#top) or [here](#overview). Since Particles are not affected by any lighting, toon levels do not change their appearance.
+We can see the sobels outlines with particles [here](#overview). Since particles are not affected by any lighting, toon levels do not change their appearance.
 
 ### Deferred Shading
 
@@ -806,7 +799,7 @@ Each particle has an offset from the base particle container position, a color i
 
 #### Validation
 
-We can see fire particles working in the [overview video](#top) and [here](#validation).
+We can see fire particles in action in the [overview videos](#overview).
 
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
   <figure>
