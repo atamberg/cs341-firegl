@@ -74,6 +74,7 @@ In `deferred_scene.js`, we added dynamic lights that move in orbital patterns:
 
 - **Parametric Animation**: Each light follows orbital paths defined by parametric equations:
   ```javascript
+  // deferred_scene.js
   light.position[0] = Math.cos(angle) * radius;
   light.position[1] = Math.sin(angle) * radius;
   light.position[2] = height + Math.sin(angle * 2) * amplitude;
@@ -81,12 +82,14 @@ In `deferred_scene.js`, we added dynamic lights that move in orbital patterns:
 
 - **Phase Offsets**: Each light starts at a different position in its orbit to avoid synchronized movement:
   ```javascript
+  // deferred_scene.js
   const phase = i * (Math.PI * 2) / lightCount;
   angle = (t * speed) + phase;
   ```
 
 - **Random Variations**: Lights have different orbit sizes, heights, and speeds to make the scene more interesting:
   ```javascript
+  // deferred_scene.js
   const radius
       = baseRadius + (Math.random() * 2 - 1) * radiusVariation;
   ```
@@ -97,6 +100,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 
 - **Collision Avoidance**: We check distances between trees to prevent them from overlapping:
   ```javascript
+  // mixed_forest_scene.js
   const tooClose = positions.some(p => {
       const dx = p.x - x;
       const dy = p.y - y;
@@ -106,6 +110,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 
 - **Random Properties**: Trees get different sizes and types for more variety:
   ```javascript
+  // mixed_forest_scene.js
   const scale = 0.5 + Math.random() * 0.8;
   const treeType
       = Math.random() > 0.7 ? 'TreeType2.obj' : 'TreeType1.obj';
@@ -120,6 +125,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 
 - **Object State Management**: Each tree stores multiple states (normal, burning, burned) with associated properties:
   ```javascript
+  // fire_spread.js
   original_scale: [scale, scale, scale],
   burned_scale: [scale * 2.5, scale * 2.5, scale * 2.5],
   ```
@@ -128,6 +134,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
   Every `fireSpreadInterval` seconds we enlarge both particle radius and light radius, clamping growth to keep it stable:
 
   ```javascript
+  // fire_spread.js
   fire.emission_radius = Math.min(
       fire.emission_radius + 0.3,
       this.maxFireSpread);
@@ -137,6 +144,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 
 - **Proximity-Based Propagation**: A tree ignites when its center falls inside a fire’s `burnZone` (flame radius × multiplier):
   ```javascript
+  // fire_spread.js
   const burnZone = fire.emission_radius * this.burnRadius;
   if(dist(firePosition, obj.translation) <= burnZone){
       this.createTreeFire(obj);
@@ -145,6 +153,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 
 - **Burning Animation**: Trees change appearance when burning, swapping meshes and changing scale:
   ```javascript
+  // fire_spread.js
   if(time > this.burnDuration - .5 && time < this.burnDuration) {
       tree.material = MATERIALS.burntTree;
       tree.mesh_reference = tree.mesh_reference == 'TreeType1.obj' ? 
@@ -162,6 +171,7 @@ All scenes include:
 
 - **Parameter Display**: A floating status box shows the current state of boolean parameters:
   ```javascript
+  // scene.js
   updateStatusBox() {
       const params = this.getParamState();
       this.statusBox.innerHTML = Object.entries(params)
@@ -172,6 +182,7 @@ All scenes include:
 
 - **Keyboard Controls**: Press keys to trigger actions like starting fires:
   ```javascript
+  // mixed_forest_scene.js
   create_hotkey_action("f",
       () => this.startFireAtCursor(), "Start fire at cursor");
   ```
@@ -368,6 +379,7 @@ This linear attenuation model is simpler than physically-based attenuation but b
 3. **Light Combining**: We add up the contributions from multiple lights while keeping the cartoon look:
 
 ```javascript
+// toon_sr.js
 blend() {
     // Use additive blending to accumulate light contributions
     return {
@@ -754,6 +766,7 @@ Each particle has an offset from the base particle container position, a color i
   Each particle is born inside a disk of radius `emission_radius` and given randomized velocity and offset from its center:
 
   ```javascript
+  // particle_system.js
   particle.offset[0]
       = Math.cos(random_angle) * this.emission_radius * Math.random();
   particle.offset[1]
