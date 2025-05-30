@@ -885,9 +885,11 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 - Overlay for skybox for a toggleable night mode
 
 
-### Failed Experiments
+### Failed Experiments / Missing Features
 
 - **Shadows**: We disabled shadows due to performance issues and visual conflicts with particles, toon outlines, and bloom. Fire spread dynamically updates the number of light sources in a scene, meaning that to update the shadows performantly we'd need an optimized dynamic shadow system. We couldn't afford to spend time on that before completing our other features. A basic unoptimized version of deferred shadows exists in the codebase
+
+- **Directional Lighting**: We removed the ambient component of the in our lighting shaders because it interfered with the light volume system during blending. As a band-aid fix we used a faraway point-light with a high light radius to reintroduce 'ambient' lighting. Of course, this is not ideal for implementing a sun-like light since the light rays aren't parallel. Also, if we try to put the light source too far away, the light volume is culled by the render distance limit. We could've implemented a second type of light source that casts parallel light rays onto the scene similar to what is in the [Regl Deferred Shading Example](https://github.com/regl-project/regl/blob/main/example/deferred_shading.js)
 
 ### Challenges
 
