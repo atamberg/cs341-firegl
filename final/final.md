@@ -887,7 +887,7 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 
 ### Failed Experiments
 
-- **Shadows**
+- **Shadows**: We disabled shadows due to performance issues and visual conflicts with particles, toon outlines, and bloom. Fire spread dynamically updates the number of light sources in a scene, meaning that to update the shadows performantly we'd need an optimized dynamic shadow system. We couldn't afford to spend time on that before completing our other features. A basic unoptimized version of deferred shadows exists in the codebase
 
 ### Challenges
 
