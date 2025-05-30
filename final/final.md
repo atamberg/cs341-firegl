@@ -186,7 +186,7 @@ The dead version of this tree was designed similarly, but we added extra branche
 For the second tree type, we included more branches and used icospheres to represent the leaves, which created a visually nice effect.
 Its dead version followed a similar structure, with additional branches.
 
-The terrain is modeled as a thick rectangle. We added a displacement modifier with a “cloud” texture to give it a natural, uneven surface resembling real terrain.
+Starting with a thick rectangle, we added a displacement modifier with a “cloud” texture to create a natural, uneven surface resembling real terrain.
 
 Finally, we baked the tree materials into texture images, allowing us to preserve their colors in the project.
 
@@ -511,7 +511,7 @@ float material_shininess = texture2D(albedoSpecBuffer, uv).a;
 
 ##### Light Volumes
 
-We rewrote the deferred version of the lighting shaders to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We modified how ambient lighting and attenutation works, which we also ported to the non-deferred shaders (without changed the original computation) so that we could compare the two implementations more easily.
+We rewrote the deferred version of the lighting shaders to use light volumes. Instead of iterating over lights per object, each light is represented as a sphere mesh, and shading is computed per fragment within the light volume using additive blending and front-face culling. We modified how ambient lighting and attenutation works, which we also ported to the non-deferred shaders (without changing the original computation) so that we could compare the two implementations more easily.
 
 ```javascript
 // blinn_phong_deferred_sr.js
@@ -766,7 +766,7 @@ Each particle has an offset from the base particle container position, a color i
   ```
 
 - **Fire-to-smoke transition**  
-  `smoke_chance` (5 %) decides whether a particle may become smoke after it rises above `fire_height`:
+  The `smoke_chance` parameter decides whether a particle may become smoke after it rises above `fire_height`:
 
   ```javascript
   particle.becomes_smoke  = Math.random() < this.smoke_chance;
@@ -781,7 +781,7 @@ Each particle has an offset from the base particle container position, a color i
   3. it exceeds a randomized fraction of `fire_height` or `smoke_height`.
 
 - **Realistic effects**  
-  Fire particles have a zig-zag and buoyancy effect making the fire look more realistic
+  Fire particles move in a zig-zag motion and with buoyancy:
 
   ```javascript
   //simple zigzag motion
@@ -880,7 +880,7 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 
 - **Deferred Shading**
 - **Particles**
-- **Fire spread**: Fire spread was quite tedious as we had to figure out the perfect parameters to pass in order to get a nice fire spread effect while keeping it stable. 
+- **Fire spread**: Tuning fire spread was tedious. We had to figure out the right parameters in order to get a nice effect while maintaining stability.
 - **Texture baking**: Texture baking was particularly hard at the beginning, many tutorials were telling use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
 
 
