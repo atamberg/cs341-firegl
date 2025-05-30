@@ -119,7 +119,8 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
 
 **Fire Spread System**
 
-`mixed_forest_scene.js` and `pine_scene.js` includes a fire system (`fire_spread.js`) that shows off our particles and lighting:
+`mixed_forest_scene.js` and `pine_scene.js` includes a fire system (`fire_spread.js`) that shows off our particles (*explained later*) and lighting:
+
 
 - **Object State Management**: Each tree stores multiple states (normal, burning, burned) with associated properties:
   ```javascript
@@ -127,30 +128,37 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
   burned_scale: [scale * 2.5, scale * 2.5, scale * 2.5],
   ```
 
-- **Proximity-Based Propagation**: Fire spreads naturally between nearby objects based on configurable parameters:
+- **Parametric fire growth**  
+  Every `fireSpreadInterval` seconds we enlarge both particle radius and light radius, clamping growth to keep it stable:
+
   ```javascript
-  const distance = dist(firePosition, obj.translation);
-  if(distance <= burnZone){
+  fire.emission_radius = Math.min(
+      fire.emission_radius + 0.3,
+      this.maxFireSpread);
+  if (fire.emission_radius < this.maxFireSpread)
+      fire.particles_per_frame *= 1.2; 
+  ```
+
+- **Proximity-Based Propagation**: A tree ignites when its center falls inside a fire’s `burnZone` (flame radius × multiplier):
+  ```javascript
+  const burnZone = fire.emission_radius * this.burnRadius;
+  if(dist(firePosition, obj.translation) <= burnZone){
       this.createTreeFire(obj);
   }
   ```
 
-- **Burning Animation**: Trees change appearance when burning, swapping models and changing scale:
+- **Burning Animation**: Trees change appearance when burning, swapping meshes and changing scale:
   ```javascript
   if(time > this.burnDuration - .5 && time < this.burnDuration) {
       tree.material = MATERIALS.burntTree;
-      tree.mesh_reference = tree.mesh_reference == 'TreeType1.obj' ? 
+      tree.images/mesh_reference = tree.images/mesh_reference == 'TreeType1.obj' ? 
           'DeadTreeType1.obj': 'DeadTreeType2.obj';
       vec3.scale(tree.scale, tree.burned_scale, 0.75 + 0.25 * 
           (time - this.burnDuration + 0.5) / .5);
   }
   ```
 
-- **User Interaction**: We implemented a ray-casting system that converts screen coordinates to world positions, allowing users to start fires with mouse clicks:
-  ```javascript
-  const ray = this.camera.screenPointToRay(normalizedX, normalizedY);
-  const groundPlaneIntersection = this.intersectRayWithGroundPlane(ray);
-  ```
+- **User Interaction**: We implemented a ray-casting system that converts screen coordinates to world positions, allowing users to start fires with pressing a key on the keyboard.
 
 **User Interface**
 
@@ -218,9 +226,37 @@ Finally, we baked the tree materials into texture images, allowing us to preserv
 </div>
 
 ##### Mesh Design
-Here is a comparison between our meshes rendered in our project versus in Blender:
 
+Here is a comparison between our meshes rendered in Blender versus in our project:
+<h2 style="text-align:center;">BLENDER vs. PROJECT</h2>
 
+<!-- Tree Type 1 -->
+<div style="text-align:center; margin-bottom:2em;">
+  <img src="images/mesh_TreeType1.png" alt="Tree Type 1 – Blender" height="300" width="300" style="object-fit:cover;"/>
+  <img src="images/mesh_bTreeType1.png" alt="Tree Type 1 – Project" height="300" width="300" style="object-fit:cover;"/>
+  <p><em>Figure: Tree Type 1</em></p>
+</div>
+
+<!-- Tree Type 2 -->
+<div style="text-align:center; margin-bottom:2em;">
+  <img src="images/mesh_TreeType2.png" alt="Tree Type 2 – Blender" height="300" width="300" style="object-fit:cover;"/>
+  <img src="images/mesh_bTreeType2.png" alt="Tree Type 2 – Project" height="300" width="300" style="object-fit:cover;"/>
+  <p><em>Figure: Tree Type 2</em></p>
+</div>
+
+<!-- Dead Tree Type 1 -->
+<div style="text-align:center; margin-bottom:2em;">
+  <img src="images/mesh_DeadTreeType1.png" alt="Dead Tree Type 1 – Blender" height="300" width="300" style="object-fit:cover;"/>
+  <img src="images/mesh_bDeadTreeType1.png" alt="Dead Tree Type 1 – Project" height="300" width="300" style="object-fit:cover;"/>
+  <p><em>Figure: Dead Tree Type 1</em></p>
+</div>
+
+<!-- Dead Tree Type 2 -->
+<div style="text-align:center; margin-bottom:2em;">
+  <img src="images/mesh_DeadTreeType2.png" alt="Dead Tree Type 2 – Blender" height="300" width="300" style="object-fit:cover;"/>
+  <img src="images/mesh_bDeadTreeType2.png" alt="Dead Tree Type 2 – Project" height="300" width="300" style="object-fit:cover;"/>
+  <p><em>Figure: Dead Tree Type 2</em></p>
+</div>
 
 ### Bloom
 
@@ -484,7 +520,7 @@ We rewrote the deferred version of the lighting shaders to use light volumes. In
 ```javascript
 // blinn_phong_deferred_sr.js
 ...
-this.light_sphere = cg_mesh_make_uv_sphere(16);
+this.light_sphere = cg_images/mesh_make_uv_sphere(16);
 ...
 render(scene_state, gBuffer) {
 ...
@@ -622,10 +658,10 @@ Following the same tutorial, we created a particle container class (`particle_co
 ```javascript
 // particle_container.js
 export class ParticleContainer {
-    constructor(translation, scale, mesh_reference) {
+    constructor(translation, scale, images/mesh_reference) {
         this.translation = translation;
         this.scale = scale;
-        this.mesh_reference = mesh_reference;
+        this.images/mesh_reference = images/mesh_reference;
         this.material = MATERIALS.particle_green;
         this.color = this.material.color;
         this.particle_list = [];
@@ -659,7 +695,7 @@ render(scene_state) {
 	...
 	// using gpu instancing to push particle data into buffer
 	inputs.push({
-	    mesh: this.resource_manager.get_mesh(obj.mesh_reference),
+	    mesh: this.resource_manager.get_mesh(obj.images/mesh_reference),
 	    particle_offsets: {
 		buffer: obj.particle_list.map(p => p.offset),
 		divisor: 1,
@@ -704,6 +740,80 @@ Each particle has an offset from the base particle container position, a color i
 
 ##### Fire Particles
 
+**`fire_and_smoke.js` :** extends `ParticleContainer` and provides a convincing fire effect with fire colors and smoke.
+
+
+- **Per-frame emission with cap**  
+  Up to `particles_per_frame` (45) new particles are spawned each tick, but the cap guarantees we never exceed `max_particles`:
+
+  ```javascript
+  for (let i = 0; i < this.particles_per_frame; ++i)
+      this.emitParticle();             
+  ```
+
+- **Spawn parameters**  
+  Each particle is born inside a disk of radius `emission_radius` and given randomized velocity and offset from its center:
+
+  ```javascript
+  particle.offset[0] = Math.cos(random_angle) * this.emission_radius * Math.random();
+  particle.offset[1] = Math.sin(random_angle) * this.emission_radius * Math.random();
+  particle.velocity[0] = Math.cos(random_angle) * (0.1 + Math.random() * 0.2) ;
+  particle.velocity[1] = Math.sin(random_angle) * (0.1 + Math.random() * 0.2) ;
+  particle.velocity[2] = upward_speed;
+  ```
+
+- **Fire-to-smoke transition**  
+  `smoke_chance` (5 %) decides whether a particle may become smoke after it rises above `fire_height`:
+
+  ```javascript
+  particle.becomes_smoke  = Math.random() < this.smoke_chance;
+  const isSmoke = particle.becomes_smoke && (particle.offset[2] > this.fire_height);
+  ```
+
+- **Lifespan**  
+  A particle dies when:  
+  1. `life` ≤ 0,  
+  2. it has existed longer than its `smoke_lifetime`, or  
+  3. it exceeds a randomized fraction of `fire_height` or `smoke_height`.
+
+- **Realistic effects**  
+  Fire particles have a zig-zag and buoyancy effect making the fire look more realistic
+
+  ```javascript
+  //simple zigzag motion
+  if(!isSmoke){
+      const random_angle = Math.random() * Math.PI * 2
+      particle.velocity[0] += Math.cos(random_angle) * 0.025;  
+      particle.velocity[1] += Math.sin(random_angle) * 0.025; 
+  }else{
+      particle.velocity[2] *= 0.985;
+  }
+  
+  //buoyancy effect
+  if(!isSmoke){
+      //get the height ratio [0,1]
+      const heightRatio = particle.offset[2] / this.fire_height;
+      //upward acceleration (stronger when lower)
+      particle.velocity[2] += (1.0 - heightRatio) * 4.0 * slower_dt; 
+  }
+  ```
+
+- **Height-based color grading**  
+  Linear interpolation (`lerp`) blends between three fire colors (yellow → orange → red) or smoke colors (dark-red → gray → black) based on height:
+
+  ```javascript
+  // fire example
+  const heightRatio = particle.offset[2] / this.fire_height;
+  if(heightRatio < 0.4){
+      //bottom yellow
+      const t = heightRatio / 0.4;
+      lerp(particle.color, this.fire_colors[0], this.fire_colors[1], t);
+  }else{
+      //orange to red
+      const t = (heightRatio - 0.4) / 0.6;
+      lerp(particle.color, this.fire_colors[1], this.fire_colors[2], t);
+  }
+  ```
 
 
 #### Validation
@@ -723,15 +833,14 @@ TODO
 
 ### Failed Experiments
 
-- Shadows
+- **Shadows**
 
 ### Challenges
 
-- Deferred Shading
-- Particles
-- Fire spread
-#### Texture baking
-Texture baking was particularly hard at the beginning, many tutorials were telling use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
+- **Deferred Shading**
+- **Particles**
+- **Fire spread**: Fire spread was quite tedious as we had to figure out the perfect parameters to pass in order to get a nice fire spread effect while keeping it stable. 
+- **Texture baking**: Texture baking was particularly hard at the beginning, many tutorials were telling use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
 
 
 ## Contributions
@@ -758,10 +867,10 @@ Texture baking was particularly hard at the beginning, many tutorials were telli
 			<td style="background-color: #f0f0f0;">2</td>
 			<td>0</td>
 			<td>10</td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td>5</td>
+			<td>13</td>
+			<td>9</td>
+			<td>40</td>
 		</tr>
 		<tr>
 			<td>Ali Gorgani</td>
@@ -826,6 +935,8 @@ TODO
 - [Deferred Shading Tutorial](https://learnopengl.com/Advanced-Lighting/Deferred-Shading)
 - [Billboards and Particles Tutorial](https://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/)
 - [Bloom Tutorial](https://learnopengl.com/Advanced-Lighting/Bloom)
+- [Particles (Fire)](https://learnopengl.com/In-Practice/2D-Game/Particles)
+- [Texture Baking](https://youtu.be/JE2Zmy088zc?si=zxaeML4sF3d6ACP1)
 - [Toon Shading Tutorial](https://www.youtube.com/watch?v=h15kTY3aWaY)
 - [Toon Shading Wiki](https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Toon_Shading)
 - [Toon and Sobel Inspiration](https://www.shadertoy.com/view/4dVGRW)

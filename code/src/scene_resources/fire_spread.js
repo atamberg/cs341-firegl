@@ -34,13 +34,13 @@ export class FireSpreadAndBurn{
         if(this.fireSpreadTimer >= this.fireSpreadInterval){
 
             this.scene.fire_containers.forEach(fire => {
-                fire.emission_radius += 0.3;
-                fire.light_source.radius += 0.5; 
-                if(fire.emission_radius > this.maxFireSpread){
-                    fire.emission_radius = this.maxFireSpread;
-                } else {
+                fire.emission_radius = 
+                Math.min(fire.emission_radius + 0.3,
+                        this.maxFireSpread);
+                if(fire.emission_radius < this.maxFireSpread){
                     fire.particles_per_frame *= 1.2; 
                 }
+        
             });
 
             this.fireSpreadTimer = 0;
