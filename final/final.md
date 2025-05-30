@@ -16,7 +16,7 @@ Scenes are populated with procedurally placed trees of varying types, scales, an
 
 To model the fire itself, we implemented a custom particle system with support for GPU instancing, allowing thousands of particles to be animated each frame with minimal CPU overhead. These particles change size, velocity, and color over their lifetimes, transitioning smoothly between fire and smoke. Combined with bloom post-processing, bright areas such as fire particles and light sources glow vividly, especially in nighttime scenes. The final esthetic is further enhanced by toon shading with edge outlines. The toon, thickly-outlined appearance is similar to that of the game *Lethal Company*.
 
-<div style="text-align: center;"> <video src="videos/video-group64.mp4" width="700" controls></video> <figcaption>Our final video submission: Fire spreading, lighting effects, and stylized visuals</figcaption> </div> <div style="display: flex; justify-content: center; gap: 20px; text-align: center;"> <figure> <video src="videos/minifire.mp4" height="300px" autoplay loop muted></video> <figcaption>Close-up fire with cycling toon and bloom effects</figcaption> </figure> <figure> <video src="videos/firespread_closeup.mp4" height="300px" autoplay loop muted></video> <figcaption>Fire propagation system in action</figcaption> </figure> </div>
+<div style="text-align: center;"> <video src="videos/video-group64.mp4" width="700" controls></video> <figcaption>Our final video submission: Fire spreading, lighting effects, and stylized visuals</figcaption> </div> <div style="display: flex; justify-content: center; gap: 20px; text-align: center;"> <figure> <video src="videos/minifire.mp4" height="300px" playsinline autoplay loop muted></video> <figcaption>Close-up fire with cycling toon and bloom effects</figcaption> </figure> <figure> <video src="videos/firespread_closeup.mp4" height="300px" playsinline autoplay loop muted></video> <figcaption>Fire propagation system in action</figcaption> </figure> </div>
 
 
 ## Feature validation
@@ -225,11 +225,11 @@ Finally, we baked the tree materials into texture images, allowing us to preserv
 
 <div style="display: flex; justify-content: center; gap: 20px; text-align: center;">
   <figure>
-    <video src="videos/parameter_display.webm" width="350" autoplay loop></video>
+    <video src="videos/parameter_display.webm" width="350" playsinline autoplay loop muted></video>
     <figcaption>Close-up of Parameter Display Changing</figcaption>
   </figure>
   <figure>
-    <video src="videos/firespread_closeup.mp4" width="350" autoplay loop></video>
+    <video src="videos/firespread_closeup.mp4" width="350" playsinline autoplay loop muted></video>
     <figcaption>Close-up of Fire Spread</figcaption>
   </figure>
 </div>
@@ -841,19 +841,19 @@ We can see fire particles in action in the [overview videos](#overview).
 
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
   <figure>
-    <video src="videos/fire_closeup.mp4" width="350" autoplay loop></video>
+    <video src="videos/fire_closeup.mp4" width="350" playsinline autoplay loop muted></video>
     <figcaption>a Fire Particle Container</figcaption>
   </figure>
   <figure>
-    <video src="videos/billboard.mp4" width="350" autoplay loop></video>
+    <video src="videos/billboard.mp4" width="350" playsinline autoplay loop muted></video>
     <figcaption>Billboard with a texture</figcaption>
   </figure>
   <figure>
-    <video src="videos/vomit_cropped.mp4" width="350" autoplay loop></video>
+    <video src="videos/vomit_cropped.mp4" width="350" playsinline autoplay loop muted></video>
     <figcaption>Non-GPU Instanced Rainbow Vomit (video from milestone)</figcaption>
   </figure>
   <figure>
-    <video src="videos/vomit_gpu.mp4" width="350" autoplay loop></video>
+    <video src="videos/vomit_gpu.mp4" width="350" playsinline autoplay loop muted></video>
     <figcaption>GPU Instanced Rainbow Vomit</figcaption>
   </figure>
 </div>
