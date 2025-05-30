@@ -509,7 +509,7 @@ void main() {
 }
 ```
 
-We compute the pixel coordinate `uv` from the position in camera-projection view to be able to extract data from the gBuffer textures:
+We compute the pixel coordinate `uv` from the camera-projection position to extract data from the gBuffer textures:
 
 ```glsl
 // deferred/blinn_phong.frag.glsl
@@ -577,6 +577,8 @@ Here is a comparison between deferred and non-deferred shading, as well the cont
 <img src="images/deferred_0_toon.png" width="700"/>
 <figcaption>Deferred Shading Enabled (Toon)</figcaption>
 </div>
+
+We can see very little, if any, difference between deferred and non-deferred shading.
 
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
   <figure>
@@ -682,7 +684,7 @@ export class ParticleContainer {
     }
 
     find_unused_particle() {
-	... //(taken from the tutorial)
+	... // algorithm taken from the tutorial
     }
 
     // To be overrided in subclass
@@ -692,7 +694,7 @@ export class ParticleContainer {
 
 Some of these fields are likely unnecessary or weren't fully used in our project (e.g., `last_used_particle`, since `find_unused_particle` also returns the index of the last used particle).
 
-To prevent a mesh from being rendered at the container's base position we excluded particles from all of the depth-related shaders (e.g., `pre_processing_sr.js`, `map_mixer.js`) as well as from the lighting shaders (e.g., `no_blinn_phong` material propery) which is recommended for billboards but not strictly necessary for other types of particle meshes.
+To prevent a mesh from being rendered at the container's base position we excluded particles from all of the depth-related shaders (e.g., `pre_processing_sr.js`, `map_mixer.js`) as well as from the lighting shaders (e.g., `no_blinn_phong` material property). Disabling shading is recommended for billboards but not strictly necessary for other types of particle meshes.
 
 ##### GPU Instancing
 
@@ -751,7 +753,7 @@ Each particle has an offset from the base particle container position, a color i
 
 ##### Fire Particles
 
-**`fire_and_smoke.js` :** extends `ParticleContainer` and provides a convincing fire effect with fire colors and smoke.
+`fire_and_smoke.js` extends `ParticleContainer` and provides a convincing effect with fiery colors and smoke.
 
 
 - **Per-frame emission with cap**  
@@ -793,7 +795,7 @@ Each particle has an offset from the base particle container position, a color i
   2. it has existed longer than its `smoke_lifetime`, or  
   3. it exceeds a randomized fraction of `fire_height` or `smoke_height`.
 
-- **Realistic effects**  
+- **Realistic motion**
   Fire particles move in a zig-zag motion and with buoyancy:
 
   ```javascript
@@ -837,7 +839,7 @@ Each particle has an offset from the base particle container position, a color i
 
 #### Validation
 
-We can see fire particles in action in the [overview videos](#overview).
+We can see fire particles in complete action in the [overview videos](#overview).
 
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; text-align: center;">
   <figure>
@@ -858,12 +860,12 @@ We can see fire particles in action in the [overview videos](#overview).
   </figure>
 </div>
 
-Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs entirely on the CPU), we see that without GPU instancing particle rendering is significantly slower.
+Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs entirely on the CPU), we see that GPU-instanced particle rendering is significantly faster.
 
 <div style="display: flex; justify-content: space-between; max-width: 800px; margin: auto; gap: 20px; text-align: center; align-items: flex-start;">
   <figure>
     <video src="videos/particle_color.mp4" width="226" autoplay loop muted playsinline></video>
-    <figcaption>Color Changing Particle with a Semi-Transparent Texture</figcaption>
+    <figcaption>Color Changing Particle with a Semi-transparent Texture</figcaption>
   </figure>
 
   <figure>
@@ -884,7 +886,7 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 
 - Overlay for skybox for a toggleable night mode
 - We ported toon shaders to work with deferred shading.
-- Although we present it as part of our scene design, the fire spread, generation, and other scene features not strictly about meshes could be considered additional components.
+- Although we present it as part of our scene design, the fire spread, generation, and other scene features not strictly about meshes could be considered as add-ons.
 - We consider sobel outlines to be part of our toon shader implementation, even though the original project instructions lists toon shaders and outlines as separate features
 
 
@@ -893,15 +895,16 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 - **Shadows**: We disabled shadows due to performance issues and visual conflicts with particles, toon outlines, and bloom. Fire spread dynamically updates the number of light sources in a scene, meaning that to update the shadows performantly we'd need an optimized dynamic shadow system. We couldn't afford to spend time on that before completing our other features. A basic unoptimized version of deferred shadows exists in the codebase
 
 - **Directional Lighting**: We removed the ambient component of the in our lighting shaders because it interfered with the light volume system during blending. As a band-aid fix we used a faraway point-light with a high light radius to reintroduce 'ambient' lighting. Of course, this is not ideal for implementing a sun-like light since the light rays aren't parallel. Also, if we try to put the light source too far away, the light volume is culled by the render distance limit. We could've implemented a second type of light source that casts parallel light rays onto the scene similar to what is in the [Regl Deferred Shading Example](https://github.com/regl-project/regl/blob/main/example/deferred_shading.js)
+
 ### Challenges
 
-- **Adapting to the Framework**: Understanding how to adapt C++ code into the provided javascript framework was challenging, and made harder by the fact that the framework did not follow the same project layout as other regl projects. The functional javascript code in many examples wasn't always easily adaptable to the object-oriented, de-functionalized framework. We were unsure how much the provided utility functions could accomplish in place of rolling our own.
+- **Adapting to the Framework**: Understanding how to adapt C++ code into the provided javascript framework was challenging, and made harder by the fact that the framework did not follow the same project layout as other Regl projects. Functional regl code in many examples wasn't always easily adaptable to the object-oriented, de-functionalized framework. We weren't always sure if the provided utility functions did what some features required.
 
 - **Fire Particles**: It was hard to make the fire look real. At first, the particles flew straight up and it didn't look nice. We added a little wavy (zig-zag) motion and a gentle upward force (buoyancy effect), then spent some time adjusting the colors until the flames looked believable.
 
-- **Fire Spread**: Tuning fire spread was tedious. We had to figure out the right parameters in order to get a nice effect while maintaining stability.
+- **Fire Spread**: Tuning fire spread was tedious. We had to figure out the right parameters in order to get a nice effect while maintaining performance.
 
-- **Texture Baking**: Texture baking was particularly hard at the beginning, many tutorials were telling us to use the different unwrap options in Blender, but each time it made a mess. In the end, we were able to bake the pine tree texture without any unwrapping and then we just used photoshop for the second tree texture (our models only have two colors).
+- **Texture Baking**: Texture baking was particularly hard at the beginning, many tutorials were told us to use various unwrapping options in Blender, but each time they made a mess. In the end, we were able to bake the pine tree texture without any unwrapping and then we just used photoshop for the second tree texture (our models only have two colors).
 
 ## Contributions
 
@@ -1001,4 +1004,4 @@ We had no issues splitting up the workload.
 - [Toon and Sobel Inspiration](https://www.shadertoy.com/view/4dVGRW)
 - [Sobel Outline](https://www.vertexfragment.com/ramblings/unity-postprocessing-sobel-outline/#sobel-outlines-as-a-post-processing-effect)
 
-**Note**: We used LLMs to find some resources and give us ideas for implementing the more cosmetic parts of our project. For example, using zig-zagging motions and buoyancy to make more realistic fire. We also used AI for troubleshooting. We did not generate entire chunks of code and paste them into our project. (AIs used: ChatGPT, ClaudeAI.)
+**Note**: We used LLMs to find some resources and give us ideas for implementing the more cosmetic parts of our project. For example, using zig-zagging motions and buoyancy to make more realistic fire. We also used AI for troubleshooting. We did not generate entire chunks of code and paste them into our project. We used ChatGPT and ClaudeAI.
