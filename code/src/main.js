@@ -22,7 +22,6 @@ import { MixedForestScene } from "./scenes/mixed_forest_scene.js";
 import { ModelsScene } from "./scenes/models_scene.js";
 import { DeferredScene } from "./scenes/deferred_scene.js";
 
-import { DemoScene } from "./scenes/demo_scene.js";
 // import { distance } from "../lib/gl-matrix_3.3.0/esm/vec3.js";
 
 DOM_loaded_promise.then(main)
@@ -133,14 +132,12 @@ async function main() {
 
   // Only have ONE of these uncommented! otherwise GUI overlays from different scenes will render at the same time!
 
-  // const demo_scene = new DemoScene(resource_manager, procedural_texture_generator);
   // const pine_scene = new PineScene(resource_manager);
   const mixed_forest_scene = new MixedForestScene(resource_manager);
   // const models_scene = new ModelsScene(resource_manager, procedural_texture_generator);
   // const deferred_scene = new DeferredScene(resource_manager);
 
-  const active_scene = mixed_forest_scene;
-  // const active_scene = demo_scene;   // Assign the scene to be rendered to active_scene
+  const active_scene = mixed_forest_scene; // Assign the scene to be rendered to active_scene
   
   /*---------------------------------------------------------------
     5. UI Instantiation
