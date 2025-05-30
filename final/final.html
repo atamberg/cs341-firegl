@@ -151,10 +151,10 @@ post-processing to produce visually distinct effects while maintaining
 performance. Procedural scene generation and fire propagation systems
 allow trees to ignite and spread fire based on proximity and time, with
 visual transitions between normal, burning, and burned states. A
-GPU-instanced particle system renders thousands of animated fire and
-smoke particles efficiently. Users can interact with the simulation by
-triggering fires. We validate our results through side-by-side visual
-comparisons and limited performance tests.</p>
+GPU-instanced particle system efficiently renders thousands of animated
+fire and smoke particles efficiently. Users can interact with the
+simulation by triggering fires. We validate our results through
+side-by-side visual comparisons and limited performance tests.</p>
 <h2 id="overview">Overview</h2>
 <p>We set out to create a stylized interactive forest fire simulation.
 Rather than focusing on physical realism, we aimed to model the essence
@@ -168,8 +168,8 @@ scales, and positions to create dense, organic-looking forests. Users
 can initiate fires by pressing a key, triggering a system that spreads
 flames from tree to tree based on distance and timing. Each tree
 transitions through multiple states: normal, burning, and burned. These
-transitions are accompanied a mesh swap, cartoony animation, and color
-shifts.</p>
+transitions are accompanied by a mesh swap, cartoony animation, and
+color shifts.</p>
 <p>To model the fire itself, we implemented a custom particle system
 with support for GPU instancing, allowing thousands of particles to be
 animated each frame with minimal CPU overhead. These particles change
@@ -177,8 +177,8 @@ size, velocity, and color over their lifetimes, transitioning smoothly
 between fire and smoke. Combined with bloom post-processing, bright
 areas such as fire particles and light sources glow vividly, especially
 in nighttime scenes. The final esthetic is further enhanced by toon
-shading with edge outlines. The toon, thickly-outlined appearance one
-can achieve is similar to that of the game <em>Lethal Company</em>.</p>
+shading with edge outlines. The toon, thickly-outlined appearance is
+similar to that of the game <em>Lethal Company</em>.</p>
 <div style="text-align: center;">
 <video src="videos/video-group64.mp4" width="700" controls></video>
 <figcaption>
@@ -334,7 +334,7 @@ n), allowing us to place hundreds of trees efficiently.</p></li>
 </ul>
 <p><strong>Fire Spread System</strong></p>
 <p><code>mixed_forest_scene.js</code> and <code>pine_scene.js</code>
-includes a fire system (<code>fire_spread.js</code>) that shows off our
+include a fire system (<code>fire_spread.js</code>) that shows off our
 particles (<em>explained later</em>) and lighting:</p>
 <ul>
 <li><p><strong>Object State Management</strong>: Each tree stores
@@ -376,7 +376,7 @@ class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb9-
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
 <li><p><strong>User Interaction</strong>: We implemented a ray-casting
 system that converts screen coordinates to world positions, allowing
-users to start fires with pressing a key on the keyboard.</p></li>
+users to start fires by pressing a key on the keyboard.</p></li>
 </ul>
 <p><strong>User Interface</strong></p>
 <p>All scenes include:</p>
@@ -1067,11 +1067,11 @@ href="https://github.com/regl-project/regl/blob/b907a63bbb0d5307494657d4028ceca3
 GPU Instancing Example</a> very helpful.</p>
 <h5 id="billboards">Billboards</h5>
 <p>First, we implemented a basic billboard shader. The vertex shader
-takes x and y coordinates the model-world vertices of the billboard mesh
-(a square plane) and maps them along the <code>cameraRight</code> and
-<code>cameraUp</code> vectors in world-space (along with some modifiable
-scale values), thereby forcing the top of the mesh to always face the
-camera:</p>
+takes x and y coordinates of the model-world vertices of the billboard
+mesh (a square plane) and maps them along the <code>cameraRight</code>
+and <code>cameraUp</code> vectors in world-space (along with some
+modifiable scale values), thereby forcing the top of the mesh to always
+face the camera:</p>
 <div class="sourceCode" id="cb25"><pre
 class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">// billboard.vert.glsl</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span>
@@ -1318,8 +1318,8 @@ GPU Instanced Rainbow Vomit
 </figure>
 </div>
 <p>Although GPU instancing hasn’t eliminated lag entirely,
-(<code>evolve()</code> still runs entirely on the cpu,) we see that
-without gpu instancing particle rendering is significantly slower.</p>
+(<code>evolve()</code> still runs entirely on the CPU), we see that
+without GPU instancing particle rendering is significantly slower.</p>
 <div
 style="display: flex; justify-content: space-between; max-width: 800px; margin: auto; gap: 20px; text-align: center; align-items: flex-start;">
 <figure>
@@ -1374,16 +1374,21 @@ Deferred Shading Example</a></p></li>
 <h3 id="challenges">Challenges</h3>
 <ul>
 <li><strong>Deferred Shading</strong></li>
-<li><strong>Particles</strong></li>
+<li><strong>Fire particles</strong>: It was hard to make the fire look
+real. At first, the particles flew straight up and it didn’t look nice.
+We added a little wavy (zig-zag) motion and a gentle upward force
+(buoyancy effect), then spent some time adjusting the colors until the
+flames looked believable.</li>
 <li><strong>Fire spread</strong>: Tuning fire spread was tedious. We had
 to figure out the right parameters in order to get a nice effect while
 maintaining stability.</li>
 <li><strong>Texture baking</strong>: Texture baking was particularly
-hard at the beginning, many tutorials were telling use the different
-unwrap options in Blender, but each time we did that it made a mess. At
-the end, for the pine tree we were able to bake the texture without any
-unwrapping and then for the second tree type we simply used photoshop to
-create the texture, realising that our meshes only had two colors…</li>
+hard at the beginning, many tutorials were telling us to use the
+different unwrap options in Blender, but each time we did that it made a
+mess. At the end, for the pine tree we were able to bake the texture
+without any unwrapping and then for the second tree type we simply used
+photoshop to create the texture, realising that our meshes only had two
+colors…</li>
 </ul>
 <h2 id="contributions">Contributions</h2>
 <table>
@@ -1588,6 +1593,11 @@ Inspiration</a></li>
 href="https://www.vertexfragment.com/ramblings/unity-postprocessing-sobel-outline/#sobel-outlines-as-a-post-processing-effect">Sobel
 Outline</a></li>
 </ul>
+<p><strong>Note</strong>: AI was used during this project for finding
+ressources and giving us ideas for implementing certain aspects of our
+project. For example, AI gave us the hint to use zig-zag motion and
+buoyancy effect to make the fire more realistic. (AIs used: OpenAI,
+ClaudeAI)</p>
         </div>
       </div>
     </div>

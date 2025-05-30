@@ -894,7 +894,7 @@ Although GPU instancing hasn't eliminated lag entirely, (`evolve()` still runs e
 ### Challenges
 
 - **Deferred Shading**
-- **Particles**
+- **Fire particles**: It was hard to make the fire look real. At first, the particles flew straight up and it didn't look nice. We added a little wavy (zig-zag) motion and a gentle upward force (buoyancy effect), then spent some time adjusting the colors until the flames looked believable.
 - **Fire spread**: Tuning fire spread was tedious. We had to figure out the right parameters in order to get a nice effect while maintaining stability.
 - **Texture baking**: Texture baking was particularly hard at the beginning, many tutorials were telling us to use the different unwrap options in Blender, but each time we did that it made a mess. At the end, for the pine tree we were able to bake the texture without any unwrapping and then for the second tree type we simply used photoshop to create the texture, realising that our meshes only had two colors...
 
@@ -997,3 +997,5 @@ TODO
 - [Toon Shading Wiki](https://en.wikibooks.org/wiki/GLSL_Programming/Unity/Toon_Shading)
 - [Toon and Sobel Inspiration](https://www.shadertoy.com/view/4dVGRW)
 - [Sobel Outline](https://www.vertexfragment.com/ramblings/unity-postprocessing-sobel-outline/#sobel-outlines-as-a-post-processing-effect)
+
+**Note**: AI was used during this project for finding ressources and giving us ideas for implementing certain aspects of our project. For example, AI gave us the hint to use zig-zag motion and buoyancy effect to make the fire more realistic. (AIs used: OpenAI, ClaudeAI)
