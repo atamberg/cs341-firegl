@@ -151,7 +151,7 @@ Our `generateTreePositions()` function (in `mixed_forest_scene.js` and `models_s
   ```javascript
   if(time > this.burnDuration - .5 && time < this.burnDuration) {
       tree.material = MATERIALS.burntTree;
-      tree.images/mesh_reference = tree.images/mesh_reference == 'TreeType1.obj' ? 
+      tree.mesh_reference = tree.mesh_reference == 'TreeType1.obj' ? 
           'DeadTreeType1.obj': 'DeadTreeType2.obj';
       vec3.scale(tree.scale, tree.burned_scale, 0.75 + 0.25 * 
           (time - this.burnDuration + 0.5) / .5);
@@ -505,7 +505,7 @@ We rewrote the deferred version of the lighting shaders to use light volumes. In
 ```javascript
 // blinn_phong_deferred_sr.js
 ...
-this.light_sphere = cg_images/mesh_make_uv_sphere(16);
+this.light_sphere = mesh_make_uv_sphere(16);
 ...
 render(scene_state, gBuffer) {
 ...
@@ -643,10 +643,10 @@ Following the same tutorial, we created a particle container class (`particle_co
 ```javascript
 // particle_container.js
 export class ParticleContainer {
-    constructor(translation, scale, images/mesh_reference) {
+    constructor(translation, scale, mesh_reference) {
         this.translation = translation;
         this.scale = scale;
-        this.images/mesh_reference = images/mesh_reference;
+        this.mesh_reference = mesh_reference;
         this.material = MATERIALS.particle_green;
         this.color = this.material.color;
         this.particle_list = [];
@@ -680,7 +680,7 @@ render(scene_state) {
 	...
 	// using gpu instancing to push particle data into buffer
 	inputs.push({
-	    mesh: this.resource_manager.get_mesh(obj.images/mesh_reference),
+	    mesh: this.resource_manager.get_mesh(obj.mesh_reference),
 	    particle_offsets: {
 		buffer: obj.particle_list.map(p => p.offset),
 		divisor: 1,
